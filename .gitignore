@@ -1,0 +1,8 @@
+# Intellij
+.idea
+
+# Golang
+bin/
+go.sum
+go.mod
+
