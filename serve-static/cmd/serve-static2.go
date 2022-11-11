@@ -1,18 +1,27 @@
 package main
 
 import (
-	"html/template"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"serve-static/internal"
 )
 
 func main() {
-	tmpl := template.Must(template.ParseFiles("static/index.html"))
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// Log the request
-		log.Printf("Got request from: %s, %s\n", r.RemoteAddr, r.Header.Get("User-Agent"))
-		tmpl.Execute(w, nil)
-	})
-	log.Print("Listening on :5000...")
-	http.ListenAndServe(":5000", nil)
+	// Input arguments required : port & static directory to serve
+	if len(os.Args) != 4 {
+		fmt.Printf("Usage: %s <port> <static-directory> <geo-db>\n", os.Args[0])
+		os.Exit(1)
+	}
+
+	port := os.Args[1]
+	directory := os.Args[2]
+	if err := internal.InitGeoDB(os.Args[3]); err != nil {
+		fmt.Printf("Failed opening ip2location db file %s : %s\n", os.Args[3], err)
+		os.Exit(2)
+	}
+
+	log.Printf("Listening on port %s ...\n", port)
+	http.ListenAndServe(port, internal.ReturnHandler(directory))
 }
