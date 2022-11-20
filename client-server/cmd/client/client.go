@@ -24,8 +24,9 @@ func makeRequest(restPath string) {
 		log.Printf("[%d] Failed", requestCount)
 	}
 	body, err := io.ReadAll(response.Body)
-	log.Printf("[%d] Got: %d : %s", requestCount, response.StatusCode, string(body))
+	log.Printf("[%d] Got: %d {%s} : %s", requestCount, response.StatusCode, response.Header.Get("Server"),
+		string(body))
 	requestCount++
 	_ = response.Body.Close()
-	time.Sleep(time.Second*2)
+	time.Sleep(time.Second * 2)
 }

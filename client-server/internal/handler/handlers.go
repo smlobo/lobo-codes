@@ -3,14 +3,14 @@ package handler
 import (
 	"log"
 	"net/http"
+	"runtime"
 )
 
-//func ReturnHandler(countryPath string) func(http.ResponseWriter, *http.Request) {
 func ReturnHandler(countryPath string) http.HandlerFunc {
 	var responseString string
 	var count int
 	if countryPath == "asia" {
-		responseString = "India";
+		responseString = "India"
 	} else if countryPath == "america" {
 		responseString = "United States"
 	}
@@ -22,6 +22,7 @@ func ReturnHandler(countryPath string) http.HandlerFunc {
 		}
 		log.Printf("[%d] Received %s request from: %s", count, countryPath, request.UserAgent())
 		count++
+		writer.Header().Add("Server", runtime.Version())
 		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write([]byte(responseString))
 	}
