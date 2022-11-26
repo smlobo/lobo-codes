@@ -6,3 +6,6 @@ bin/
 go.sum
 go.mod
 
+# MacOS
+.DS_Store
+
