@@ -56,6 +56,14 @@ func main() {
 	router.Handle("/*", fileServer)
 
 	log.Printf("Listening on port %s ...\n", port)
-	http.ListenAndServe(port, router)
-	http.ListenAndServeTLS(sslPort, sslDir+"/fullchain.pem", sslDir+"/privkey.pem", router)
+	go func() {
+		err := http.ListenAndServe(port, router)
+		if err != nil {
+			fmt.Printf("Error serving on port %s : %s", port, err)
+		}
+	}()
+	err = http.ListenAndServeTLS(sslPort, sslDir+"/fullchain.pem", sslDir+"/privkey.pem", router)
+	if err != nil {
+		fmt.Printf("Error serving with SSL on port %s : %s", sslPort, err)
+	}
 }
