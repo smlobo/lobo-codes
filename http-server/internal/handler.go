@@ -21,9 +21,9 @@ func ReturnHandler(directory string, db *gorm.DB) http.HandlerFunc {
 
 		var info RequestInfo
 		requestInfo(request, &info)
-		log.Printf("RequestInfo: %s", info)
 		//log.Printf("IP: %s", info.RemoteAddress)
 		db.Create(&info)
+		log.Printf("RequestInfo: %s", info)
 
 		url := request.URL
 		key := ""
