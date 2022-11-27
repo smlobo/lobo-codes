@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/go-chi/chi/v5"
 	"gorm.io/driver/sqlite"
@@ -9,61 +10,84 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 )
 
 func main() {
-	// Input arguments required : port, ssl-port, static directory to serve, ip geodb mapping, request info db
-	if len(os.Args) != 7 {
-		fmt.Printf("Usage: %s <port> <ssl-port> <static-directory> <geo-db> <requests-db> <ssl-key-dir>\n",
-			os.Args[0])
-		os.Exit(1)
-	}
+	// Input arguments
+	portPtr := flag.String("port", ":80", "http port (:80)")
+	sslPortPtr := flag.String("ssl-port", ":443", "https port (:443)")
+	htmlDirPtr := flag.String("html-dir", "/var/www/amelia-html/portfolio-website",
+		"directory with static html to serve")
+	geoDbPtr := flag.String("geodb", "~/db/IP2LOCATION-LITE-DB11.IPV6.BIN",
+		"ip2location db")
+	requestsDbPtr := flag.String("requestsdb", "requests.db", "db to store incoming requests ip")
+	sslKeyDirPtr := flag.String("ssl-key-dir", "/etc/letsencrypt/live/amelia.lobo.codes",
+		"directory with SSL key and cert files")
+	logPtr := flag.String("log", "stdout", "log file (stdout)")
 
-	// Port (as ":XXXX")
-	port := os.Args[1]
-	sslPort := os.Args[2]
-
-	// Root of the static directory to serve
-	directory := os.Args[3]
+	flag.Parse()
 
 	// Ip2location db file init
-	if err := internal.InitGeoDB(os.Args[4]); err != nil {
-		fmt.Printf("Failed opening ip2location db file %s : %s\n", os.Args[4], err)
+	if err := internal.InitGeoDB(*geoDbPtr); err != nil {
+		fmt.Printf("Failed opening ip2location db file %s : %s\n", *geoDbPtr, err)
 		os.Exit(1)
 	}
 
 	// Init gorm db
-	requestsDb, err := gorm.Open(sqlite.Open(os.Args[5]), &gorm.Config{})
+	requestsDb, err := gorm.Open(sqlite.Open(*requestsDbPtr), &gorm.Config{})
 	if err != nil {
-		fmt.Printf("Failed to connect to sqlite db %s : %s\n", os.Args[5], err)
+		fmt.Printf("Failed to connect to sqlite db %s : %s\n", *requestsDbPtr, err)
 		os.Exit(1)
 	}
 	// Migrate the schema
 	//requestsDb.AutoMigrate(&internal.RequestInfo{})
 
-	// SSL key dir
-	sslDir := os.Args[6]
+	// Logging
+	if *logPtr != "stdout" {
+		// If the file doesn't exist, create it or append to the file
+		file, err := os.OpenFile(*logPtr, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.SetOutput(file)
+	}
 
 	// Router
 	router := chi.NewRouter()
 
 	// Main pattern to be logged to db
-	router.Get("/", internal.ReturnHandler(directory, requestsDb))
+	router.Get("/", internal.ReturnHandler(*htmlDirPtr, requestsDb))
 
 	// Other static content
-	fileServer := http.FileServer(http.Dir(directory))
+	fileServer := http.FileServer(http.Dir(*htmlDirPtr))
 	//router.Handle("/*", http.StripPrefix("/", fileServer))
 	router.Handle("/*", fileServer)
 
-	log.Printf("Listening on port %s ...\n", port)
+	// Wait for both http & https servers to finish
+	var serversWaitGroup sync.WaitGroup
+	serversWaitGroup.Add(2)
+
 	go func() {
-		err := http.ListenAndServe(port, router)
+		fmt.Printf("Listening on port %s ...\n", *portPtr)
+		err := http.ListenAndServe(*portPtr, router)
 		if err != nil {
-			fmt.Printf("Error serving on port %s : %s", port, err)
+			fmt.Printf("Error serving on port %s : %s\n", *portPtr, err)
 		}
+		serversWaitGroup.Done()
 	}()
-	err = http.ListenAndServeTLS(sslPort, sslDir+"/fullchain.pem", sslDir+"/privkey.pem", router)
-	if err != nil {
-		fmt.Printf("Error serving with SSL on port %s : %s", sslPort, err)
-	}
+
+	go func() {
+		if *sslPortPtr != "" {
+			fmt.Printf("Listening on SSL port %s ...\n", *sslPortPtr)
+			err := http.ListenAndServeTLS(*sslPortPtr, *sslKeyDirPtr+"/fullchain.pem",
+				*sslKeyDirPtr+"/privkey.pem", router)
+			if err != nil {
+				fmt.Printf("Error serving with SSL on port %s : %s\n", *sslPortPtr, err)
+			}
+		}
+		serversWaitGroup.Done()
+	}()
+
+	serversWaitGroup.Wait()
 }
