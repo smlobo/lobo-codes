@@ -12,32 +12,37 @@ import (
 )
 
 func main() {
-	// Input arguments required : port, static directory to serve, ip geodb mapping, request info db
-	if len(os.Args) != 5 {
-		fmt.Printf("Usage: %s <port> <static-directory> <geo-db> <requests-db>\n", os.Args[0])
+	// Input arguments required : port, ssl-port, static directory to serve, ip geodb mapping, request info db
+	if len(os.Args) != 7 {
+		fmt.Printf("Usage: %s <port> <ssl-port> <static-directory> <geo-db> <requests-db> <ssl-key-dir>\n",
+			os.Args[0])
 		os.Exit(1)
 	}
 
 	// Port (as ":XXXX")
 	port := os.Args[1]
+	sslPort := os.Args[2]
 
 	// Root of the static directory to serve
-	directory := os.Args[2]
+	directory := os.Args[3]
 
 	// Ip2location db file init
-	if err := internal.InitGeoDB(os.Args[3]); err != nil {
-		fmt.Printf("Failed opening ip2location db file %s : %s\n", os.Args[3], err)
+	if err := internal.InitGeoDB(os.Args[4]); err != nil {
+		fmt.Printf("Failed opening ip2location db file %s : %s\n", os.Args[4], err)
 		os.Exit(1)
 	}
 
 	// Init gorm db
-	requestsDb, err := gorm.Open(sqlite.Open(os.Args[4]), &gorm.Config{})
+	requestsDb, err := gorm.Open(sqlite.Open(os.Args[5]), &gorm.Config{})
 	if err != nil {
-		fmt.Printf("Failed to connect to sqlite db %s : %s\n", os.Args[4], err)
+		fmt.Printf("Failed to connect to sqlite db %s : %s\n", os.Args[5], err)
 		os.Exit(1)
 	}
 	// Migrate the schema
 	//requestsDb.AutoMigrate(&internal.RequestInfo{})
+
+	// SSL key dir
+	sslDir := os.Args[6]
 
 	// Router
 	router := chi.NewRouter()
@@ -52,4 +57,5 @@ func main() {
 
 	log.Printf("Listening on port %s ...\n", port)
 	http.ListenAndServe(port, router)
+	http.ListenAndServeTLS(sslPort, sslDir+"/fullchain.pem", sslDir+"/privkey.pem", router)
 }
