@@ -3,7 +3,6 @@ package internal
 import (
 	"gorm.io/gorm"
 	"html/template"
-	"log"
 	"net/http"
 )
 
@@ -19,11 +18,8 @@ func ReturnHandler(directory string, db *gorm.DB) http.HandlerFunc {
 		//log.Printf("Got request from: %s, %s, %s", request.RemoteAddr, request.Header.Get("User-Agent"),
 		//	request.RequestURI)
 
-		var info RequestInfo
-		requestInfo(request, &info)
-		//log.Printf("IP: %s", info.RemoteAddress)
-		db.Create(&info)
-		log.Printf("RequestInfo: %s", info)
+		// Log request to the sqlite3 db
+		requestInfo(request, db)
 
 		url := request.URL
 		key := ""
