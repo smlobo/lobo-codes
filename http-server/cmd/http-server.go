@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"http-server/internal"
@@ -38,6 +39,17 @@ func main() {
 	// Migrate the schema
 	//requestsDb.AutoMigrate(&internal.RequestInfo{})
 
+	// Router
+	router := chi.NewRouter()
+
+	// Main pattern to be logged to db
+	router.Get("/", internal.ReturnHandler(directory, requestsDb))
+
+	// Other static content
+	fileServer := http.FileServer(http.Dir(directory))
+	//router.Handle("/*", http.StripPrefix("/", fileServer))
+	router.Handle("/*", fileServer)
+
 	log.Printf("Listening on port %s ...\n", port)
-	http.ListenAndServe(port, internal.ReturnHandler(directory, requestsDb))
+	http.ListenAndServe(port, router)
 }

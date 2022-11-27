@@ -16,12 +16,13 @@ func ReturnHandler(directory string, db *gorm.DB) http.HandlerFunc {
 	pathMap["notfound.html"] = template.Must(template.ParseFiles("static/notfound.html"))
 
 	return func(writer http.ResponseWriter, request *http.Request) {
-		log.Printf("Got request from: %s, %s", request.RemoteAddr, request.Header.Get("User-Agent"))
+		//log.Printf("Got request from: %s, %s, %s", request.RemoteAddr, request.Header.Get("User-Agent"),
+		//	request.RequestURI)
 
 		var info RequestInfo
 		requestInfo(request, &info)
 		log.Printf("RequestInfo: %s", info)
-		log.Printf("IP: %s", info.RemoteAddress)
+		//log.Printf("IP: %s", info.RemoteAddress)
 		db.Create(&info)
 
 		url := request.URL
