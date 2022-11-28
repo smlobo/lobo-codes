@@ -19,7 +19,7 @@ func main() {
 	sslPortPtr := flag.String("ssl-port", ":443", "https port (:443)")
 	htmlDirPtr := flag.String("html-dir", "/var/www/amelia-html/portfolio-website",
 		"directory with static html to serve")
-	geoDbPtr := flag.String("geodb", "~/db/IP2LOCATION-LITE-DB11.IPV6.BIN",
+	geoDbPtr := flag.String("geodb", "/home/pi/db/IP2LOCATION-LITE-DB11.IPV6.BIN",
 		"ip2location db")
 	requestsDbPtr := flag.String("requestsdb", "requests.db", "db to store incoming requests ip")
 	sslKeyDirPtr := flag.String("ssl-key-dir", "/etc/letsencrypt/live/amelia.lobo.codes",
