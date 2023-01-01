@@ -8,11 +8,14 @@ run-stage:
 	./bin/${TARGET} -port=:3000 -ssl-port=:3001
 
 run-test:
-	./bin/${TARGET} -port=:3000 -ssl-port= -html-dir=static \
+	./bin/${TARGET} -port=:3000 -ssl-port= -html-dir=../../portfolio-website \
 		-geodb=../ip2location-db/IP2LOCATION-LITE-DB11.IPV6.BIN -requestsdb=requests.db
 
 build:
 	go build -o bin/${TARGET} cmd/${TARGET}.go
+
+read-db:
+	go run cmd/read-requests-db.go
 
 module:
 	rm -f go.mod go.sum

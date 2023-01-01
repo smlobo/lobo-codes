@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"html/template"
 	"http-server/internal"
 	"log"
 	"net/http"
@@ -58,6 +59,10 @@ func main() {
 
 	// Main pattern to be logged to db
 	router.Get("/", internal.ReturnHandler(*htmlDirPtr, requestsDb))
+
+	// Template
+	tmpl := template.Must(template.ParseFiles("template/visitors.html"))
+	router.Get("/myvisitors", internal.TemplateHandler(tmpl, requestsDb))
 
 	// Other static content
 	fileServer := http.FileServer(http.Dir(*htmlDirPtr))
