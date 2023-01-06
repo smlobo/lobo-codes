@@ -107,14 +107,14 @@ func main() {
 		main:    http.NewServeMux(),
 	}
 
+	// Other static content
+	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
+	mux.amelia.Handle("/*", ameliaFileServer)
+
 	mux.amelia.HandleFunc("/", internal.AmeliaHandler)
 	mux.ryan.HandleFunc("/", internal.RyanHandler)
 	mux.sheldon.HandleFunc("/", internal.SheldonHandler)
 	mux.main.HandleFunc("/", internal.MainHandler)
-
-	// Other static content
-	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
-	mux.amelia.Handle("/*", ameliaFileServer)
 
 	// Wait for both http & https servers to finish
 	var serversWaitGroup sync.WaitGroup
