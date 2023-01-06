@@ -83,6 +83,7 @@ func main() {
 	router := chi.NewRouter()
 	hostRouter := hostrouter.New()
 	hostRouter.Map("amelia.lobo.codes", ameliaRouter())
+	router.Mount("/", hostRouter)
 
 	// Wait for both http & https servers to finish
 	var serversWaitGroup sync.WaitGroup
