@@ -3,6 +3,7 @@ package internal
 import (
 	"gorm.io/gorm"
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -34,6 +35,8 @@ func handleIndexHtml(directory string, writer http.ResponseWriter, request *http
 }
 
 func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
+	log.Printf("Amelia request: %s :: %s", request.RequestURI, request.URL.Path)
+
 	handleIndexHtml("amelia", writer, request)
 
 	url := request.URL
