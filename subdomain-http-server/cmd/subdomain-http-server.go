@@ -4,36 +4,16 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/go-chi/chi/v5"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
 	"os"
-	"strings"
+	"subdomain-http-server/hostrouter"
 	"subdomain-http-server/internal"
 	"sync"
 )
-
-type Mux struct {
-	amelia, ryan, sheldon, main *http.ServeMux
-}
-
-func (mux *Mux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if r.Host == "lobo.codes" {
-		mux.main.ServeHTTP(w, r)
-		return
-	}
-	domainParts := strings.Split(r.Host, ".")
-	if domainParts[0] == "amelia" {
-		mux.amelia.ServeHTTP(w, r)
-	} else if domainParts[0] == "ryan" {
-		mux.ryan.ServeHTTP(w, r)
-	} else if domainParts[0] == "sheldon" {
-		mux.sheldon.ServeHTTP(w, r)
-	} else {
-		http.Error(w, "Not found", 404)
-	}
-}
 
 func main() {
 	var err error
@@ -99,22 +79,10 @@ func main() {
 		log.SetOutput(file)
 	}
 
-	// Setup mux and handlers
-	mux := &Mux{
-		amelia:  http.NewServeMux(),
-		ryan:    http.NewServeMux(),
-		sheldon: http.NewServeMux(),
-		main:    http.NewServeMux(),
-	}
-
-	// Other static content
-	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
-	mux.amelia.Handle("/*", ameliaFileServer)
-
-	mux.amelia.HandleFunc("/", internal.AmeliaHandler)
-	mux.ryan.HandleFunc("/", internal.RyanHandler)
-	mux.sheldon.HandleFunc("/", internal.SheldonHandler)
-	mux.main.HandleFunc("/", internal.MainHandler)
+	// Setup chi with hostrouter
+	router := chi.NewRouter()
+	hostRouter := hostrouter.New()
+	hostRouter.Map("amelia.lobo.codes", ameliaRouter())
 
 	// Wait for both http & https servers to finish
 	var serversWaitGroup sync.WaitGroup
@@ -122,7 +90,7 @@ func main() {
 
 	go func() {
 		fmt.Printf("Listening on port %s ...\n", *portPtr)
-		err := http.ListenAndServe(*portPtr, mux)
+		err := http.ListenAndServe(*portPtr, router)
 		if err != nil {
 			fmt.Printf("Error serving on port %s : %s\n", *portPtr, err)
 		}
@@ -133,7 +101,7 @@ func main() {
 		if *sslPortPtr != "" {
 			fmt.Printf("Listening on SSL port %s ...\n", *sslPortPtr)
 			err := http.ListenAndServeTLS(*sslPortPtr, *sslKeyDirPtr+"/fullchain.pem",
-				*sslKeyDirPtr+"/privkey.pem", mux)
+				*sslKeyDirPtr+"/privkey.pem", router)
 			if err != nil {
 				fmt.Printf("Error serving with SSL on port %s : %s\n", *sslPortPtr, err)
 			}
@@ -142,4 +110,16 @@ func main() {
 	}()
 
 	serversWaitGroup.Wait()
+}
+
+// Router for the Short URL service
+func ameliaRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/", internal.AmeliaHandler)
+
+	// Other static content
+	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
+	r.Handle("/*", ameliaFileServer)
+
+	return r
 }
