@@ -85,6 +85,8 @@ func main() {
 		}
 
 		handlerInfo.PathMap = internal.GetPathMap(subdomain)
+
+		internal.HandlerInfoMap[subdomain] = handlerInfo
 	}
 
 	// Logging
