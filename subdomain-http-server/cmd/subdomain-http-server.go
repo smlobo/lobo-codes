@@ -112,6 +112,10 @@ func main() {
 	mux.sheldon.HandleFunc("/", internal.SheldonHandler)
 	mux.main.HandleFunc("/", internal.MainHandler)
 
+	// Other static content
+	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
+	mux.amelia.Handle("/*", ameliaFileServer)
+
 	// Wait for both http & https servers to finish
 	var serversWaitGroup sync.WaitGroup
 	serversWaitGroup.Add(2)
