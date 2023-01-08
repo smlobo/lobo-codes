@@ -120,7 +120,7 @@ func ameliaRouter() chi.Router {
 
 	// Other static content
 	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
-	r.Handle("/static", ameliaFileServer)
+	r.Handle("/static/*", ameliaFileServer)
 
 	return r
 }
