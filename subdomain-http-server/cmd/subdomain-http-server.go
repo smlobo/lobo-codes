@@ -83,6 +83,8 @@ func main() {
 	router := chi.NewRouter()
 	hostRouter := hostrouter.New()
 	hostRouter.Map("amelia.lobo.codes", ameliaRouter())
+	hostRouter.Map("ryan.lobo.codes", ryanRouter())
+	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
 	router.Mount("/", hostRouter)
 
 	// Wait for both http & https servers to finish
@@ -113,7 +115,6 @@ func main() {
 	serversWaitGroup.Wait()
 }
 
-// Router for the Short URL service
 func ameliaRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.AmeliaHandler)
@@ -122,6 +123,28 @@ func ameliaRouter() chi.Router {
 
 	// Other static content
 	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
+	r.Handle("/static/*", ameliaFileServer)
+
+	return r
+}
+
+func ryanRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/", internal.RyanHandler)
+
+	// Other static content
+	ameliaFileServer := http.FileServer(http.Dir("./ryan"))
+	r.Handle("/static/*", ameliaFileServer)
+
+	return r
+}
+
+func sheldonRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/", internal.SheldonHandler)
+
+	// Other static content
+	ameliaFileServer := http.FileServer(http.Dir("./sheldon"))
 	r.Handle("/static/*", ameliaFileServer)
 
 	return r

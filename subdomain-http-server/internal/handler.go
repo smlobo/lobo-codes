@@ -23,12 +23,12 @@ func GetPathMap(directory string) map[string]*template.Template {
 }
 
 func handleIndexHtml(directory string, writer http.ResponseWriter, request *http.Request) {
-	// Log request to the sqlite3 db
-	requestInfo(request, HandlerInfoMap[directory].RequestsDb)
-
 	url := request.URL
 	key := ""
 	if url.Path == "" || url.Path == "/" || url.Path == "/index.html" {
+		// Log request to the sqlite3 db
+		requestInfo(request, HandlerInfoMap[directory].RequestsDb)
+
 		key = "index"
 		_ = HandlerInfoMap[directory].PathMap[key].Execute(writer, nil)
 	}
@@ -93,11 +93,4 @@ type VisitorsPage struct {
 	UniqueCountries int64
 	Countries       []Country
 	Cities          []City
-}
-
-func TemplateHandler(tmpl *template.Template, db *gorm.DB) http.HandlerFunc {
-
-	return func(w http.ResponseWriter, r *http.Request) {
-
-	}
 }
