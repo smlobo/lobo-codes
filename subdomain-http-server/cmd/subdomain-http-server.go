@@ -122,8 +122,8 @@ func ameliaRouter() chi.Router {
 	r.Get("/visitors.html", internal.AmeliaHandler)
 
 	// Other static content
-	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
-	r.Handle("/*", ameliaFileServer)
+	//ameliaFileServer := http.FileServer(http.Dir("./amelia"))
+	//r.Handle("/*", ameliaFileServer)
 
 	return r
 }
