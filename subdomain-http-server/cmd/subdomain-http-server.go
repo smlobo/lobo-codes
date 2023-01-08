@@ -39,6 +39,7 @@ func main() {
 		"amelia":  {},
 		"ryan":    {},
 		"sheldon": {},
+		"domain":  {},
 	}
 
 	// Init gorm db for each subdomain
@@ -85,6 +86,7 @@ func main() {
 	hostRouter.Map("amelia.lobo.codes", ameliaRouter())
 	hostRouter.Map("ryan.lobo.codes", ryanRouter())
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
+	hostRouter.Map("lobo.codes", domainRouter())
 	router.Mount("/", hostRouter)
 
 	// Wait for both http & https servers to finish
@@ -133,8 +135,8 @@ func ryanRouter() chi.Router {
 	r.Get("/", internal.RyanHandler)
 
 	// Other static content
-	ameliaFileServer := http.FileServer(http.Dir("./ryan"))
-	r.Handle("/static/*", ameliaFileServer)
+	ryanFileServer := http.FileServer(http.Dir("./ryan"))
+	r.Handle("/static/*", ryanFileServer)
 
 	return r
 }
@@ -144,8 +146,19 @@ func sheldonRouter() chi.Router {
 	r.Get("/", internal.SheldonHandler)
 
 	// Other static content
-	ameliaFileServer := http.FileServer(http.Dir("./sheldon"))
-	r.Handle("/static/*", ameliaFileServer)
+	sheldonFileServer := http.FileServer(http.Dir("./sheldon"))
+	r.Handle("/static/*", sheldonFileServer)
+
+	return r
+}
+
+func domainRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/", internal.DomainHandler)
+
+	// Other static content
+	domainFileServer := http.FileServer(http.Dir("./domain"))
+	r.Handle("/static/*", domainFileServer)
 
 	return r
 }

@@ -3,7 +3,6 @@ package internal
 import (
 	"gorm.io/gorm"
 	"html/template"
-	"log"
 	"net/http"
 )
 
@@ -35,7 +34,7 @@ func handleIndexHtml(directory string, writer http.ResponseWriter, request *http
 }
 
 func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
-	log.Printf("Amelia request: %s :: %s", request.RequestURI, request.URL.Path)
+	//log.Printf("Amelia request: %s :: %s", request.RequestURI, request.URL.Path)
 
 	handleIndexHtml("amelia", writer, request)
 
@@ -73,7 +72,8 @@ func SheldonHandler(writer http.ResponseWriter, request *http.Request) {
 	handleIndexHtml("sheldon", writer, request)
 }
 
-func MainHandler(writer http.ResponseWriter, request *http.Request) {
+func DomainHandler(writer http.ResponseWriter, request *http.Request) {
+	handleIndexHtml("domain", writer, request)
 }
 
 type Country struct {
