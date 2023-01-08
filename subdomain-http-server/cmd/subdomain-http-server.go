@@ -117,13 +117,10 @@ func main() {
 func ameliaRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.AmeliaHandler)
-	r.Get("/index.html", internal.AmeliaHandler)
-	r.Get("/visitors", internal.AmeliaHandler)
-	r.Get("/visitors.html", internal.AmeliaHandler)
 
 	// Other static content
-	//ameliaFileServer := http.FileServer(http.Dir("./amelia"))
-	//r.Handle("/*", ameliaFileServer)
+	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
+	r.Handle("/static", ameliaFileServer)
 
 	return r
 }
