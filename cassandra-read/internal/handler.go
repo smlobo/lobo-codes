@@ -11,7 +11,7 @@ import (
 func ReturnHandler() http.HandlerFunc {
 	var count int
 
-	cluster := gocql.NewCluster("10.1.1.42")
+	cluster := gocql.NewCluster("10.152.183.196")
 	cluster.Keyspace = "cycling"
 	cluster.Consistency = gocql.Quorum
 
