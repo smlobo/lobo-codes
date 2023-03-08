@@ -1,7 +1,7 @@
 package main
 
 import (
-	"cassandra-read/internal"
+	"cassandra-client/internal"
 	"net/http"
 )
 
