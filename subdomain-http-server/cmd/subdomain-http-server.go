@@ -7,6 +7,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -80,6 +81,9 @@ func main() {
 		log.SetOutput(file)
 	}
 
+	// Not found template
+	internal.NotFoundTemplate = template.Must(template.ParseFiles("notfound/notfound.html"))
+
 	// Setup chi with hostrouter
 	router := chi.NewRouter()
 	hostRouter := hostrouter.New()
@@ -87,6 +91,7 @@ func main() {
 	hostRouter.Map("ryan.lobo.codes", ryanRouter())
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
 	hostRouter.Map("lobo.codes", domainRouter())
+	hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
 
 	// Wait for both http & https servers to finish
@@ -122,6 +127,7 @@ func ameliaRouter() chi.Router {
 	r.Get("/", internal.AmeliaHandler)
 	r.Get("/visitors", internal.AmeliaHandler)
 	r.Get("/visitors.html", internal.AmeliaHandler)
+	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
 	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
@@ -133,6 +139,7 @@ func ameliaRouter() chi.Router {
 func ryanRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.RyanHandler)
+	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
 	ryanFileServer := http.FileServer(http.Dir("./ryan"))
@@ -144,6 +151,7 @@ func ryanRouter() chi.Router {
 func sheldonRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.SheldonHandler)
+	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
 	sheldonFileServer := http.FileServer(http.Dir("./sheldon"))
@@ -155,10 +163,22 @@ func sheldonRouter() chi.Router {
 func domainRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.DomainHandler)
+	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
 	domainFileServer := http.FileServer(http.Dir("./domain"))
 	r.Handle("/static/*", domainFileServer)
+
+	return r
+}
+
+func notFoundRouter() chi.Router {
+	r := chi.NewRouter()
+	r.NotFound(internal.NotFoundHandler)
+
+	// Other static content
+	notFoundFileServer := http.FileServer(http.Dir("./notfound"))
+	r.Handle("/static/*", notFoundFileServer)
 
 	return r
 }

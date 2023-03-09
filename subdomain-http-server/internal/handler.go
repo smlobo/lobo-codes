@@ -76,6 +76,12 @@ func DomainHandler(writer http.ResponseWriter, request *http.Request) {
 	handleIndexHtml("domain", writer, request)
 }
 
+var NotFoundTemplate *template.Template
+
+func NotFoundHandler(writer http.ResponseWriter, request *http.Request) {
+	_ = NotFoundTemplate.Execute(writer, nil)
+}
+
 type Country struct {
 	CountryShort string
 	CountryLong  string
