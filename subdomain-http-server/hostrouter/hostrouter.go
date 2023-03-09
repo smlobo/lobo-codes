@@ -1,6 +1,7 @@
 package hostrouter
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -28,6 +29,9 @@ func (hr Routes) Unmap(host string) {
 }
 
 func (hr Routes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Request: %s %s/%s?%s#%s ; From: %s", r.Method, r.Host, r.URL.Path,
+		r.URL.RawQuery, r.URL.RawFragment, r.RemoteAddr)
+
 	host := requestHost(r)
 	if router, ok := hr[strings.ToLower(host)]; ok {
 		router.ServeHTTP(w, r)
