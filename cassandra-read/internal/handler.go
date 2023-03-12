@@ -11,7 +11,8 @@ import (
 func ReturnHandler() http.HandlerFunc {
 	var count int
 
-	cluster := gocql.NewCluster("10.152.183.196")
+	//cluster := gocql.NewCluster("10.152.183.196")
+	cluster := gocql.NewCluster("cassandra-internal")
 	cluster.Keyspace = "cycling"
 	cluster.Consistency = gocql.Quorum
 
