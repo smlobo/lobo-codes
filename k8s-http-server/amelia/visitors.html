@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Visitors</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍓</text></svg>">
+
+    <!-- Styles -->
+    <style>
+        #chartdiv {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+
+    <link href="static/bootstrap.min.css" rel="stylesheet">
+    <link href="static/starter-template.css" rel="stylesheet">
+
+</head>
+<body>
+    <div class="col-lg-8 mx-auto p-3 py-md-5">
+    <header class="d-flex align-items-center pb-3 mb-5 border-bottom">
+    <span class="fs-4">My Visitors</span>
+    </header>
+    From {{.UniqueCountries}} countries
+
+    <!-- Resources -->
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+    <!-- Chart code -->
+    <script>
+        let countryArray = {{.Countries}};
+        const am5Array = [];
+        countryArray.forEach((element, index) => {
+            // console.log(element.CountryShort);
+            // console.log(element.Count);
+            // console.log(index);
+            am5Array[index] = {id: element.CountryShort, value: element.Count}
+        });
+
+        am5.ready(function() {
+
+            // Create root element
+            // https://www.amcharts.com/docs/v5/getting-started/#Root_element
+            var root = am5.Root.new("chartdiv");
+
+            // Set themes
+            // https://www.amcharts.com/docs/v5/concepts/themes/
+            root.setThemes([
+                am5themes_Animated.new(root)
+            ]);
+
+            // Create the map chart
+            // https://www.amcharts.com/docs/v5/charts/map-chart/
+            var chart = root.container.children.push(am5map.MapChart.new(root, {
+                panX: "translateX",
+                panY: "translateY",
+                projection: am5map.geoMercator()
+            }));
+
+            // Create main polygon series for countries
+            // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+            var polygonSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+                geoJSON: am5geodata_worldLow,
+                exclude: ["AQ"],
+                valueField: "value",
+                calculateAggregates: true
+            }));
+
+            polygonSeries.mapPolygons.template.setAll({
+                tooltipText: "{name}: {value}",
+                toggleKey: "active",
+                interactive: true
+            });
+
+            polygonSeries.set("heatRules", [{
+                target: polygonSeries.mapPolygons.template,
+                dataField: "value",
+                min: am5.color(0xff621f),
+                max: am5.color(0x661f00),
+                key: "fill"
+            }]);
+
+            // polygonSeries.data.setAll([
+            //     { "id": "US", "value": 700 },
+            //     { id: "CN", value: 20 },
+            //     { id: "IN", value: 10 }
+            // ]);
+            polygonSeries.data.setAll(am5Array);
+
+            // polygonSeries.mapPolygons.template.states.create("hover", {
+            //     fill: root.interfaceColors.get("primaryButtonHover")
+            // });
+            //
+            // polygonSeries.mapPolygons.template.states.create("active", {
+            //     fill: root.interfaceColors.get("primaryButtonHover")
+            // });
+
+            // Make stuff animate on load
+            chart.appear(1000, 100);
+
+        }); // end am5.ready()
+    </script>
+
+    <!-- HTML -->
+    <div id="chartdiv"></div>
+
+        <!-- City Table -->
+        <br><br>
+        Top 20 cities (unique IPs):
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">City</th>
+                <th scope="col">State</th>
+                <th scope="col">Country</th>
+                <th scope="col">Unique Count</th>
+            </tr>
+            </thead>
+            <tbody class="table-group-divider">
+            {{range .Cities}}
+            <tr>
+                <td>{{.City}}</td>
+                <td>{{.Region}}</td>
+                <td>{{.CountryShort}}</td>
+                <td>{{.Count}}</td>
+            </tr>
+            {{end}}
+            </tbody>
+        </table>
+
+    </div>
+</body>
+</html>
