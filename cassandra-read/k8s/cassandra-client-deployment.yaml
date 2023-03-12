@@ -17,10 +17,11 @@ spec:
     spec:
       containers:
         - name: go-app-container
-          image: localhost:32000/golang-cassandra-client:2
+          image: localhost:32000/golang-cassandra-client:latest
           resources:
             limits:
               memory: "128Mi"
               cpu: "500m"
           ports:
             - containerPort: 8080
+
