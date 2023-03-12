@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: lobo-codes
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: lobo-codes
+  template:
+    metadata:
+      labels:
+        app: lobo-codes
+    spec:
+      containers:
+        - name: lobo-codes
+          image: localhost:32000/lobo-codes:latest
+          ports:
+            - containerPort: 80
+              name: http
+            - containerPort: 443
+              name: https
+
