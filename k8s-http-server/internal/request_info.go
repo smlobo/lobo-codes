@@ -21,6 +21,7 @@ func requestInfo(request *http.Request, tableName string) {
 	// done concurrently
 	go func() {
 		info.RemoteAddress = strings.Trim(strings.Split(remoteAddress, ":")[0], "[]")
+		log.Printf("Remote: %s -> %s", remoteAddress, info.RemoteAddress)
 
 		// TODO: IP (v6?) address not found, log and skip
 		if info.RemoteAddress == "" {
