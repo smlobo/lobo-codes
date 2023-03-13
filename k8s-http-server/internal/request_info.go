@@ -41,7 +41,7 @@ func requestInfo(request *http.Request, tableName string) {
 
 		// Find a pre-existing IP Address & UserAgent entry
 		queryString := fmt.Sprintf("SELECT id,created_at,updated_at,deleted_at,remote_address,user_agent,count,country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation "+
-			"FROM %s WHERE remote_address = ? AND user_agent = ? LIMIT 1", tableName)
+			"FROM %s WHERE remote_address = ? AND user_agent = ? ALLOW FILTERING LIMIT 1", tableName)
 		err = session.Query(queryString, info.RemoteAddress, info.UserAgent).
 			Scan(&info.ID, &info.CreatedAt, &info.UpdatedAt, &info.UpdatedAt, &info.RemoteAddress, &info.UserAgent,
 				&info.Count, &info.CountryShort, &info.CountryLong, &info.Region, &info.City, &info.Latitude,

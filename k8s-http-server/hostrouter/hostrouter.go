@@ -59,14 +59,12 @@ func (hr Routes) Middlewares() chi.Middlewares {
 func requestHost(r *http.Request) (host string) {
 	// not standard, but most popular
 	host = r.Header.Get("X-Forwarded-Host")
-	log.Printf("X-Forwarded-Host: %s", host)
 	if host != "" {
 		return
 	}
 
 	// RFC 7239
 	host = r.Header.Get("Forwarded")
-	log.Printf("Forwarded: %s", host)
 	_, _, host = parseForwarded(host)
 	if host != "" {
 		return
@@ -74,7 +72,6 @@ func requestHost(r *http.Request) (host string) {
 
 	// if all else fails fall back to request host
 	host = r.Host
-	log.Printf("Request host: %s", host)
 	return
 }
 
