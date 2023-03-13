@@ -81,7 +81,7 @@ func main() {
 	hostRouter.Map("ryan.lobo.codes", ryanRouter())
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
 	hostRouter.Map("lobo.codes", domainRouter())
-	hostRouter.Map("*", notFoundRouter())
+	//hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
 
 	// Wait for both http & https servers to finish
