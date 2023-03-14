@@ -5,7 +5,6 @@ import (
 	"github.com/gocql/gocql"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -15,19 +14,18 @@ func requestInfo(request *http.Request, tableName string) {
 	var info RequestInfo
 
 	info.UserAgent = request.Header.Get("User-Agent")
-	remoteAddress2 := request.Header.Get("X-Forwarded-For")
 	remoteAddress := request.RemoteAddr
+	info.RemoteAddress = request.Header.Get("X-Forwarded-For")
 
 	// Once the information is extracted from the request, the remainder of processing can be
 	// done concurrently
 	go func() {
-		info.RemoteAddress = strings.Trim(strings.Split(remoteAddress, ":")[0], "[]")
-		log.Printf("Remote: %s -> %s", remoteAddress, info.RemoteAddress)
-		log.Printf("XFF: %s -> %s", remoteAddress2)
+		//info.RemoteAddress = strings.Trim(strings.Split(remoteAddress, ":")[0], "[]")
+		//log.Printf("Remote: %s -> %s", remoteAddress, info.RemoteAddress)
 
 		// TODO: IP (v6?) address not found, log and skip
 		if info.RemoteAddress == "" {
-			log.Printf("WARNING: IP addr not parsed: %s\n", remoteAddress)
+			log.Printf("WARNING: IP addr not found: %s; XFF: %s", remoteAddress, info.RemoteAddress)
 			return
 		}
 
