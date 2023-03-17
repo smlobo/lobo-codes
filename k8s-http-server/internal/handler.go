@@ -2,6 +2,7 @@ package internal
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 )
 
@@ -40,15 +41,17 @@ func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 	if url.Path == "/visitors.html" || url.Path == "/visitors" {
 		visitorPageData := VisitorsPage{}
 
-		//db := HandlerInfoMap["amelia"].RequestsDb
+		// Cassandra session
+		session, err := CassandraCluster.CreateSession()
+		if err != nil {
+			log.Printf("WARNING: failed to create session with cassandra database: %s; %s",
+				CassandraCluster.Hosts[0], err.Error())
+			return
+		}
+		defer session.Close()
+
 		tmpl := HandlerInfoMap["amelia"].PathMap["visitors"]
-		//// Read country name and count
-		//result := db.Table("request_infos").
-		//	Select("country_short, country_long, count(country_short) as count").
-		//	Group("country_short").
-		//	Order("count desc").
-		//	Find(&visitorPageData.Countries)
-		//
+
 		//// Read the top 20 cities
 		//_ = db.Table("request_infos").
 		//	Select("city, region, country_short, count(city) as count").
@@ -56,8 +59,35 @@ func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 		//	Order("count desc").
 		//	Limit(20).
 		//	Find(&visitorPageData.Cities)
-		//
-		//visitorPageData.UniqueCountries = result.RowsAffected
+
+		// Read country name & count
+		queryString := "SELECT country_short FROM amelia ALLOW FILTERING "
+		scanner := session.Query(queryString).Iter().Scanner()
+		countryCountMap := make(map[string]int)
+		for scanner.Next() {
+			var countryShort string
+			err = scanner.Scan(&countryShort)
+			if err != nil {
+				continue
+			}
+			if count, ok := countryCountMap[countryShort]; !ok {
+				countryCountMap[countryShort] = 1
+			} else {
+				countryCountMap[countryShort] = count + 1
+			}
+		}
+
+		visitorPageData.UniqueCountries = len(countryCountMap)
+
+		visitorPageData.Countries = make([]Country, visitorPageData.UniqueCountries)
+		index := 0
+		for country, count := range countryCountMap {
+			visitorPageData.Countries[index] = Country{
+				CountryShort: country,
+				Count:        count,
+			}
+		}
+
 		_ = tmpl.Execute(writer, visitorPageData)
 	}
 }
@@ -82,8 +112,8 @@ func NotFoundHandler(writer http.ResponseWriter, request *http.Request) {
 
 type Country struct {
 	CountryShort string
-	CountryLong  string
-	Count        int
+	//CountryLong  string
+	Count int
 }
 
 type City struct {
@@ -94,7 +124,7 @@ type City struct {
 }
 
 type VisitorsPage struct {
-	UniqueCountries int64
+	UniqueCountries int
 	Countries       []Country
 	Cities          []City
 }

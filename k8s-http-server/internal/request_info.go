@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-var CassandraServer string
+var CassandraCluster *gocql.ClusterConfig
 
 func requestInfo(request *http.Request, tableName string) {
 	var info RequestInfo
@@ -30,12 +30,10 @@ func requestInfo(request *http.Request, tableName string) {
 		}
 
 		// Cassandra session
-		cluster := gocql.NewCluster(CassandraServer)
-		cluster.Keyspace = "lobo_codes"
-		cluster.Consistency = gocql.Quorum
-		session, err := cluster.CreateSession()
+		session, err := CassandraCluster.CreateSession()
 		if err != nil {
-			log.Printf("WARNING: failed to create session with cassandra database: %s; %s", CassandraServer, err.Error())
+			log.Printf("WARNING: failed to create session with cassandra database: %s; %s",
+				CassandraCluster.Hosts[0], err.Error())
 			return
 		}
 		defer session.Close()

@@ -43,13 +43,13 @@ func main() {
 	}
 
 	// Init cassandra db
-	internal.CassandraServer = "cassandra-internal"
-	cluster := gocql.NewCluster(internal.CassandraServer)
-	cluster.Keyspace = "lobo_codes"
-	cluster.Consistency = gocql.Quorum
-	session, err := cluster.CreateSession()
+	internal.CassandraCluster = gocql.NewCluster("cassandra-internal")
+	internal.CassandraCluster.Keyspace = "lobo_codes"
+	internal.CassandraCluster.Consistency = gocql.Quorum
+	session, err := internal.CassandraCluster.CreateSession()
 	if err != nil {
-		log.Fatalf("failed to create session with cassandra database: %s; %s", internal.CassandraServer, err.Error())
+		log.Fatalf("failed to create session with cassandra database: %s; %s",
+			internal.CassandraCluster.Hosts[0], err.Error())
 	}
 	session.Close()
 
@@ -81,7 +81,7 @@ func main() {
 	hostRouter.Map("ryan.lobo.codes", ryanRouter())
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
 	hostRouter.Map("lobo.codes", domainRouter())
-	//hostRouter.Map("*", notFoundRouter())
+	hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
 
 	// Wait for both http & https servers to finish
