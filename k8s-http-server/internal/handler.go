@@ -86,6 +86,7 @@ func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 				CountryShort: country,
 				Count:        count,
 			}
+			index++
 		}
 
 		_ = tmpl.Execute(writer, visitorPageData)
