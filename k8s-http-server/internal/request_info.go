@@ -70,6 +70,6 @@ func requestInfo(request *http.Request, tableName string) {
 		if err != nil {
 			log.Printf("WARNING: Error inserting %+v; %s", info, err.Error())
 		}
-		log.Printf("INFO: Inserted %v\n", info)
+		log.Printf("INFO: Inserted in %s : %v\n", tableName, info)
 	}()
 }
