@@ -75,7 +75,7 @@ func requestInfo(request *http.Request, tableName string) {
 			insertString := fmt.Sprintf("INSERT INTO %s "+
 				"(id,created_at,updated_at,remote_address,user_agent,count,country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation) "+
 				"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", tableName)
-			err = session.Query(insertString, info.Id, info.CreatedAt, info.UpdatedAt, info.RemoteAddress, info.UserAgent,
+			err = session.Query(insertString, info.Id.String(), info.CreatedAt, info.UpdatedAt, info.RemoteAddress, info.UserAgent,
 				info.Count, info.CountryShort, info.CountryLong, info.Region, info.City, info.Latitude, info.Longitude, info.Zipcode,
 				info.Timezone, info.Elevation).Exec()
 			if err != nil {
@@ -87,7 +87,7 @@ func requestInfo(request *http.Request, tableName string) {
 			// Existing visitor
 			updateString := fmt.Sprintf("UPDATE %s SET count=?,updated_at=? where id=?", tableName)
 
-			err = session.Query(updateString, info.Count, info.UpdatedAt, info.Id).Exec()
+			err = session.Query(updateString, info.Count, info.UpdatedAt, info.Id.String()).Exec()
 
 			if err != nil {
 				log.Printf("WARNING: Error updating %s; %s", info, err.Error())
