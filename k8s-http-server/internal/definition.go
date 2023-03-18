@@ -2,11 +2,15 @@ package internal
 
 import (
 	"fmt"
-	"gorm.io/gorm"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 type RequestInfo struct {
-	gorm.Model
+	Id            uuid.UUID
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 	RemoteAddress string
 	UserAgent     string
 	Count         int64
@@ -26,8 +30,8 @@ type GeoLocation struct {
 }
 
 func (ri RequestInfo) String() string {
-	return fmt.Sprintf("<%s + %s> %s {%d} %s [%s]", ri.CreatedAt, ri.UpdatedAt, ri.RemoteAddress,
-		ri.Count, ri.UserAgent, ri.GeoLocation)
+	return fmt.Sprintf("[%s] <%s + %s> %s {%d} %s [%s]", ri.Id.String(), ri.CreatedAt, ri.UpdatedAt,
+		ri.RemoteAddress, ri.Count, ri.UserAgent, ri.GeoLocation)
 }
 
 func (gl GeoLocation) String() string {

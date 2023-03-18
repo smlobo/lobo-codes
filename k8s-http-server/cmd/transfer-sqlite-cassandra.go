@@ -4,14 +4,27 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"time"
 
 	"github.com/gocql/gocql"
+	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
 	"k8s-http-server/internal"
 )
+
+type RequestInfo struct {
+	gorm.Model
+	RemoteAddress string
+	UserAgent     string
+	Count         int64
+	internal.GeoLocation
+}
+
+func (ri RequestInfo) String() string {
+	return fmt.Sprintf("<%s + %s> %s {%d} %s [%s]", ri.CreatedAt, ri.UpdatedAt, ri.RemoteAddress,
+		ri.Count, ri.UserAgent, ri.GeoLocation)
+}
 
 func main() {
 	// Input arguments
@@ -37,7 +50,7 @@ func main() {
 	defer session.Close()
 
 	// Read all records
-	var requestInfos []internal.RequestInfo
+	var requestInfos []RequestInfo
 	result := db.Find(&requestInfos)
 	fmt.Printf("Found: %d request\n", result.RowsAffected)
 	//for i, product := range requestInfos {
@@ -46,11 +59,15 @@ func main() {
 
 	// Write to cassandra
 	insertString := fmt.Sprintf("INSERT INTO %s "+
-		"(id,created_at,updated_at,deleted_at,remote_address,user_agent,count,country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation) "+
-		"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", *cassandraTblPtr)
-	zeroTime := time.Time{}
+		"(id,created_at,updated_at,remote_address,user_agent,count,country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation) "+
+		"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", *cassandraTblPtr)
 	for i, rI := range requestInfos {
-		err := session.Query(insertString, rI.ID, rI.CreatedAt, rI.UpdatedAt, zeroTime, rI.RemoteAddress, rI.UserAgent,
+		id, err := uuid.NewRandom()
+		if err != nil {
+			log.Fatalf("uuid generation error: %s", err.Error())
+		}
+
+		err = session.Query(insertString, id.String(), rI.CreatedAt, rI.UpdatedAt, rI.RemoteAddress, rI.UserAgent,
 			rI.Count, rI.CountryShort, rI.CountryLong, rI.Region, rI.City, rI.Latitude, rI.Longitude, rI.Zipcode,
 			rI.Timezone, rI.Elevation).Exec()
 		if err != nil {

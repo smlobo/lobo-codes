@@ -2,10 +2,12 @@ package internal
 
 import (
 	"fmt"
-	"github.com/gocql/gocql"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gocql/gocql"
+	"github.com/google/uuid"
 )
 
 var CassandraCluster *gocql.ClusterConfig
@@ -39,12 +41,10 @@ func requestInfo(request *http.Request, tableName string) {
 		defer session.Close()
 
 		// Find a pre-existing IP Address & UserAgent entry
-		queryString := fmt.Sprintf("SELECT id,created_at,updated_at,deleted_at,remote_address,user_agent,count,country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation "+
-			"FROM %s WHERE remote_address = ? AND user_agent = ? LIMIT 1 ALLOW FILTERING ", tableName)
+		queryString := fmt.Sprintf("SELECT id,count,country_short FROM %s WHERE remote_address = ? AND "+
+			"user_agent = ?", tableName)
 		err = session.Query(queryString, info.RemoteAddress, info.UserAgent).
-			Scan(&info.ID, &info.CreatedAt, &info.UpdatedAt, &info.UpdatedAt, &info.RemoteAddress, &info.UserAgent,
-				&info.Count, &info.CountryShort, &info.CountryLong, &info.Region, &info.City, &info.Latitude,
-				&info.Longitude, &info.Zipcode, &info.Timezone, &info.Elevation)
+			Scan(&info.Id, &info.Count, &info.CountryShort)
 
 		if err != nil && err != gocql.ErrNotFound {
 			log.Printf("WARNING: Error during lookup of IP: %s; %s", info.RemoteAddress, err.Error())
@@ -55,21 +55,45 @@ func requestInfo(request *http.Request, tableName string) {
 		info.Count += 1
 		info.UpdatedAt = time.Now()
 
-		// New visitor - get geo info
 		if err == gocql.ErrNotFound {
+			// New visitor - get geo info
 			geoInfo(&info)
 			info.CreatedAt = info.UpdatedAt
-		}
 
-		insertString := fmt.Sprintf("INSERT INTO %s "+
-			"(id,created_at,updated_at,deleted_at,remote_address,user_agent,count,country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation) "+
-			"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", tableName)
-		err = session.Query(insertString, info.ID, info.CreatedAt, info.UpdatedAt, time.Time{}, info.RemoteAddress, info.UserAgent,
-			info.Count, info.CountryShort, info.CountryLong, info.Region, info.City, info.Latitude, info.Longitude, info.Zipcode,
-			info.Timezone, info.Elevation).Exec()
-		if err != nil {
-			log.Printf("WARNING: Error inserting %+v; %s", info, err.Error())
+			if info.Id != uuid.Nil {
+				log.Printf("WARNING: Request info not found, but UUID: %s for IP: %s; %s", info.Id.String(),
+					info.RemoteAddress, err.Error())
+				return
+			}
+
+			info.Id, err = uuid.NewRandom()
+			if err != nil {
+				log.Printf("WARNING: Error during UUID generation for IP: %s; %s", info.RemoteAddress, err.Error())
+				return
+			}
+
+			insertString := fmt.Sprintf("INSERT INTO %s "+
+				"(id,created_at,updated_at,remote_address,user_agent,count,country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation) "+
+				"VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", tableName)
+			err = session.Query(insertString, info.Id, info.CreatedAt, info.UpdatedAt, info.RemoteAddress, info.UserAgent,
+				info.Count, info.CountryShort, info.CountryLong, info.Region, info.City, info.Latitude, info.Longitude, info.Zipcode,
+				info.Timezone, info.Elevation).Exec()
+			if err != nil {
+				log.Printf("WARNING: Error inserting %s; %s", info, err.Error())
+			}
+
+			log.Printf("INFO: Inserted in %s : %v\n", tableName, info)
+		} else {
+			// Existing visitor
+			updateString := fmt.Sprintf("UPDATE %s SET count=?,updated_at=? where id=?", tableName)
+
+			err = session.Query(updateString, info.Count, info.UpdatedAt, info.Id).Exec()
+
+			if err != nil {
+				log.Printf("WARNING: Error updating %s; %s", info, err.Error())
+			}
+
+			log.Printf("INFO: Updated in %s : %v\n", tableName, info)
 		}
-		log.Printf("INFO: Inserted in %s : %v\n", tableName, info)
 	}()
 }
