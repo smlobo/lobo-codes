@@ -60,12 +60,6 @@ func requestInfo(request *http.Request, tableName string) {
 			geoInfo(&info)
 			info.CreatedAt = info.UpdatedAt
 
-			if foundId != uuid.Nil.String() {
-				log.Printf("WARNING: Request info not found, but UUID: %s for IP: %s; %s", foundId,
-					info.RemoteAddress, err.Error())
-				return
-			}
-
 			info.Id, err = uuid.NewRandom()
 			if err != nil {
 				log.Printf("WARNING: Error during UUID generation for IP: %s; %s", info.RemoteAddress, err.Error())
