@@ -80,6 +80,7 @@ func requestInfo(request *http.Request, tableName string) {
 				info.Timezone, info.Elevation).Exec()
 			if err != nil {
 				log.Printf("WARNING: Error inserting %s; %s", info, err.Error())
+				return
 			}
 
 			log.Printf("INFO: Inserted in %s : %v\n", tableName, info)
@@ -91,6 +92,7 @@ func requestInfo(request *http.Request, tableName string) {
 
 			if err != nil {
 				log.Printf("WARNING: Error updating %s; %s", info, err.Error())
+				return
 			}
 
 			log.Printf("INFO: Updated in %s : %v\n", tableName, info)
