@@ -42,8 +42,8 @@ func requestInfo(request *http.Request, tableName string) {
 
 		// Find a pre-existing IP Address & UserAgent entry
 		var foundId string
-		queryString := fmt.Sprintf("SELECT id,count,country_short FROM %s WHERE remote_address = ? AND "+
-			"user_agent = ?", tableName)
+		queryString := fmt.Sprintf("SELECT id,count,country_short FROM %s WHERE remote_address=? AND "+
+			"user_agent=?", tableName)
 		err = session.Query(queryString, info.RemoteAddress, info.UserAgent).Scan(&foundId, &info.Count, &info.CountryShort)
 
 		if err != nil && err != gocql.ErrNotFound {
@@ -86,9 +86,10 @@ func requestInfo(request *http.Request, tableName string) {
 			log.Printf("INFO: Inserted in %s : %v\n", tableName, info)
 		} else {
 			// Existing visitor
-			updateString := fmt.Sprintf("UPDATE %s SET count=?,updated_at=? where id=?", tableName)
+			updateString := fmt.Sprintf("UPDATE %s SET count=?,updated_at=? where remote_address=? AND user_agent=?",
+				tableName)
 
-			err = session.Query(updateString, info.Count, info.UpdatedAt, foundId).Exec()
+			err = session.Query(updateString, info.Count, info.UpdatedAt, info.RemoteAddress, info.UserAgent).Exec()
 
 			if err != nil {
 				log.Printf("WARNING: Error updating %s; %s", info, err.Error())
