@@ -4,6 +4,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"sort"
 )
 
 type HandlerInfo struct {
@@ -39,8 +40,6 @@ func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 
 	url := request.URL
 	if url.Path == "/visitors.html" || url.Path == "/visitors" {
-		visitorPageData := VisitorsPage{}
-
 		// Cassandra session
 		session, err := CassandraCluster.CreateSession()
 		if err != nil {
@@ -61,19 +60,38 @@ func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 		//	Find(&visitorPageData.Cities)
 
 		// Read country name & count
-		queryString := "SELECT country_short FROM amelia ALLOW FILTERING "
+		// Also, the city & region to count
+		visitorPageData := VisitorsPage{}
+
+		queryString := "SELECT country_short, city, region FROM amelia ALLOW FILTERING "
 		scanner := session.Query(queryString).Iter().Scanner()
+
 		countryCountMap := make(map[string]int)
+		cityCountMap := make(map[string]City)
+
 		for scanner.Next() {
-			var countryShort string
-			err = scanner.Scan(&countryShort)
+			var countryShort, city, region string
+			err = scanner.Scan(&countryShort, &city, &region)
 			if err != nil {
 				continue
 			}
+
 			if count, ok := countryCountMap[countryShort]; !ok {
 				countryCountMap[countryShort] = 1
 			} else {
 				countryCountMap[countryShort] = count + 1
+			}
+
+			if count, ok := cityCountMap[city]; !ok {
+				cityCountMap[city] = City{
+					City:         city,
+					Region:       region,
+					CountryShort: countryShort,
+					Count:        1,
+				}
+			} else {
+				count.Count += 1
+				cityCountMap[city] = count
 			}
 		}
 
@@ -88,6 +106,17 @@ func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 			}
 			index++
 		}
+
+		visitorPageData.Cities = make([]City, len(cityCountMap))
+		index = 0
+		for _, city := range cityCountMap {
+			visitorPageData.Cities[index] = city
+			index++
+		}
+		sort.Slice(visitorPageData.Cities, func(i, j int) bool {
+			return visitorPageData.Cities[i].Count > visitorPageData.Cities[j].Count
+		})
+		visitorPageData.Cities = visitorPageData.Cities[:20]
 
 		_ = tmpl.Execute(writer, visitorPageData)
 	}
@@ -113,8 +142,7 @@ func NotFoundHandler(writer http.ResponseWriter, request *http.Request) {
 
 type Country struct {
 	CountryShort string
-	//CountryLong  string
-	Count int
+	Count        int
 }
 
 type City struct {
