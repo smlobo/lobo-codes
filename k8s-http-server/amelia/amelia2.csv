@@ -1,2 +1,0 @@
-id,created_at,updated_at,deleted_at,remote_address,user_agent,count,country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation
-1,"2022-11-27T18:36:26.599045-05:00","2022-11-27T18:46:05.076934-05:00",,10.1.1.16,"Mozilla/5.0 (iPhone; CPU iPhone OS 15_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6.1 Mobile/15E148 Safari/604.1",3,-,-,-,-,0.0,0.0,-,-,0.0
