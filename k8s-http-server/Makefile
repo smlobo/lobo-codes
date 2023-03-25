@@ -4,6 +4,9 @@ TARGET = k8s-http-server
 build:
 	go build -o bin/${TARGET} cmd/${TARGET}.go
 
+test:
+	go run cmd/${TARGET}.go -port=":3000" -ssl-port=":3001" -cassandra-db="10.1.1.42"
+
 module:
 	rm -f go.mod go.sum
 	go mod init ${TARGET}

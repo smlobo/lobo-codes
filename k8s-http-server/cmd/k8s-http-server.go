@@ -24,6 +24,7 @@ func main() {
 	sslKeyDirPtr := flag.String("ssl-key-dir", "./ssl-certificates",
 		"directory with SSL key and cert files")
 	logPtr := flag.String("log", "stdout", "log file (stdout)")
+	cassandraPtr := flag.String("cassandra-db", "cassandra-internal", "cassandra server/service")
 
 	flag.Parse()
 
@@ -43,7 +44,7 @@ func main() {
 	}
 
 	// Init cassandra db
-	internal.CassandraCluster = gocql.NewCluster("cassandra-internal")
+	internal.CassandraCluster = gocql.NewCluster(*cassandraPtr)
 	internal.CassandraCluster.Keyspace = "lobo_codes"
 	internal.CassandraCluster.Consistency = gocql.Quorum
 	session, err := internal.CassandraCluster.CreateSession()
@@ -72,15 +73,23 @@ func main() {
 	}
 
 	// Not found template
-	internal.NotFoundTemplate = template.Must(template.ParseFiles("notfound/notfound.html"))
+	internal.NotFoundTemplate = template.Must(template.ParseFiles("common/notfound.html"))
 
 	// Setup chi with hostrouter
 	router := chi.NewRouter()
 	hostRouter := hostrouter.New()
+
 	hostRouter.Map("amelia.lobo.codes", ameliaRouter())
 	hostRouter.Map("ryan.lobo.codes", ryanRouter())
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
 	hostRouter.Map("lobo.codes", domainRouter())
+
+	// Testing locally
+	hostRouter.Map("amelia.lobo.codes"+*portPtr, ameliaRouter())
+	hostRouter.Map("ryan.lobo.codes"+*portPtr, ryanRouter())
+	hostRouter.Map("sheldon.lobo.codes"+*portPtr, sheldonRouter())
+	hostRouter.Map("lobo.codes"+*portPtr, domainRouter())
+
 	hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
 
@@ -129,6 +138,8 @@ func ameliaRouter() chi.Router {
 func ryanRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.RyanHandler)
+	r.Get("/visitors", internal.RyanHandler)
+	r.Get("/visitors.html", internal.RyanHandler)
 	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
@@ -141,6 +152,8 @@ func ryanRouter() chi.Router {
 func sheldonRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.SheldonHandler)
+	r.Get("/visitors", internal.SheldonHandler)
+	r.Get("/visitors.html", internal.SheldonHandler)
 	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
@@ -153,6 +166,8 @@ func sheldonRouter() chi.Router {
 func domainRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.DomainHandler)
+	r.Get("/visitors", internal.DomainHandler)
+	r.Get("/visitors.html", internal.DomainHandler)
 	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
@@ -167,7 +182,7 @@ func notFoundRouter() chi.Router {
 	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
-	notFoundFileServer := http.FileServer(http.Dir("./notfound"))
+	notFoundFileServer := http.FileServer(http.Dir("./common"))
 	r.Handle("/static/*", notFoundFileServer)
 
 	return r

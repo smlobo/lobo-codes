@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -16,8 +17,13 @@ var HandlerInfoMap map[string]HandlerInfo
 func GetPathMap(directory string) map[string]*template.Template {
 	// Todo: iterate over all html files in directory
 	pathMap := map[string]*template.Template{}
+
+	// Domain/sub-domain specific html templates
 	pathMap["index"] = template.Must(template.ParseFiles(directory + "/index.html"))
-	pathMap["visitors"] = template.Must(template.ParseFiles(directory + "/visitors.html"))
+
+	// Common html templates
+	pathMap["visitors"] = template.Must(template.ParseFiles("common/visitors.html"))
+
 	return pathMap
 }
 
@@ -25,7 +31,7 @@ func handleIndexHtml(directory string, writer http.ResponseWriter, request *http
 	url := request.URL
 	key := ""
 	if url.Path == "" || url.Path == "/" || url.Path == "/index.html" {
-		// Log request to the sqlite3 db
+		// Log request to the Cassandra db
 		requestInfo(request, directory)
 
 		key = "index"
@@ -33,11 +39,7 @@ func handleIndexHtml(directory string, writer http.ResponseWriter, request *http
 	}
 }
 
-func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
-	//log.Printf("Amelia request: %s :: %s", request.RequestURI, request.URL.Path)
-
-	handleIndexHtml("amelia", writer, request)
-
+func handleVisitorHtml(directory string, writer http.ResponseWriter, request *http.Request) {
 	url := request.URL
 	if url.Path == "/visitors.html" || url.Path == "/visitors" {
 		// Cassandra session
@@ -49,21 +51,13 @@ func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 		}
 		defer session.Close()
 
-		tmpl := HandlerInfoMap["amelia"].PathMap["visitors"]
-
-		//// Read the top 20 cities
-		//_ = db.Table("request_infos").
-		//	Select("city, region, country_short, count(city) as count").
-		//	Group("city").
-		//	Order("count desc").
-		//	Limit(20).
-		//	Find(&visitorPageData.Cities)
+		tmpl := HandlerInfoMap[directory].PathMap["visitors"]
 
 		// Read country name & count
 		// Also, the city & region to count
 		visitorPageData := VisitorsPage{}
 
-		queryString := "SELECT country_short, city, region FROM amelia ALLOW FILTERING "
+		queryString := fmt.Sprintf("SELECT country_short, city, region FROM %s ALLOW FILTERING", directory)
 		scanner := session.Query(queryString).Iter().Scanner()
 
 		countryCountMap := make(map[string]int)
@@ -122,16 +116,28 @@ func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
+func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
+	directory := "amelia"
+	handleIndexHtml(directory, writer, request)
+	handleVisitorHtml(directory, writer, request)
+}
+
 func RyanHandler(writer http.ResponseWriter, request *http.Request) {
-	handleIndexHtml("ryan", writer, request)
+	directory := "ryan"
+	handleIndexHtml(directory, writer, request)
+	handleVisitorHtml(directory, writer, request)
 }
 
 func SheldonHandler(writer http.ResponseWriter, request *http.Request) {
-	handleIndexHtml("sheldon", writer, request)
+	directory := "sheldon"
+	handleIndexHtml(directory, writer, request)
+	handleVisitorHtml(directory, writer, request)
 }
 
 func DomainHandler(writer http.ResponseWriter, request *http.Request) {
-	handleIndexHtml("domain", writer, request)
+	directory := "domain"
+	handleIndexHtml(directory, writer, request)
+	handleVisitorHtml(directory, writer, request)
 }
 
 var NotFoundTemplate *template.Template
