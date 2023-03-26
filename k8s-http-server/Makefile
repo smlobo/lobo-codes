@@ -4,8 +4,9 @@ TARGET = k8s-http-server
 build:
 	go build -o bin/${TARGET} cmd/${TARGET}.go
 
+.PHONY: test
 test:
-	go run cmd/${TARGET}.go -port=":3000" -ssl-port=":3001" -cassandra-db="10.1.1.42"
+	go run cmd/${TARGET}.go -port=":3000" -ssl-port=":3001" -cassandra-db="10.1.1.42" -os-release="test/os-release"
 
 module:
 	rm -f go.mod go.sum

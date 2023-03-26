@@ -27,6 +27,10 @@ spec:
           env:
             - name: KUBERNETES_VERSION
               value: "v1.26.1"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           ports:
             - containerPort: 80
               name: http

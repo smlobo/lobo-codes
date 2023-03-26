@@ -153,6 +153,9 @@ func getpoweredBy(poweredByPtr *PoweredBy) {
 	poweredByPtr.GoVersion = os.Getenv("GOLANG_VERSION")
 	poweredByPtr.KubernetesVersion = os.Getenv("KUBERNETES_VERSION")
 	poweredByPtr.PodName = os.Getenv("HOSTNAME")
+	poweredByPtr.NodeName = os.Getenv("NODE_NAME")
+
+	poweredByPtr.OsVersion = OsRelease.VersionId
 }
 
 type Country struct {
@@ -181,5 +184,7 @@ type IndexPage struct {
 type PoweredBy struct {
 	GoVersion         string
 	KubernetesVersion string
+	OsVersion         string
 	PodName           string
+	NodeName          string
 }

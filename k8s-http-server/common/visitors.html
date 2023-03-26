@@ -132,10 +132,13 @@
             </tbody>
         </table>
         <footer class="pt-5 my-5 text-muted border-top">
-            <p>Powered By:
-                <img src="static/common/GoLang.png" alt="Go" style="width:48px;height:18px;"> {{.PoweredBy.GoVersion}}
-                <img src="static/common/Kubernetes.png" alt="Kubernetes" style="width:36px;height:36px;"> {{.PoweredBy.KubernetesVersion}}
+            <p>
+                Powered By:&nbsp;
+                <img src="static/common/GoLang.png" alt="Go" style="width:48px;height:18px;"> {{.PoweredBy.GoVersion}}&nbsp;
+                <img src="static/common/Alpine.png" alt="Go" style="width:32px;height:32px;"> {{.PoweredBy.OsVersion}}&nbsp;
+                <img src="static/common/Kubernetes.png" alt="Kubernetes" style="width:32px;height:32px;"> {{.PoweredBy.KubernetesVersion}}
                 <br>Pod Name: {{.PoweredBy.PodName}}
+                <br>Node Name: {{.PoweredBy.NodeName}}
             </p>
         </footer>
     </div>

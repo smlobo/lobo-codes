@@ -25,6 +25,7 @@ func main() {
 		"directory with SSL key and cert files")
 	logPtr := flag.String("log", "stdout", "log file (stdout)")
 	cassandraPtr := flag.String("cassandra-db", "cassandra-internal", "cassandra server/service")
+	testOsReleasePtr := flag.String("os-release", "/etc/os-release", "os-release file")
 
 	flag.Parse()
 
@@ -34,6 +35,9 @@ func main() {
 		fmt.Printf("Failed opening ip2location db file %s : %s\n", geoDbFile, err)
 		os.Exit(1)
 	}
+
+	// Parse os-release
+	internal.InitOsRelease(*testOsReleasePtr)
 
 	// Subdomains served
 	internal.HandlerInfoMap = map[string]internal.HandlerInfo{
