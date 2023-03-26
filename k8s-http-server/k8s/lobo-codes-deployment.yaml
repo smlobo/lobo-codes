@@ -24,6 +24,9 @@ spec:
         - name: lobo-codes
           image: localhost:32000/lobo-codes:latest
           imagePullPolicy: Always
+          env:
+            - name: KUBERNETES_VERSION
+              value: "v1.26.1"
           ports:
             - containerPort: 80
               name: http

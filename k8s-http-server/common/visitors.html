@@ -131,7 +131,13 @@
             {{end}}
             </tbody>
         </table>
-
+        <footer class="pt-5 my-5 text-muted border-top">
+            <p>Powered By:
+                <img src="static/common/GoLang.png" alt="Go" style="width:48px;height:18px;"> {{.PoweredBy.GoVersion}}
+                <img src="static/common/Kubernetes.png" alt="Kubernetes" style="width:36px;height:36px;"> {{.PoweredBy.KubernetesVersion}}
+                <br>Pod Name: {{.PoweredBy.PodName}}
+            </p>
+        </footer>
     </div>
 </body>
 </html>

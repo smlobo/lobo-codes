@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"os"
 	"sort"
 )
 
@@ -29,13 +30,13 @@ func GetPathMap(directory string) map[string]*template.Template {
 
 func handleIndexHtml(directory string, writer http.ResponseWriter, request *http.Request) {
 	url := request.URL
-	key := ""
 	if url.Path == "" || url.Path == "/" || url.Path == "/index.html" {
 		// Log request to the Cassandra db
 		requestInfo(request, directory)
 
-		key = "index"
-		_ = HandlerInfoMap[directory].PathMap[key].Execute(writer, nil)
+		indexPageData := IndexPage{}
+		getpoweredBy(&indexPageData.PoweredBy)
+		_ = HandlerInfoMap[directory].PathMap["index"].Execute(writer, indexPageData)
 	}
 }
 
@@ -112,6 +113,8 @@ func handleVisitorHtml(directory string, writer http.ResponseWriter, request *ht
 		})
 		visitorPageData.Cities = visitorPageData.Cities[:20]
 
+		getpoweredBy(&visitorPageData.PoweredBy)
+
 		_ = tmpl.Execute(writer, visitorPageData)
 	}
 }
@@ -146,6 +149,12 @@ func NotFoundHandler(writer http.ResponseWriter, request *http.Request) {
 	_ = NotFoundTemplate.Execute(writer, nil)
 }
 
+func getpoweredBy(poweredByPtr *PoweredBy) {
+	poweredByPtr.GoVersion = os.Getenv("GOLANG_VERSION")
+	poweredByPtr.KubernetesVersion = os.Getenv("KUBERNETES_VERSION")
+	poweredByPtr.PodName = os.Getenv("HOSTNAME")
+}
+
 type Country struct {
 	CountryShort string
 	Count        int
@@ -162,4 +171,15 @@ type VisitorsPage struct {
 	UniqueCountries int
 	Countries       []Country
 	Cities          []City
+	PoweredBy       PoweredBy
+}
+
+type IndexPage struct {
+	PoweredBy PoweredBy
+}
+
+type PoweredBy struct {
+	GoVersion         string
+	KubernetesVersion string
+	PodName           string
 }

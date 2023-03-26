@@ -69,6 +69,10 @@
             <div class="row">
                 <div class="col-lg-6 col-lg-offset-3">
                     <p class="copyright">Copyright &copy; 2023 - <a href="http://scoopthemes.com">ScoopThemes.com</a>
+                    <br>Powered By:
+                        <img src="static/common/GoLang.png" alt="Go" style="width:48px;height:18px;"> {{.PoweredBy.GoVersion}}
+                        <img src="static/common/Kubernetes.png" alt="Kubernetes" style="width:36px;height:36px;"> {{.PoweredBy.KubernetesVersion}}
+                    <br>Pod Name: {{.PoweredBy.PodName}}
                     </p>
                 </div>
             </div>

@@ -35,7 +35,12 @@
       </div>
       <div class="mastfoot">
         <div class="inner">
-          <p>&copy; Sheldon Lobo. Design: <a href="https://templateflip.com/" target="_blank">TemplateFlip</a>.</p>
+          <p>&copy; Sheldon Lobo. Design: <a href="https://templateflip.com/" target="_blank">TemplateFlip</a>.
+          <br>Powered By:
+            <img src="static/common/GoLang.png" alt="Go" style="width:48px;height:18px;"> {{.PoweredBy.GoVersion}}
+            <img src="static/common/Kubernetes.png" alt="Kubernetes" style="width:36px;height:36px;"> {{.PoweredBy.KubernetesVersion}}
+          <br>Pod Name: {{.PoweredBy.PodName}}
+          </p>
         </div>
       </div>
       <div class="modal fade" id="subscribeModal" tabindex="-1" role="dialog" aria-labelledby="subscribeModalLabel" aria-hidden="true">
