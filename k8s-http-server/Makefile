@@ -13,6 +13,7 @@ module:
 	go mod init ${TARGET}
 	go mod tidy
 
+.PHONY: docker
 docker:
 	docker build -t localhost:32000/lobo-codes:$(tag) -f docker/Dockerfile .
 	docker tag localhost:32000/lobo-codes:$(tag) localhost:32000/lobo-codes:latest
