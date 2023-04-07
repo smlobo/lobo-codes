@@ -39,6 +39,9 @@ func main() {
 	// Parse os-release
 	internal.InitOsRelease(*testOsReleasePtr)
 
+	// Get kubernetes version
+	internal.InitKubernetesInfo()
+
 	// Subdomains served
 	internal.HandlerInfoMap = map[string]internal.HandlerInfo{
 		"amelia":  {},

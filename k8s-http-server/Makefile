@@ -14,7 +14,7 @@ module:
 	go mod tidy
 
 docker:
-	docker build -t localhost:32000/lobo-codes:$(tag) .
+	docker build -t localhost:32000/lobo-codes:$(tag) -f docker/Dockerfile .
 	docker tag localhost:32000/lobo-codes:$(tag) localhost:32000/lobo-codes:latest
 	docker push localhost:32000/lobo-codes:$(tag)
 	docker push localhost:32000/lobo-codes:latest
@@ -24,6 +24,11 @@ rollout:
 
 transfer:
 	go run cmd/transfer-sqlite-cassandra.go -sqliteDb=requests-db/$(name).db -cassandraDb=10.1.1.42 -cassandraTbl=$(name)
+
+k8s-test:
+	docker build -t localhost:32000/k8s-test:latest -f docker/Dockerfile.k8s-test .
+	docker push localhost:32000/k8s-test:latest
+	microk8s kubectl run --rm -i k8s-test --image=localhost:32000/k8s-test
 
 clean:
 	rm -rf bin

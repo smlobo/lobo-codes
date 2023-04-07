@@ -6,6 +6,12 @@ import (
 	"log"
 )
 
+type KubernetesInfo struct {
+	Version string
+}
+
+var Kubernetes KubernetesInfo
+
 func InitKubernetesInfo() {
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -19,5 +25,10 @@ func InitKubernetesInfo() {
 	}
 
 	serverVersion, err := clientset.DiscoveryClient.ServerVersion()
+	if err != nil {
+		log.Printf("Error getting k8s serverVersion: %s", err.Error())
+	}
+
 	log.Printf("Server version: %s", serverVersion.GitVersion)
+	Kubernetes.Version = serverVersion.GitVersion
 }
