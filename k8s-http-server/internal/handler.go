@@ -42,7 +42,7 @@ func handleIndexHtml(directory string, writer http.ResponseWriter, request *http
 
 func handleVisitorHtml(directory string, writer http.ResponseWriter, request *http.Request) {
 	url := request.URL
-	if url.Path == "/visitors.html" || url.Path == "/visitors" {
+	if url.Path == "/visitors" {
 		// Cassandra session
 		session, err := CassandraCluster.CreateSession()
 		if err != nil {
@@ -135,6 +135,13 @@ func SheldonHandler(writer http.ResponseWriter, request *http.Request) {
 	directory := "sheldon"
 	handleIndexHtml(directory, writer, request)
 	handleVisitorHtml(directory, writer, request)
+
+	url := request.URL
+	if url.Path == "/graph" {
+		pageData := IndexPage{}
+		getpoweredBy(&pageData.PoweredBy)
+		_ = HandlerInfoMap[directory].PathMap["graph"].Execute(writer, pageData)
+	}
 }
 
 func DomainHandler(writer http.ResponseWriter, request *http.Request) {

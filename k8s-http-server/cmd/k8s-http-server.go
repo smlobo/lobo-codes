@@ -68,6 +68,8 @@ func main() {
 
 		internal.HandlerInfoMap[subdomain] = handlerInfo
 	}
+	// Other HTML templates
+	internal.HandlerInfoMap["sheldon"].PathMap["graph"] = template.Must(template.ParseFiles("sheldon/graph.html"))
 
 	// Logging
 	if *logPtr != "stdout" {
@@ -160,7 +162,7 @@ func sheldonRouter() chi.Router {
 	r := chi.NewRouter()
 	r.Get("/", internal.SheldonHandler)
 	r.Get("/visitors", internal.SheldonHandler)
-	r.Get("/visitors.html", internal.SheldonHandler)
+	r.Get("/graph", internal.SheldonHandler)
 	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
