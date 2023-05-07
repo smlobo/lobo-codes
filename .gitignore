@@ -9,3 +9,7 @@ go.mod
 # MacOS
 .DS_Store
 
+# Node / npm / Vue
+dist
+node_modules
+

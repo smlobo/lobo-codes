@@ -44,10 +44,11 @@ func main() {
 
 	// Subdomains served
 	internal.HandlerInfoMap = map[string]internal.HandlerInfo{
-		"amelia":  {},
-		"ryan":    {},
-		"sheldon": {},
-		"domain":  {},
+		"amelia":   {},
+		"ryan":     {},
+		"sheldon":  {},
+		"domain":   {},
+		"test-vue": {},
 	}
 
 	// Init cassandra db
@@ -92,12 +93,14 @@ func main() {
 	hostRouter.Map("ryan.lobo.codes", ryanRouter())
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
 	hostRouter.Map("lobo.codes", domainRouter())
+	hostRouter.Map("test-vue.lobo.codes", testVueRouter())
 
 	// Testing locally
 	hostRouter.Map("amelia.lobo.codes"+*portPtr, ameliaRouter())
 	hostRouter.Map("ryan.lobo.codes"+*portPtr, ryanRouter())
 	hostRouter.Map("sheldon.lobo.codes"+*portPtr, sheldonRouter())
 	hostRouter.Map("lobo.codes"+*portPtr, domainRouter())
+	hostRouter.Map("test-vue.lobo.codes"+*portPtr, testVueRouter())
 
 	hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
@@ -182,6 +185,19 @@ func domainRouter() chi.Router {
 	// Other static content
 	domainFileServer := http.FileServer(http.Dir("./domain"))
 	r.Handle("/static/*", domainFileServer)
+
+	return r
+}
+
+func testVueRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/", internal.TestVueHandler)
+	r.NotFound(internal.NotFoundHandler)
+
+	// Other static content
+	testVueFileServer := http.FileServer(http.Dir("./test-vue/dist"))
+	r.Handle("/assets/*", testVueFileServer)
+	r.Handle("/js/*", testVueFileServer)
 
 	return r
 }
