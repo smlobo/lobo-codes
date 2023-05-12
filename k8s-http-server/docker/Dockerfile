@@ -17,7 +17,7 @@ COPY ./domain domain
 COPY ./amelia amelia
 COPY ./ryan ryan
 COPY ./sheldon sheldon
-COPY ./test-vue test-vue
+COPY ./test-vue/dist test-vue/dist
 
 CMD ["/app/k8s-http-server"]
 
