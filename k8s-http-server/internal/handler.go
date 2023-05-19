@@ -176,13 +176,14 @@ func NotFoundHandler(writer http.ResponseWriter, request *http.Request) {
 }
 
 func getpoweredBy(poweredByPtr *PoweredBy) {
-	poweredByPtr.GoVersion = os.Getenv("GOLANG_VERSION")
 	poweredByPtr.PodName = os.Getenv("HOSTNAME")
 	poweredByPtr.NodeName = os.Getenv("NODE_NAME")
 
 	poweredByPtr.OsVersion = OsRelease.VersionId
 
 	poweredByPtr.KubernetesVersion = Kubernetes.Version
+
+	poweredByPtr.GoVersion = string(GoVersion)
 }
 
 type Country struct {

@@ -26,6 +26,7 @@ func main() {
 	logPtr := flag.String("log", "stdout", "log file (stdout)")
 	cassandraPtr := flag.String("cassandra-db", "cassandra-internal", "cassandra server/service")
 	testOsReleasePtr := flag.String("os-release", "/etc/os-release", "os-release file")
+	testGoVersionPtr := flag.String("go-version", "/app/golang_version.txt", "go_version.txt file")
 
 	flag.Parse()
 
@@ -41,6 +42,9 @@ func main() {
 
 	// Get kubernetes version
 	internal.InitKubernetesInfo()
+
+	// Get Go version
+	internal.InitGoVersion(*testGoVersionPtr)
 
 	// Subdomains served
 	internal.HandlerInfoMap = map[string]internal.HandlerInfo{

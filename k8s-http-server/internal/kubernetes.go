@@ -13,6 +13,9 @@ type KubernetesInfo struct {
 var Kubernetes KubernetesInfo
 
 func InitKubernetesInfo() {
+	// For testing in non-K8s env
+	Kubernetes.Version = "v1.18.9"
+
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		log.Printf("Error getting k8s cluster config: %s", err.Error())
