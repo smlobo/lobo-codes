@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/go-chi/cors"
 	"github.com/gocql/gocql"
 	"html/template"
 	"log"
@@ -91,6 +92,18 @@ func main() {
 
 	// Setup chi with hostrouter
 	router := chi.NewRouter()
+
+	router.Use(cors.Handler(cors.Options{
+		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
+		AllowedOrigins: []string{"https://*", "http://*"},
+		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300, // Maximum value not ignored by any of major browsers
+	}))
+
 	hostRouter := hostrouter.New()
 
 	hostRouter.Map("amelia.lobo.codes", ameliaRouter())
@@ -98,6 +111,7 @@ func main() {
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
 	hostRouter.Map("lobo.codes", domainRouter())
 	hostRouter.Map("test-vue.lobo.codes", testVueRouter())
+	hostRouter.Map("api.lobo.codes", apiRouter())
 
 	// Testing locally
 	hostRouter.Map("amelia.lobo.codes"+*portPtr, ameliaRouter())
@@ -105,6 +119,7 @@ func main() {
 	hostRouter.Map("sheldon.lobo.codes"+*portPtr, sheldonRouter())
 	hostRouter.Map("lobo.codes"+*portPtr, domainRouter())
 	hostRouter.Map("test-vue.lobo.codes"+*portPtr, testVueRouter())
+	hostRouter.Map("api.lobo.codes"+*portPtr, apiRouter())
 
 	hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
@@ -202,6 +217,14 @@ func testVueRouter() chi.Router {
 	testVueFileServer := http.FileServer(http.Dir("./test-vue/dist"))
 	r.Handle("/assets/*", testVueFileServer)
 	r.Handle("/js/*", testVueFileServer)
+
+	return r
+}
+
+func apiRouter() chi.Router {
+	r := chi.NewRouter()
+	r.Get("/graph/{fredSeries}", internal.GraphApiHandler)
+	r.NotFound(internal.ApiNotFoundHandler)
 
 	return r
 }
