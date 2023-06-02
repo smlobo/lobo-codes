@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <meta name="referrer" content="unsafe-url">
+
     <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
@@ -19,9 +21,9 @@
       // instantiates the pie chart, passes in the data and
       // draws it.
       function drawChart(fredSeries = 'POP') {
-        // console.log(fredSeries)
+        console.log(fredSeries)
 
-        url = 'http://api.lobo.codes/graph/' + fredSeries
+        url = 'http://api.lobo.codes:3000/graph/' + fredSeries
         axios.get(url, {
           params: {},
           // headers: {
