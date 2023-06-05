@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta name="referrer" content="unsafe-url">
 
     <!--Load the AJAX API-->
@@ -11,115 +11,145 @@
 
     <script type="text/javascript">
 
-      // Load the Visualization API and the corechart package.
-      google.charts.load('current', {'packages':['corechart']});
+        // Load the Visualization API and the corechart package.
+        google.charts.load('current', {'packages':['corechart']});
 
-      // Set a callback to run when the Google Visualization API is loaded.
-      google.charts.setOnLoadCallback(drawChart);
+        // Set a callback to run when the Google Visualization API is loaded.
+        google.charts.setOnLoadCallback(drawChart);
 
-      let defaultSeries = 'POP'
+        let defaultSeries = 'POP'
 
-      function drawChart(fredSeries = defaultSeries) {
-        console.log(fredSeries)
+        function drawChart(fredSeries = defaultSeries) {
+            console.log(fredSeries)
 
-        // url = 'https://api.lobo.codes/graph/' + fredSeries
-        // Generate the URL from the current URL
-        if (window.location.port === 80) {
-          var url = window.location.protocol + '//api.lobo.codes/graph/' + fredSeries
-        } else {
-          var url = window.location.protocol + '//api.lobo.codes:' + window.location.port + '/graph/' + fredSeries
+            // url = 'https://api.lobo.codes/graph/' + fredSeries
+            // Generate the URL from the current URL
+            if (window.location.port === 80) {
+                var url = window.location.protocol + '//api.lobo.codes/graph/' + fredSeries
+            } else {
+                var url = window.location.protocol + '//api.lobo.codes:' + window.location.port + '/graph/' + fredSeries
+            }
+            axios.get(url, {
+                params: {},
+                // headers: {
+                //   "Access-Control-Allow-Origin": "*",
+                //   "Access-Control-Allow-Methods": "*"
+                // }
+            }).then(function (response) {
+                // console.log(response);
+                // console.log(response.data);
+                // console.log(response.data.Title);
+
+                // Create the 2nd data table.
+                data = new google.visualization.DataTable();
+                data.addColumn('string', 'Date');
+                data.addColumn('number', response.data.Units);
+                response.data.Data.forEach(function (dataItem) {
+                    // console.log(dataItem);
+                    // console.log(dataItem.Date);
+                    // console.log(dataItem.Value);
+                    data.addRow([dataItem.Date, Number(dataItem.Value)])
+                });
+
+                // Set chart options
+                let height = window.innerHeight - 300
+                let options = {
+                    title: response.data.Title,
+                    // 'width':900,
+                    height: height,
+                    legend: {
+                        position: 'bottom'
+                    }
+                };
+                // Instantiate and draw our chart, passing in some options.
+                chart = new google.visualization.LineChart(document.getElementById('axios_chart'));
+                chart.draw(data, options);
+
+                // Try to hide the dropdown-content
+                var ddcList = document.getElementsByClassName('dropdown-content');
+                for (let i = 0; i < ddcList.length; i++) {
+                    // console.log(ddcList[i]);
+                    // ddcList[i].style.display = "none"
+                }
+            }).catch(function (error) {
+                console.log(error);
+            }).finally(function () {
+                // always executed
+            });
         }
-        axios.get(url, {
-          params: {},
-          // headers: {
-          //   "Access-Control-Allow-Origin": "*",
-          //   "Access-Control-Allow-Methods": "*"
-          // }
-        }).then(function (response) {
-          // console.log(response);
-          // console.log(response.data);
-          // console.log(response.data.Title);
 
-          // Create the 2nd data table.
-          data = new google.visualization.DataTable();
-          data.addColumn('string', 'Date');
-          data.addColumn('number', 'Rate');
-          response.data.Data.forEach(function (dataItem) {
-            // console.log(dataItem);
-            // console.log(dataItem.Date);
-            // console.log(dataItem.Value);
-            data.addRow([dataItem.Date, Number(dataItem.Value)])
-          });
-
-          // Set chart options
-          let height = window.innerHeight - 300
-          let options2 = {'title':response.data.Title,
-            // 'width':900,
-            'height': height
-          };
-          // Instantiate and draw our chart, passing in some options.
-          chart = new google.visualization.LineChart(document.getElementById('axios_chart'));
-          chart.draw(data, options2);
-        }).catch(function (error) {
-          console.log(error);
-        }).finally(function () {
-          // always executed
-        });
-      }
-
-      /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
-      function myFunction() {
-        var x = document.getElementById("myTopnav");
-        if (x.className === "topnav") {
-          x.className += " responsive";
-        } else {
-          x.className = "topnav";
-        }
-      }
     </script>
 
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
     <link href="static/css/dropdown.css" rel="stylesheet">
-  </head>
+</head>
 
-  <body>
-    <div class="col-lg-8 mx-auto p-3 py-md-5">
+<body>
+<div class="col-lg-auto mx-auto p-3 py-md-5">
 
-<!--      <div class="dropdown">-->
-<!--        <select id ="ddl" name="ddl" onmousedown="this.value='';" onchange="drawChart(this.value);" class="dropbtn">-->
-<!--          <div class="dropdown-content">-->
-<!--            <option value='POP'>POP</option>-->
-<!--            <option value='FEDFUNDS'>FEDFUNDS</option>-->
-<!--            <option value='DFF'>DFF</option>-->
-<!--            <option value='GNPCA'>GNPCA</option>-->
-<!--            <option value='CORESTICKM159SFRBATL'>CPI</option>-->
-<!--            <option value='UNRATE'>UNRATE</option>-->
-<!--            <option value='CCSA'>CCSA</option>-->
-<!--            <option value='DEXINUS'>DEXINUS</option>-->
-<!--          </div>-->
-<!--        </select>-->
-<!--      </div>-->
-      <div class="dropdown">
-        <button class="dropbtn" onmousedown="this.value='';" onchange="drawChart(this.value);">FRED Charts</button>
+    <div class="dropdown">
+        <button class="dropbtn">Misc</button>
         <div class="dropdown-content">
-            <p onclick="drawChart('POP');">POP</p>
-            <p onclick="drawChart('FEDFUNDS');">FEDFUNDS</p>
-            <p onclick="drawChart('UNRATE');">UNRATE</p>
-            <p onclick="drawChart('CORESTICKM159SFRBATL');">CPI</p>
-            <p onclick="drawChart('DEXINUS');">DEXINUS</p>
+            <a onclick="drawChart('POP');">US Population</a>
+            <a onclick="drawChart('FEDFUNDS');">Federal Funds Rate</a>
+            <a onclick="drawChart('UNRATE');">Unemployment</a>
+            <a onclick="drawChart('CORESTICKM159SFRBATL');">Consumer Price Index</a>
+            <a onclick="drawChart('FYGDP');">Gross Domestic Product</a>
+            <a onclick="drawChart('GFDEGDQ188S');">Public Debt % of GDP</a>
+            <a onclick="drawChart('INDPRO');">Industrial Production</a>
+            <a onclick="drawChart('BOPGSTB');">Trade Balance</a>
         </div>
-      </div>
+    </div>
 
-      <!--Div that will hold the axios line chart-->
-      <div id="axios_chart" style="width: 100%; height: 50%;"></div>
-      <p>
+    <div class="dropdown">
+        <button class="dropbtn">Xchg Rates</button>
+        <div class="dropdown-content">
+            <a onclick="drawChart('EXUSEU');">Euro</a>
+            <a onclick="drawChart('EXJPUS');">Japanese Yen</a>
+            <a onclick="drawChart('EXCHUS');">Chinese Yuan</a>
+            <a onclick="drawChart('EXUSUK');">British Pound</a>
+            <a onclick="drawChart('EXINUS');">Indian Rupee</a>
+            <a onclick="drawChart('EXCAUS');">Canadian Dollar</a>
+            <a onclick="drawChart('EXMXUS');">Mexican Peso</a>
+            <a onclick="drawChart('EXUSAL');">Australian Dollar</a>
+            <a onclick="drawChart('EXSZUS');">Swiss Franc</a>
+            <a onclick="drawChart('EXBZUS');">Brazilian Real</a>
+        </div>
+    </div>
+
+    <div class="dropdown">
+        <button class="dropbtn">Prices</button>
+        <div class="dropdown-content">
+            <a onclick="drawChart('MCOILWTICO');">Crude Oil</a>
+            <a onclick="drawChart('GASREGM');">Gallon of Gas</a>
+            <a onclick="drawChart('APU0000708111');">Eggs</a>
+            <a onclick="drawChart('APU0000703112');">Beef</a>
+            <a onclick="drawChart('PCOPPUSDM');">Copper</a>
+            <a onclick="drawChart('PWHEAMTUSDM');">Wheat</a>
+            <a onclick="drawChart('PRUBBUSDM');">Rubber</a>
+        </div>
+    </div>
+
+    <div class="dropdown">
+        <button class="dropbtn">Yeild Curve</button>
+        <div class="dropdown-content">
+            <a onclick="drawChart('T10Y2Y');">10 Yr, 2 Yr</a>
+            <a onclick="drawChart('T10Y3M');">10 Yr, 3 Mo</a>
+            <a onclick="drawChart('T10YFF');">10 Yr, Fed Rate</a>
+        </div>
+    </div>
+
+    <!--Div that will hold the axios line chart-->
+<!--    <div id="axios_chart" style="width: 120%; height: 50%;"></div>-->
+    <div id="axios_chart"></div>
+    <p>
         Powered By:&nbsp;
         <img src="static/common/GoLang.png" alt="Go" style="width:48px;height:18px;"> {{.PoweredBy.GoVersion}}&nbsp;
         <img src="static/common/Alpine.png" alt="Go" style="width:32px;height:32px;"> {{.PoweredBy.OsVersion}}&nbsp;
         <img src="static/common/Kubernetes.png" alt="Kubernetes" style="width:32px;height:32px;"> {{.PoweredBy.KubernetesVersion}}
         <br>Pod Name: {{.PoweredBy.PodName}}
         <br>Node Name: {{.PoweredBy.NodeName}}
-      </p>
-    </div>
-  </body>
+    </p>
+</div>
+</body>
 </html>

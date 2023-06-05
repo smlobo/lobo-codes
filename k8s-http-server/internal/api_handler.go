@@ -30,6 +30,7 @@ func GraphApiHandler(writer http.ResponseWriter, request *http.Request) {
 	}
 	type graphData struct {
 		Title string
+		Units string
 		Data  []seriesData
 	}
 	var returnData graphData
@@ -56,6 +57,7 @@ func GraphApiHandler(writer http.ResponseWriter, request *http.Request) {
 	series0 := metaData["seriess"].([]interface{})[0]
 	seriesMap := series0.(map[string]interface{})
 	returnData.Title = seriesMap["title"].(string)
+	returnData.Units = seriesMap["units"].(string)
 	returnData.Data = make([]seriesData, 0, 100)
 
 	log.Printf("Got: %d : %s", response.StatusCode, returnData.Title)
