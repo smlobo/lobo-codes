@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sheldon Lobo</title>
+    <link rel="icon" href="static/img/engg-64.png">
+    <link href="static/css/resume.css" rel="stylesheet" type='text/css'>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="full-name">
+            <span class="first-name">Sheldon</span>
+            <span class="last-name">Lobo</span>
+        </div>
+        <div class="contact-info">
+            <div class="left">
+                919-961-6206<br>
+                <a href="mailto: sheldon.m.lobo@gmail.com">sheldon.m.lobo@gmail.com</a><br>
+                Cary, NC 27519
+            </div>
+            <div class="right">
+                <a href="https://sheldon.lobo.codes/" target="_blank">
+                    https://sheldon.lobo.codes/</a>
+                <a href="https://www.linkedin.com/in/sheldon-lobo/" target="_blank">
+                    https://www.linkedin.com/in/sheldon-lobo/</a>
+                <a href="https://github.com/smlobo/" target="_blank">
+                    https://github.com/smlobo/</a>
+            </div>
+        </div>
+    </div>
+    <div class="details">
+        <div class="section">
+            <div class="section__title">Profile</div>
+            <span class="desc">
+                Extensive experience in binary instrumentation (native code, Java bytecode, PHP, .NET) & compilers (backend, linkers, runtime libraries).
+            </span>
+        </div>
+
+        <div class="section">
+            <div class="section__title">Skills</div>
+            <span class="desc">
+                <ul class="section__unlist">
+                    <li>C, C++, Java, Go, x64/SPARC assembly</li>
+                    <li>Binary rewriting (native, Java bytecode, PHP, .NET)</li>
+                    <li>Compilers (backend, linkers, runtime libraries, debuggers)</li>
+                    <li>Scripting (Python, bash, RegEx)</li>
+                    <li>Docker, Kubernetes, Linux/UNIX, VMs, GCP, GKE</li>
+                    <li>App servers (Tomcat, Jetty, WLS, WAS, Go)</li>
+                    <li>MySql, Cassandra, SQLite, Redis, GCP Firestore</li>
+                    <li>IntelliJ, CLion, GoLand</li>
+                    <li>make, maven, ant, gradle / git, hg</li>
+                    <li>CICD - Bitbucket, TeamCity, Jenkins, CircleCi</li>
+                </ul>
+            </span>
+        </div>
+
+        <div class="section">
+            <div class="section__title">Conferences</div>
+            <span class="desc">
+                <ul class="section__unlist">
+                    <li>Oracle Open World 2015 CON8216;
+                        <a href="https://www.oracle.com/technetwork/database/bi-datawarehousing/sas/con8216-final-2760803.pdf" target="_blank">
+                            Inoculating Software, Boosting Quality
+                        </a>
+                    </li>
+                    <li>Oracle Open World 2014 CON8009; Code Analysis Tools</li>
+                </ul>
+            </span>
+        </div>
+
+        <div class="section">
+            <div class="section__title">Experience</div>
+            <div class="section__list">
+                <div class="section__list-item">
+                    <div class="left">
+                        <div class="name">Senior Backend Engineer</div>
+                        <div class="name">Pendo</div>
+                        <div class="duration">2022 - 2023</div>
+                    </div>
+                    <div class="right">
+                        <div class="desc">
+                            The core distributed systems Platform team using Golang.
+                            <ul class="section__unlist">
+                                <li>Cross GCP project migrations of live customer data at scale. Copying, filtering, mutating data across GCS buckets and GCP Firestore Entities.</li>
+                                <li>On call responding to customer issues with realtime AppEngine/GKE Event ingestion and batch processing GCP Pub/Sub messaging based jobs framework.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="section__list-item">
+                    <div class="left">
+                        <div class="name">Principal Software Engineer</div>
+                        <div class="name">Aternity/Riverbed</div>
+                        <div class="duration">2021 - 2022</div>
+                    </div>
+                    <div class="right">
+                        <div class="desc">
+                            The APM Agent team.
+                            <ul class="section__unlist">
+                                <li>Java instrumentation for APM using a C++ native profiler library with a Java jar using JNI.</li>
+                                <li>Golang based collector for open source distributed tracing (Zipkin, Jaeger, OpenTelemetry)</li>
+                                <li>New support for Java frameworks focussing on distributed tracing:
+                                    <ul class="section__unlist">
+                                        <li>Reactive Streams (Spring WebFlux, Reactor)</li>
+                                        <li>Jetty (Apache CXF)</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="section__list-item">
+                    <div class="left">
+                        <div class="name">Principal Software Engineer</div>
+                        <div class="name">Oracle</div>
+                        <div class="duration">2017 - 2021</div>
+                    </div>
+                    <div class="right">
+                        <div class="desc">
+                            The APM group, developing the Java Agent and maintaining the existing PHP & .NET (IIS) Agents.
+                            <ul class="section__unlist">
+                                <li>Java instrumentation for Application Performance Monitoring (APM), using the ASM library:
+                                    <ul class="section__unlist">
+                                        <li>Instrumentation of a running Java VM, rather than invoking the Java Agent at startup</li>
+                                        <li>Select Java methods for instrumentation based on Annotations</li>
+                                        <li>OCI & Kubernetes/OKE resource discovery using the Instance Metadata Service</li>
+                                        <li>Jetty/Dropwizard resource discovery</li>
+                                    </ul>
+                                </li>
+                                <li>Prototypes:
+                                    <ul class="section__unlist">
+                                        <li>RASP features for Oracle APM; Java probes in App Servers for detecting SQL injection, SQL audit, session begin/end, and authentication failure events.</li>
+                                        <li>Bayesian anomaly detection; converted data scientist python research to Java.</li>
+                                        <li>Rust based lightweight proxy server to detect and parse SQL for possible security monitoring.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="section__list-item">
+                    <div class="left">
+                        <div class="name">Principal Software Engineer</div>
+                        <div class="name">Oracle</div>
+                        <div class="duration">2016 - 2017</div>
+                    </div>
+                    <div class="right">
+                        <div class="desc">
+                            The Linux Engineering group, focussed on SPARC features and bugs for gcc, glibc, & binutils.
+                            <ul class="section__unlist">
+                                <li>SPARC ADI (Application Data Integrity) for glibc malloc.</li>
+                                <li>misalign memory access in gcc for SPARC.</li>
+                                <li>SPARC ASI (Alternate Space Identifier) support in binutils.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="section__list-item">
+                    <div class="left">
+                        <div class="name">Principal Software Engineer</div>
+                        <div class="name">Oracle</div>
+                        <div class="duration">2010 - 2016</div>
+                    </div>
+                    <div class="right">
+                        <div class="desc">
+                            The Code Analyzer team of the Oracle Developer Studio group. Developing the
+                            <a href="https://docs.oracle.com/cd/E77782_01/html/E77795/index.html" target="_blank">
+                                Discover and Uncover tools</a>.
+                            <ul class="section__unlist">
+                                <li>A shared memory based custom memory error checker for the Oracle database team. A
+                                    complete solution was provided - fast!(~2x), integrated with their build, stack
+                                    trace with symbolic information, source line information, allocation/free stack trace </li>
+                                <li>Developed the runtime library for SPARC SSM/ADI (hardware assisted memory checking).
+                                    Worked with a customer (SAS) to get their prototype working. Talked about this
+                                    experience at
+                                    <a href="https://www.oracle.com/technetwork/database/bi-datawarehousing/sas/con8216-final-2760803.pdf" target="_blank">
+                                        OOW 2015.</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="section__list-item">
+                    <div class="left">
+                        <div class="name">Staff Software Engineer</div>
+                        <div class="name">Sun Microsystems</div>
+                        <div class="duration">1999 - 2010</div>
+                    </div>
+                    <div class="right">
+                        <div class="desc">
+                            The Global Optimizer team of the Studio compiler group. Developed the
+                            <a href="https://docs.oracle.com/cd/E19205-01/819-5265/bjauv/index.html" target="_blank">
+                                -xlinkopt</a> Studio compiler option.
+                            <ul class="section__unlist">
+                                <li>Reading and writing ELF relocatable object and binary files.</li>
+                                <li>Disassembler and re-assembler for IA-32/AMD64 and SPARC.</li>
+                                <li>Building the whole program control flow, data flow, & call graphs.</li>
+                                <li>Designed and implemented the interface for passing profile and
+                                annotation information from the code generator to our tools.</li>
+                                <li>Reading and writing Studio and gcc exception handling structures
+                                (.eh_frame, .gcc_except_table).</li>
+                                <li>Handling C++ template code in object files.</li>
+                                <li>Several binary optimizations (see patents).</li>
+                                <li>DWARF debugging support in our tools.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="section">
+            <div class="section__title">Patents</div>
+            <span class="desc">
+                <ul class="section__unlist">
+                    <li><a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/9519592" target="_blank">9519592</a> Stale pointer detection with overlapping versioned memory</li>
+                    <li><a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/9015686" target="_blank">9015686</a> Redundant run-time type information removal</li>
+                    <li><a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/8510727" target="_blank">8510727</a> Link-time redundant code elimination using functional equivalence</li>
+                    <li><a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/8495606" target="_blank">8495606</a> Redundant exception handling code removal</li>
+                    <li><a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/7861234" target="_blank">7861234</a> System and method for binary translation to improve parameter passing</li>
+                    <li><a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/7784042" target="_blank">7784042</a> Data reordering for improved cache operation</li>
+                    <li><a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/7735074" target="_blank">7735074</a> Code outlining without trampolines</li>
+                    <li><a href="https://image-ppubs.uspto.gov/dirsearch-public/print/downloadPdf/7353503" target="_blank">7353503</a> Efficient dead code elimination</li>
+                </ul>
+            </span>
+        </div>
+        <div class="section">
+            <div class="section__title">Publication</div>
+            <span class="desc">
+                Alexandre E. Eichenberger and Sheldon M. Lobo,
+                <a href="https://ieeexplore.ieee.org/document/727264" target="_blank">
+                    Efficient Edge Profiling for ILP-Processors</a>,
+                Proceedings of the International Conference on Parallel Architectures and Compilation Techniques (PACT).
+            </span>
+        </div>
+        <div class="section">
+            <div class="section__title">Education</div>
+            <ul class="section__unlist">
+                <li>
+                    <div class="left">North Carolina State University</div>
+                    <div class="right">MS Computer Engineering</div>
+                </li>
+                <li>
+                    <div class="left">University of Mumbai</div>
+                    <div class="right">BE Electronics Engineering</div>
+                </li>
+            </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

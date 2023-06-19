@@ -147,6 +147,10 @@ func SheldonHandler(writer http.ResponseWriter, request *http.Request) {
 		pageData := IndexPage{}
 		getpoweredBy(&pageData.PoweredBy)
 		_ = HandlerInfoMap[directory].PathMap["graph"].Execute(writer, pageData)
+	} else if url.Path == "/resume" {
+		pageData := IndexPage{}
+		getpoweredBy(&pageData.PoweredBy)
+		_ = HandlerInfoMap[directory].PathMap["resume"].Execute(writer, pageData)
 	}
 }
 

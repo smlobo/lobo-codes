@@ -76,6 +76,7 @@ func main() {
 	}
 	// Other HTML templates
 	internal.HandlerInfoMap["sheldon"].PathMap["graph"] = template.Must(template.ParseFiles("sheldon/graph.html"))
+	internal.HandlerInfoMap["sheldon"].PathMap["resume"] = template.Must(template.ParseFiles("sheldon/resume.html"))
 
 	// Logging
 	if *logPtr != "stdout" {
@@ -185,6 +186,7 @@ func sheldonRouter() chi.Router {
 	r.Get("/", internal.SheldonHandler)
 	r.Get("/visitors", internal.SheldonHandler)
 	r.Get("/graph", internal.SheldonHandler)
+	r.Get("/resume", internal.SheldonHandler)
 	r.NotFound(internal.NotFoundHandler)
 
 	// Other static content
