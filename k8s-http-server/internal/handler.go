@@ -38,7 +38,7 @@ func handleIndexHtml(directory string, writer http.ResponseWriter, request *http
 	url := request.URL
 	if url.Path == "" || url.Path == "/" || url.Path == "/index.html" {
 		// Log request to the Cassandra db
-		requestInfo(request, directory)
+		//requestInfo(request, directory)
 
 		indexPageData := IndexPage{}
 		getpoweredBy(&indexPageData.PoweredBy)
@@ -128,19 +128,19 @@ func handleVisitorHtml(directory string, writer http.ResponseWriter, request *ht
 func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
 	directory := "amelia"
 	handleIndexHtml(directory, writer, request)
-	handleVisitorHtml(directory, writer, request)
+	//handleVisitorHtml(directory, writer, request)
 }
 
 func RyanHandler(writer http.ResponseWriter, request *http.Request) {
 	directory := "ryan"
 	handleIndexHtml(directory, writer, request)
-	handleVisitorHtml(directory, writer, request)
+	//handleVisitorHtml(directory, writer, request)
 }
 
 func SheldonHandler(writer http.ResponseWriter, request *http.Request) {
 	directory := "sheldon"
 	handleIndexHtml(directory, writer, request)
-	handleVisitorHtml(directory, writer, request)
+	//handleVisitorHtml(directory, writer, request)
 
 	url := request.URL
 	if url.Path == "/graph" {
@@ -157,7 +157,7 @@ func SheldonHandler(writer http.ResponseWriter, request *http.Request) {
 func DomainHandler(writer http.ResponseWriter, request *http.Request) {
 	directory := "domain"
 	handleIndexHtml(directory, writer, request)
-	handleVisitorHtml(directory, writer, request)
+	//handleVisitorHtml(directory, writer, request)
 }
 
 func TestVueHandler(writer http.ResponseWriter, request *http.Request) {
