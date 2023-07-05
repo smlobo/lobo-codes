@@ -4,7 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-chi/cors"
-	//"github.com/gocql/gocql"
+	"github.com/gocql/gocql"
 	"html/template"
 	"log"
 	"net/http"
@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	//var err error
+	var err error
 
 	// Input arguments
 	portPtr := flag.String("port", ":80", "http port (:80)")
@@ -25,7 +25,7 @@ func main() {
 	sslKeyDirPtr := flag.String("ssl-key-dir", "./ssl-certificates",
 		"directory with SSL key and cert files")
 	logPtr := flag.String("log", "stdout", "log file (stdout)")
-	//cassandraPtr := flag.String("cassandra-db", "cassandra-internal", "cassandra server/service")
+	cassandraPtr := flag.String("cassandra-db", "cassandra-internal", "cassandra server/service")
 	testOsReleasePtr := flag.String("os-release", "/etc/os-release", "os-release file")
 	testGoVersionPtr := flag.String("go-version", "/app/golang_version.txt", "go_version.txt file")
 
@@ -57,15 +57,15 @@ func main() {
 	}
 
 	// Init cassandra db
-	//internal.CassandraCluster = gocql.NewCluster(*cassandraPtr)
-	//internal.CassandraCluster.Keyspace = "lobo_codes"
-	//internal.CassandraCluster.Consistency = gocql.Quorum
-	//session, err := internal.CassandraCluster.CreateSession()
-	//if err != nil {
-	//	log.Fatalf("failed to create session with cassandra database: %s; %s",
-	//		internal.CassandraCluster.Hosts[0], err.Error())
-	//}
-	//session.Close()
+	internal.CassandraCluster = gocql.NewCluster(*cassandraPtr)
+	internal.CassandraCluster.Keyspace = "lobo_codes"
+	internal.CassandraCluster.Consistency = gocql.Quorum
+	session, err := internal.CassandraCluster.CreateSession()
+	if err != nil {
+		log.Fatalf("failed to create session with cassandra database: %s; %s",
+			internal.CassandraCluster.Hosts[0], err.Error())
+	}
+	session.Close()
 
 	// Init cassandra table for each subdomain
 	// Also, save and parse html templates

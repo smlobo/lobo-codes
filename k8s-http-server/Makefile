@@ -6,10 +6,8 @@ build:
 
 .PHONY: test
 test:
-#	HOSTNAME="lobo-codes-abcdef1234-vwxyz" NODE_NAME="work-macbook" go run cmd/${TARGET}.go -port=":3000" \
-#		-ssl-port=":3001" -cassandra-db="10.1.1.42" -os-release="test/os-release" -go-version="test/golang_version.txt"
 	HOSTNAME="lobo-codes-abcdef1234-vwxyz" NODE_NAME="work-macbook" go run cmd/${TARGET}.go -port=":3000" \
-		-ssl-port=":3001" -os-release="test/os-release" -go-version="test/golang_version.txt"
+		-ssl-port=":3001" -cassandra-db="10.1.1.42" -os-release="test/os-release" -go-version="test/golang_version.txt"
 
 module:
 	rm -f go.mod go.sum
