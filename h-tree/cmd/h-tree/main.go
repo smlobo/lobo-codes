@@ -16,7 +16,7 @@ func main() {
 		err   error
 	)
 
-	const windowSize = 1024
+	const windowSize = 800
 
 	// Usage
 	if len(os.Args) != 2 {

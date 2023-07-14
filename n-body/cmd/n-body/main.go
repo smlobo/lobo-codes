@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -8,22 +9,20 @@ import (
 	"fyne.io/fyne/v2/container"
 	"n-body/internal"
 	"os"
-	"strconv"
 )
 
 const size = 800
 
 func main() {
-	// Usage
-	if len(os.Args) != 3 {
-		fmt.Printf("Usage: %s <simulation-time> <time-interval>\n", os.Args[0])
-		os.Exit(1)
-	}
+	// Input arguments
+	bgPtr := flag.Bool("bg", false, "star field background")
+	timePtr := flag.Float64("time", 157788000.0, "total time")
+	intervalPtr := flag.Float64("interval", 25000.0, "time interval")
+
+	flag.Parse()
 
 	// Command line args
-	totalTime, _ := strconv.ParseFloat(os.Args[1], 64)
-	timeInterval, _ := strconv.ParseFloat(os.Args[2], 64)
-	fmt.Printf("Time: %e, interval: %e\n", totalTime, timeInterval)
+	fmt.Printf("Time: %e, interval: %e\n", *timePtr, *intervalPtr)
 
 	// Read the n-body file
 	internal.ParseUniverse(os.Stdin)
@@ -33,7 +32,7 @@ func main() {
 
 	// Initialize fyne
 	fApp := app.New()
-	fWindow := fApp.NewWindow("Universe")
+	fWindow := fApp.NewWindow("N-body")
 	windowSize := fyne.NewSize(size, size)
 	fWindow.Resize(windowSize)
 	fContainer := container.NewWithoutLayout()
@@ -41,11 +40,14 @@ func main() {
 
 	go func() {
 		// Draw the background
-		backgroundImage := canvas.NewImageFromFile("nbody/starfield.jpg")
-		backgroundImage.Resize(windowSize)
-		fContainer.Add(backgroundImage)
+		if *bgPtr {
+			fWindow.SetTitle("Universe")
+			backgroundImage := canvas.NewImageFromFile("nbody/starfield.jpg")
+			backgroundImage.Resize(windowSize)
+			fContainer.Add(backgroundImage)
+		}
 
-		internal.Simulate(fContainer, totalTime, timeInterval)
+		internal.Simulate(fContainer, *timePtr, *intervalPtr)
 		internal.PrintUniverse()
 	}()
 
