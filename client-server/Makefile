@@ -14,8 +14,8 @@ test:
 	go test ./test
 
 build:
-	go build -o server cmd/server/server.go
-	go build -o client cmd/client/client.go
+	go build -o bin/server cmd/server/server.go
+	go build -o bin/client cmd/client/client.go
 
 clean:
 	rm -f go.sum
