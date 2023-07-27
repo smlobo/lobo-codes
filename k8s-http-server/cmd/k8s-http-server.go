@@ -1,10 +1,9 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
-	"github.com/go-chi/cors"
-	"github.com/gocql/gocql"
 	"html/template"
 	"log"
 	"net/http"
@@ -12,13 +11,13 @@ import (
 	"sync"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/cors"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"k8s-http-server/hostrouter"
 	"k8s-http-server/internal"
 )
 
 func main() {
-	var err error
-
 	// Input arguments
 	portPtr := flag.String("port", ":80", "http port (:80)")
 	sslPortPtr := flag.String("ssl-port", ":443", "https port (:443)")
@@ -30,6 +29,9 @@ func main() {
 	testGoVersionPtr := flag.String("go-version", "/app/golang_version.txt", "go_version.txt file")
 
 	flag.Parse()
+
+	// Config (currently traces only; TODO all above flags)
+	internal.SetupConfig()
 
 	// Ip2location db file init
 	geoDbFile := "IP2LOCATION-LITE-DB11.IPV6.BIN"
@@ -57,15 +59,8 @@ func main() {
 	}
 
 	// Init cassandra db
-	internal.CassandraCluster = gocql.NewCluster(*cassandraPtr)
-	internal.CassandraCluster.Keyspace = "lobo_codes"
-	internal.CassandraCluster.Consistency = gocql.Quorum
-	session, err := internal.CassandraCluster.CreateSession()
-	if err != nil {
-		log.Fatalf("failed to create session with cassandra database: %s; %s",
-			internal.CassandraCluster.Hosts[0], err.Error())
-	}
-	session.Close()
+	cassandraSession := internal.InitCassandra(*cassandraPtr)
+	defer cassandraSession.Close()
 
 	// Init cassandra table for each subdomain
 	// Also, save and parse html templates
@@ -87,6 +82,14 @@ func main() {
 		}
 		log.SetOutput(file)
 	}
+
+	// Setup OpenTelemetry tracer
+	tp := internal.InitTracerProvider("lobo-codes")
+	defer func() {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Fatal(err)
+		}
+	}()
 
 	// Not found template
 	internal.NotFoundTemplate = template.Must(template.ParseFiles("common/notfound.html"))
@@ -155,10 +158,13 @@ func main() {
 
 func ameliaRouter() chi.Router {
 	r := chi.NewRouter()
-	r.Get("/", internal.AmeliaHandler)
-	r.Get("/visitors", internal.AmeliaHandler)
-	r.Get("/visitors.html", internal.AmeliaHandler)
-	r.NotFound(internal.NotFoundHandler)
+
+	ameliaWrappedHandler := otelhttp.NewHandler(internal.AmeliaHandler(), "amelia-handler")
+	r.Method("GET", "/", ameliaWrappedHandler)
+	r.Method("GET", "/visitors", ameliaWrappedHandler)
+	r.Method("GET", "/visitors.html", ameliaWrappedHandler)
+
+	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
 	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
@@ -169,10 +175,13 @@ func ameliaRouter() chi.Router {
 
 func ryanRouter() chi.Router {
 	r := chi.NewRouter()
-	r.Get("/", internal.RyanHandler)
-	r.Get("/visitors", internal.RyanHandler)
-	r.Get("/visitors.html", internal.RyanHandler)
-	r.NotFound(internal.NotFoundHandler)
+
+	ryanWrappedHandler := otelhttp.NewHandler(internal.RyanHandler(), "ryan-handler")
+	r.Method("GET", "/", ryanWrappedHandler)
+	r.Method("GET", "/visitors", ryanWrappedHandler)
+	r.Method("GET", "/visitors.html", ryanWrappedHandler)
+
+	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
 	ryanFileServer := http.FileServer(http.Dir("./ryan"))
@@ -183,11 +192,14 @@ func ryanRouter() chi.Router {
 
 func sheldonRouter() chi.Router {
 	r := chi.NewRouter()
-	r.Get("/", internal.SheldonHandler)
-	r.Get("/visitors", internal.SheldonHandler)
-	r.Get("/graph", internal.SheldonHandler)
-	r.Get("/resume", internal.SheldonHandler)
-	r.NotFound(internal.NotFoundHandler)
+
+	sheldonWrappedHandler := otelhttp.NewHandler(internal.SheldonHandler(), "sheldon-handler")
+	r.Method("GET", "/", sheldonWrappedHandler)
+	r.Method("GET", "/visitors", sheldonWrappedHandler)
+	r.Method("GET", "/graph", sheldonWrappedHandler)
+	r.Method("GET", "/resume", sheldonWrappedHandler)
+
+	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
 	sheldonFileServer := http.FileServer(http.Dir("./sheldon"))
@@ -198,10 +210,13 @@ func sheldonRouter() chi.Router {
 
 func domainRouter() chi.Router {
 	r := chi.NewRouter()
-	r.Get("/", internal.DomainHandler)
-	r.Get("/visitors", internal.DomainHandler)
-	r.Get("/visitors.html", internal.DomainHandler)
-	r.NotFound(internal.NotFoundHandler)
+
+	domainWrappedHandler := otelhttp.NewHandler(internal.DomainHandler(), "domain-handler")
+	r.Method("GET", "/", domainWrappedHandler)
+	r.Method("GET", "/visitors", domainWrappedHandler)
+	r.Method("GET", "/visitors.html", domainWrappedHandler)
+
+	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
 	domainFileServer := http.FileServer(http.Dir("./domain"))
@@ -212,8 +227,11 @@ func domainRouter() chi.Router {
 
 func testVueRouter() chi.Router {
 	r := chi.NewRouter()
-	r.Get("/", internal.TestVueHandler)
-	r.NotFound(internal.NotFoundHandler)
+
+	testVueWrappedHandler := otelhttp.NewHandler(internal.TestVueHandler(), "domain-handler")
+	r.Method("GET", "/", testVueWrappedHandler)
+
+	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
 	testVueFileServer := http.FileServer(http.Dir("./test-vue/dist"))
@@ -225,7 +243,10 @@ func testVueRouter() chi.Router {
 
 func apiRouter() chi.Router {
 	r := chi.NewRouter()
-	r.Get("/graph/{fredSeries}", internal.GraphApiHandler)
+
+	graphApiWrappedHandler := otelhttp.NewHandler(internal.GraphApiHandler(), "api-handler")
+	r.Method("GET", "/graph/{fredSeries}", graphApiWrappedHandler)
+
 	r.NotFound(internal.ApiNotFoundHandler)
 
 	return r
@@ -233,7 +254,7 @@ func apiRouter() chi.Router {
 
 func notFoundRouter() chi.Router {
 	r := chi.NewRouter()
-	r.NotFound(internal.NotFoundHandler)
+	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
 	notFoundFileServer := http.FileServer(http.Dir("./common"))

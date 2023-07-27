@@ -1,12 +1,12 @@
 package internal
 
 import (
-	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"os"
 	"sort"
+
+	"go.opentelemetry.io/otel"
 )
 
 type HandlerInfo struct {
@@ -49,52 +49,15 @@ func handleIndexHtml(directory string, writer http.ResponseWriter, request *http
 func handleVisitorHtml(directory string, writer http.ResponseWriter, request *http.Request) {
 	url := request.URL
 	if url.Path == "/visitors" {
-		// Cassandra session
-		session, err := CassandraCluster.CreateSession()
-		if err != nil {
-			log.Printf("WARNING: failed to create session with cassandra database: %s; %s",
-				CassandraCluster.Hosts[0], err.Error())
-			return
-		}
-		defer session.Close()
 
-		tmpl := HandlerInfoMap[directory].PathMap["visitors"]
-
-		// Read country name & count
-		// Also, the city & region to count
+		// Get Visitor page data for template processing
 		visitorPageData := VisitorsPage{}
 
-		queryString := fmt.Sprintf("SELECT country_short, city, region FROM %s ALLOW FILTERING", directory)
-		scanner := session.Query(queryString).Iter().Scanner()
+		countryCountMap, cityCountMap := cassandraGetCountriesCities(directory, request)
 
-		countryCountMap := make(map[string]int)
-		cityCountMap := make(map[string]City)
-
-		for scanner.Next() {
-			var countryShort, city, region string
-			err = scanner.Scan(&countryShort, &city, &region)
-			if err != nil {
-				continue
-			}
-
-			if count, ok := countryCountMap[countryShort]; !ok {
-				countryCountMap[countryShort] = 1
-			} else {
-				countryCountMap[countryShort] = count + 1
-			}
-
-			if count, ok := cityCountMap[city]; !ok {
-				cityCountMap[city] = City{
-					City:         city,
-					Region:       region,
-					CountryShort: countryShort,
-					Count:        1,
-				}
-			} else {
-				count.Count += 1
-				cityCountMap[city] = count
-			}
-		}
+		// HTML Template processing
+		_, span := otel.Tracer("k8s-http-server").Start(request.Context(), "template-process")
+		defer span.End()
 
 		visitorPageData.UniqueCountries = len(countryCountMap)
 
@@ -117,65 +80,78 @@ func handleVisitorHtml(directory string, writer http.ResponseWriter, request *ht
 		sort.Slice(visitorPageData.Cities, func(i, j int) bool {
 			return visitorPageData.Cities[i].Count > visitorPageData.Cities[j].Count
 		})
-		visitorPageData.Cities = visitorPageData.Cities[:20]
+		if len(cityCountMap) > 20 {
+			visitorPageData.Cities = visitorPageData.Cities[:20]
+		}
 
 		getpoweredBy(&visitorPageData.PoweredBy)
 
+		tmpl := HandlerInfoMap[directory].PathMap["visitors"]
 		_ = tmpl.Execute(writer, visitorPageData)
 	}
 }
 
-func AmeliaHandler(writer http.ResponseWriter, request *http.Request) {
-	directory := "amelia"
-	handleIndexHtml(directory, writer, request)
-	handleVisitorHtml(directory, writer, request)
-}
-
-func RyanHandler(writer http.ResponseWriter, request *http.Request) {
-	directory := "ryan"
-	handleIndexHtml(directory, writer, request)
-	handleVisitorHtml(directory, writer, request)
-}
-
-func SheldonHandler(writer http.ResponseWriter, request *http.Request) {
-	directory := "sheldon"
-	handleIndexHtml(directory, writer, request)
-	handleVisitorHtml(directory, writer, request)
-
-	url := request.URL
-	if url.Path == "/graph" {
-		pageData := IndexPage{}
-		getpoweredBy(&pageData.PoweredBy)
-		_ = HandlerInfoMap[directory].PathMap["graph"].Execute(writer, pageData)
-	} else if url.Path == "/resume" {
-		pageData := IndexPage{}
-		getpoweredBy(&pageData.PoweredBy)
-		_ = HandlerInfoMap[directory].PathMap["resume"].Execute(writer, pageData)
+func AmeliaHandler() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		directory := "amelia"
+		handleIndexHtml(directory, writer, request)
+		handleVisitorHtml(directory, writer, request)
 	}
 }
 
-func DomainHandler(writer http.ResponseWriter, request *http.Request) {
-	directory := "domain"
-	handleIndexHtml(directory, writer, request)
-	handleVisitorHtml(directory, writer, request)
+func RyanHandler() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		directory := "ryan"
+		handleIndexHtml(directory, writer, request)
+		handleVisitorHtml(directory, writer, request)
+	}
 }
 
-func TestVueHandler(writer http.ResponseWriter, request *http.Request) {
-	directory := "test-vue"
-	url := request.URL
-	if url.Path == "" || url.Path == "/" {
-		// Todo: Log request to the Cassandra db
-		//requestInfo(request, directory)
+func SheldonHandler() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		directory := "sheldon"
+		handleIndexHtml(directory, writer, request)
+		handleVisitorHtml(directory, writer, request)
 
-		//indexPageData := IndexPage{}
-		//getpoweredBy(&indexPageData.PoweredBy)
-		_ = HandlerInfoMap[directory].PathMap["index"].Execute(writer, nil)
+		url := request.URL
+		if url.Path == "/graph" {
+			pageData := IndexPage{}
+			getpoweredBy(&pageData.PoweredBy)
+			_ = HandlerInfoMap[directory].PathMap["graph"].Execute(writer, pageData)
+		} else if url.Path == "/resume" {
+			pageData := IndexPage{}
+			getpoweredBy(&pageData.PoweredBy)
+			_ = HandlerInfoMap[directory].PathMap["resume"].Execute(writer, pageData)
+		}
+	}
+}
+
+func DomainHandler() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		directory := "domain"
+		handleIndexHtml(directory, writer, request)
+		handleVisitorHtml(directory, writer, request)
+	}
+}
+
+func TestVueHandler() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		directory := "test-vue"
+		url := request.URL
+		if url.Path == "" || url.Path == "/" {
+			// Todo: Log request to the Cassandra db
+			//requestInfo(request, directory)
+
+			//indexPageData := IndexPage{}
+			//getpoweredBy(&indexPageData.PoweredBy)
+			_ = HandlerInfoMap[directory].PathMap["index"].Execute(writer, nil)
+		}
 	}
 }
 
 var NotFoundTemplate *template.Template
 
-func NotFoundHandler(writer http.ResponseWriter, request *http.Request) {
+func NotFoundHandlerFunc(writer http.ResponseWriter, request *http.Request) {
 	_ = NotFoundTemplate.Execute(writer, nil)
 }
 
@@ -188,35 +164,4 @@ func getpoweredBy(poweredByPtr *PoweredBy) {
 	poweredByPtr.KubernetesVersion = Kubernetes.Version
 
 	poweredByPtr.GoVersion = string(GoVersion)
-}
-
-type Country struct {
-	CountryShort string
-	Count        int
-}
-
-type City struct {
-	City         string
-	Region       string
-	CountryShort string
-	Count        int
-}
-
-type VisitorsPage struct {
-	UniqueCountries int
-	Countries       []Country
-	Cities          []City
-	PoweredBy       PoweredBy
-}
-
-type IndexPage struct {
-	PoweredBy PoweredBy
-}
-
-type PoweredBy struct {
-	GoVersion         string
-	KubernetesVersion string
-	OsVersion         string
-	PodName           string
-	NodeName          string
 }

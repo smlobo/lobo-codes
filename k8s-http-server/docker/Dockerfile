@@ -21,6 +21,7 @@ COPY ./amelia amelia
 COPY ./ryan ryan
 COPY ./sheldon sheldon
 COPY ./test-vue/dist test-vue/dist
+COPY ./config config
 
 CMD ["/app/k8s-http-server"]
 

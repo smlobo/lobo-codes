@@ -1,0 +1,16 @@
+# Exporter
+EXPORTER: otlp-grpc
+
+# Jaeger endpoint
+JAEGER_SERVER: localhost
+JAEGER_PORT: 14268
+JAEGER_PATH: /api/traces
+
+# Zipkin endpoint
+ZIPKIN_ENDPOINT: http://localhost:9411/api/v2/spans
+
+# OTLP endpoint
+OTLP_SERVER: localhost
+OTLP_GRPC_PORT: 4317
+OTLP_HTTP_PORT: 4318
+OTLP_URL: /v1/traces

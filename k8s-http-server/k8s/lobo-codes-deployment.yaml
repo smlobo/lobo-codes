@@ -29,6 +29,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+            - name: OTLP_SERVER
+              value: "$(JAEGER_CASSANDRA_COLLECTOR_SERVICE_HOST)"
           ports:
             - containerPort: 80
               name: http

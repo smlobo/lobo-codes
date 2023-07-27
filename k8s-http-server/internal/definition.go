@@ -7,11 +7,43 @@ import (
 	"github.com/google/uuid"
 )
 
+type Country struct {
+	CountryShort string
+	Count        int
+}
+
+type City struct {
+	City         string
+	Region       string
+	CountryShort string
+	Count        int
+}
+
+type VisitorsPage struct {
+	UniqueCountries int
+	Countries       []Country
+	Cities          []City
+	PoweredBy       PoweredBy
+}
+
+type IndexPage struct {
+	PoweredBy PoweredBy
+}
+
+type PoweredBy struct {
+	GoVersion         string
+	KubernetesVersion string
+	OsVersion         string
+	PodName           string
+	NodeName          string
+}
+
 type RequestInfo struct {
 	Id            uuid.UUID
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	RemoteAddress string
+	OrigRemoteAddress string
 	UserAgent     string
 	Count         int64
 	GeoLocation
