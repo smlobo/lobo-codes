@@ -152,7 +152,9 @@ func TestVueHandler() http.HandlerFunc {
 var NotFoundTemplate *template.Template
 
 func NotFoundHandlerFunc(writer http.ResponseWriter, request *http.Request) {
-	_ = NotFoundTemplate.Execute(writer, nil)
+	notFoundPageData := IndexPage{}
+	getpoweredBy(&notFoundPageData.PoweredBy)
+	_ = NotFoundTemplate.Execute(writer, notFoundPageData)
 }
 
 func getpoweredBy(poweredByPtr *PoweredBy) {

@@ -37,10 +37,42 @@ func GraphApiHandler() http.HandlerFunc {
 			Data  []seriesData
 		}
 		var returnData graphData
+		returnData.Data = make([]seriesData, 0, 100)
 
-		// Get the title
-		response, err := otelhttp.Get(request.Context(), FRED_API + "?file_type=json&series_id=" + fredSeries +
-			"&api_key=" + API_KEY)
+		// Concurrently get data
+		titleChan := make(chan string)
+		unitsChan := make(chan string)
+
+		// Get the title & units
+		go func() {
+			response, err := otelhttp.Get(request.Context(), FRED_API+"?file_type=json&series_id="+fredSeries+
+				"&api_key="+API_KEY)
+			if err != nil || response.StatusCode > http.StatusOK {
+				writer.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			body, err := io.ReadAll(response.Body)
+			if err != nil {
+				writer.WriteHeader(http.StatusBadRequest)
+				return
+			}
+
+			// Unmarshal
+			var metaData map[string]interface{}
+			err = json.Unmarshal(body, &metaData)
+			if err != nil {
+				writer.WriteHeader(http.StatusBadRequest)
+				return
+			}
+			series0 := metaData["seriess"].([]interface{})[0]
+			seriesMap := series0.(map[string]interface{})
+			titleChan <- seriesMap["title"].(string)
+			unitsChan <- seriesMap["units"].(string)
+		} ()
+
+		// Get the data
+		response, err := otelhttp.Get(request.Context(), FRED_API + "/observations?file_type=json&series_id=" +
+			fredSeries + "&api_key=" + API_KEY)
 		if err != nil || response.StatusCode > http.StatusOK {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
@@ -58,33 +90,6 @@ func GraphApiHandler() http.HandlerFunc {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		series0 := metaData["seriess"].([]interface{})[0]
-		seriesMap := series0.(map[string]interface{})
-		returnData.Title = seriesMap["title"].(string)
-		returnData.Units = seriesMap["units"].(string)
-		returnData.Data = make([]seriesData, 0, 100)
-
-		log.Printf("Got: %d : %s", response.StatusCode, returnData.Title)
-
-		// Get the data
-		response, err = otelhttp.Get(request.Context(), FRED_API + "/observations?file_type=json&series_id=" +
-			fredSeries + "&api_key=" + API_KEY)
-		if err != nil || response.StatusCode > http.StatusOK {
-			writer.WriteHeader(http.StatusBadRequest)
-			return
-		}
-		body, err = io.ReadAll(response.Body)
-		if err != nil {
-			writer.WriteHeader(http.StatusBadRequest)
-			return
-		}
-
-		// Unmarshal
-		err = json.Unmarshal(body, &metaData)
-		if err != nil {
-			writer.WriteHeader(http.StatusBadRequest)
-			return
-		}
 		observations := metaData["observations"].([]interface{})
 		for _, observation := range observations {
 			observationMap := observation.(map[string]interface{})
@@ -93,6 +98,11 @@ func GraphApiHandler() http.HandlerFunc {
 				Value: observationMap["value"].(string),
 			})
 		}
+
+		// Block on the earlier request
+		returnData.Title = <- titleChan
+		returnData.Units = <- unitsChan
+		log.Printf("Got: %d : %s", response.StatusCode, returnData.Title)
 
 		encodedReturnData, _ := json.Marshal(returnData)
 		writer.Write(encodedReturnData)

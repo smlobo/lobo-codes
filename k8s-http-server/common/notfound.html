@@ -14,9 +14,29 @@
     <br><br>
     <ul>
         <li><a href="https://amelia.lobo.codes">amelia.lobo.codes</a></li>
+        <ul>
+            <li><a href="https://amelia.lobo.codes/visitors">amelia.lobo.codes/visitors</a></li>
+        </ul>
         <li><a href="https://ryan.lobo.codes">ryan.lobo.codes</a></li>
+        <ul>
+            <li><a href="https://ryan.lobo.codes/visitors">ryan.lobo.codes/visitors</a></li>
+        </ul>
         <li><a href="https://sheldon.lobo.codes">sheldon.lobo.codes</a></li>
+        <ul>
+            <li><a href="https://sheldon.lobo.codes/graph">sheldon.lobo.codes/graph</a></li>
+            <li><a href="https://sheldon.lobo.codes/visitors">sheldon.lobo.codes/visitors</a></li>
+        </ul>
     </ul>
+    <footer class="pt-5 my-5 text-muted border-top">
+        <p>
+            Powered By:&nbsp;
+            <img src="static/common/GoLang.png" alt="Go" style="width:48px;height:18px;"> {{.PoweredBy.GoVersion}}&nbsp;
+            <img src="static/common/Alpine.png" alt="Go" style="width:32px;height:32px;"> {{.PoweredBy.OsVersion}}&nbsp;
+            <img src="static/common/Kubernetes.png" alt="Kubernetes" style="width:32px;height:32px;"> {{.PoweredBy.KubernetesVersion}}
+            <br>Pod Name: {{.PoweredBy.PodName}}
+            <br>Node Name: {{.PoweredBy.NodeName}}
+        </p>
+    </footer>
 </div>
 </body>
 </html>
