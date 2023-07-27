@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gocql/gocql"
@@ -13,11 +14,14 @@ import (
 
 var cassandraCluster *gocql.ClusterConfig
 var cassandraSession *gocql.Session
+var cassandraRetry uint
+var cassandraSleep uint
 
-func InitCassandra(cassandraServer string) *gocql.Session {
+func InitCassandra() *gocql.Session {
 	var err error
 
-	log.Printf("Connecting to Cassandra server: %s\n", cassandraServer)
+	cassandraServer := Config["CASSANDRA_SERVER"]
+	log.Printf("Connecting to Cassandra server: %s", cassandraServer)
 
 	cassandraCluster = gocql.NewCluster(cassandraServer)
 	cassandraCluster.Keyspace = "lobo_codes"
@@ -29,7 +33,12 @@ func InitCassandra(cassandraServer string) *gocql.Session {
 			cassandraCluster.Hosts[0], err.Error())
 	}
 
-	log.Printf("Connected to Cassandra server: %s, %s\n", cassandraServer, cassandraCluster.Hosts)
+	log.Printf("Connected to Cassandra server: %s", cassandraCluster.Hosts)
+
+	temp, _ := strconv.Atoi(Config["CASSANDRA_RETRY"])
+	cassandraRetry = uint(temp)
+	temp, _ = strconv.Atoi(Config["CASSANDRA_SLEEP"])
+	cassandraSleep = uint(temp)
 
 	return cassandraSession
 }
@@ -105,6 +114,11 @@ func cassandraLogRequest(info *RequestInfo, tableName string, request *http.Requ
 
 func cassandraGetCountriesCities(tableName string, request *http.Request) (countryCount map[string]int,
 	cityCount map[string]City) {
+	return cassandraGetCountriesCitiesRetry(tableName, request, 0)
+}
+
+func cassandraGetCountriesCitiesRetry(tableName string, request *http.Request, retryCount uint) (
+	countryCount map[string]int, cityCount map[string]City) {
 
 	// Getting info from DB
 	_, span := otel.Tracer("k8s-http-server").Start(request.Context(), "db-query")
@@ -147,5 +161,12 @@ func cassandraGetCountriesCities(tableName string, request *http.Request) (count
 			cityCount[city] = count
 		}
 	}
+
+	// Retry twice if empty
+	if retryCount < cassandraRetry && (len(countryCount) == 0 || len(cityCount) == 0) {
+		time.Sleep(time.Duration(cassandraSleep) * time.Millisecond)
+		countryCount, cityCount = cassandraGetCountriesCitiesRetry(tableName, request, retryCount+1)
+	}
+
 	return
 }

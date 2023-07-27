@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -19,16 +18,23 @@ import (
 
 func main() {
 	// Input arguments
-	portPtr := flag.String("port", ":80", "http port (:80)")
-	sslPortPtr := flag.String("ssl-port", ":443", "https port (:443)")
 	sslKeyDirPtr := flag.String("ssl-key-dir", "./ssl-certificates",
 		"directory with SSL key and cert files")
 	logPtr := flag.String("log", "stdout", "log file (stdout)")
-	cassandraPtr := flag.String("cassandra-db", "cassandra-internal", "cassandra server/service")
 	testOsReleasePtr := flag.String("os-release", "/etc/os-release", "os-release file")
 	testGoVersionPtr := flag.String("go-version", "/app/golang_version.txt", "go_version.txt file")
 
 	flag.Parse()
+
+	// Logging
+	if *logPtr != "stdout" {
+		// If the file doesn't exist, create it or append to the file
+		file, err := os.OpenFile(*logPtr, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.SetOutput(file)
+	}
 
 	// config (currently traces only; TODO all above flags)
 	internal.SetupConfig()
@@ -36,7 +42,7 @@ func main() {
 	// Ip2location db file init
 	geoDbFile := "IP2LOCATION-LITE-DB11.IPV6.BIN"
 	if err := internal.InitGeoDB(geoDbFile); err != nil {
-		fmt.Printf("Failed opening ip2location db file %s : %s\n", geoDbFile, err)
+		log.Printf("Failed opening ip2location db file %s : %s", geoDbFile, err)
 		os.Exit(1)
 	}
 
@@ -49,7 +55,7 @@ func main() {
 	// Get Go version
 	internal.InitGoVersion(*testGoVersionPtr)
 
-	log.Printf("Platform info: OS%s; K8s%s; Go<%s>\n", internal.OsRelease, internal.Kubernetes,
+	log.Printf("Platform info: OS%s; K8s%s; Go<%s>", internal.OsRelease, internal.Kubernetes,
 		internal.GoVersion)
 
 	// Subdomains served
@@ -62,7 +68,7 @@ func main() {
 	}
 
 	// Init cassandra db
-	cassandraSession := internal.InitCassandra(*cassandraPtr)
+	cassandraSession := internal.InitCassandra()
 	defer cassandraSession.Close()
 
 	// Init cassandra table for each subdomain
@@ -75,16 +81,6 @@ func main() {
 	// Other HTML templates
 	internal.HandlerInfoMap["sheldon"].PathMap["graph"] = template.Must(template.ParseFiles("sheldon/graph.html"))
 	internal.HandlerInfoMap["sheldon"].PathMap["resume"] = template.Must(template.ParseFiles("sheldon/resume.html"))
-
-	// Logging
-	if *logPtr != "stdout" {
-		// If the file doesn't exist, create it or append to the file
-		file, err := os.OpenFile(*logPtr, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.SetOutput(file)
-	}
 
 	// Setup OpenTelemetry tracer
 	tp := internal.InitTracerProvider("lobo-codes")
@@ -113,6 +109,9 @@ func main() {
 
 	hostRouter := hostrouter.New()
 
+	port := ":" + internal.Config["HTTP_PORT"]
+	sslPort := ":" + internal.Config["HTTPS_PORT"]
+
 	hostRouter.Map("amelia.lobo.codes", ameliaRouter())
 	hostRouter.Map("ryan.lobo.codes", ryanRouter())
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
@@ -121,12 +120,12 @@ func main() {
 	hostRouter.Map("api.lobo.codes", apiRouter())
 
 	// Testing locally
-	hostRouter.Map("amelia.lobo.codes"+*portPtr, ameliaRouter())
-	hostRouter.Map("ryan.lobo.codes"+*portPtr, ryanRouter())
-	hostRouter.Map("sheldon.lobo.codes"+*portPtr, sheldonRouter())
-	hostRouter.Map("lobo.codes"+*portPtr, domainRouter())
-	hostRouter.Map("test-vue.lobo.codes"+*portPtr, testVueRouter())
-	hostRouter.Map("api.lobo.codes"+*portPtr, apiRouter())
+	hostRouter.Map("amelia.lobo.codes"+port, ameliaRouter())
+	hostRouter.Map("ryan.lobo.codes"+port, ryanRouter())
+	hostRouter.Map("sheldon.lobo.codes"+port, sheldonRouter())
+	hostRouter.Map("lobo.codes"+port, domainRouter())
+	hostRouter.Map("test-vue.lobo.codes"+port, testVueRouter())
+	hostRouter.Map("api.lobo.codes"+port, apiRouter())
 
 	hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
@@ -136,22 +135,20 @@ func main() {
 	serversWaitGroup.Add(2)
 
 	go func() {
-		fmt.Printf("Listening on port %s ...\n", *portPtr)
-		err := http.ListenAndServe(*portPtr, router)
+		log.Printf("Listening on port %s ...", port)
+		err := http.ListenAndServe(port, router)
 		if err != nil {
-			fmt.Printf("Error serving on port %s : %s\n", *portPtr, err)
+			log.Printf("Error serving on port %s : %s", port, err)
 		}
 		serversWaitGroup.Done()
 	}()
 
 	go func() {
-		if *sslPortPtr != "" {
-			fmt.Printf("Listening on SSL port %s ...\n", *sslPortPtr)
-			err := http.ListenAndServeTLS(*sslPortPtr, *sslKeyDirPtr+"/fullchain.pem",
-				*sslKeyDirPtr+"/privkey.pem", router)
-			if err != nil {
-				fmt.Printf("Error serving with SSL on port %s : %s\n", *sslPortPtr, err)
-			}
+		log.Printf("Listening on SSL port %s ...", sslPort)
+		err := http.ListenAndServeTLS(sslPort, *sslKeyDirPtr+"/fullchain.pem",
+			*sslKeyDirPtr+"/privkey.pem", router)
+		if err != nil {
+			log.Printf("Error serving with SSL on port %s : %s", sslPort, err)
 		}
 		serversWaitGroup.Done()
 	}()
@@ -231,7 +228,7 @@ func domainRouter() chi.Router {
 func testVueRouter() chi.Router {
 	r := chi.NewRouter()
 
-	testVueWrappedHandler := otelhttp.NewHandler(internal.TestVueHandler(), "domain-handler")
+	testVueWrappedHandler := otelhttp.NewHandler(internal.TestVueHandler(), "test-vue-handler")
 	r.Method("GET", "/", testVueWrappedHandler)
 
 	r.NotFound(internal.NotFoundHandlerFunc)

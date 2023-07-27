@@ -33,6 +33,12 @@ spec:
               value: jaeger-cassandra-collector
             - name: EXPORTER
               value: otlp-grpc
+            - name: CASSANDRA_SERVER
+              value: cassandra-internal
+            - name: HTTP_PORT
+              value: 80
+            - name: HTTPS_PORT
+              value: 443
           ports:
             - containerPort: 80
               name: http

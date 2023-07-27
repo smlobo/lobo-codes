@@ -2,9 +2,10 @@ package internal
 
 import (
 	"fmt"
+	"log"
+
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"log"
 )
 
 type KubernetesInfo struct {
@@ -19,7 +20,7 @@ func InitKubernetesInfo() {
 
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		log.Printf("Error getting k8s cluster config: %s", err.Error())
+		log.Printf("Error getting k8s cluster Config: %s", err.Error())
 		return
 	}
 	// creates the clientset
