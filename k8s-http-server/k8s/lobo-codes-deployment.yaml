@@ -30,7 +30,9 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: OTLP_SERVER
-              value: "$(JAEGER_CASSANDRA_COLLECTOR_SERVICE_HOST)"
+              value: jaeger-cassandra-collector
+            - name: EXPORTER
+              value: otlp-grpc
           ports:
             - containerPort: 80
               name: http

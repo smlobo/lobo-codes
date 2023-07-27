@@ -49,6 +49,9 @@ func main() {
 	// Get Go version
 	internal.InitGoVersion(*testGoVersionPtr)
 
+	log.Printf("Platform info: OS%s; K8s%s; Go<%s>\n", internal.OsRelease, internal.Kubernetes,
+		internal.GoVersion)
+
 	// Subdomains served
 	internal.HandlerInfoMap = map[string]internal.HandlerInfo{
 		"amelia":   {},
@@ -84,14 +87,12 @@ func main() {
 	}
 
 	// Setup OpenTelemetry tracer
-	log.Printf("Sheldon: before otel\n")
 	tp := internal.InitTracerProvider("lobo-codes")
 	defer func() {
 		if err := tp.Shutdown(context.Background()); err != nil {
 			log.Fatal(err)
 		}
 	}()
-	log.Printf("Sheldon: after otel\n")
 
 	// Not found template
 	internal.NotFoundTemplate = template.Must(template.ParseFiles("common/notfound.html"))

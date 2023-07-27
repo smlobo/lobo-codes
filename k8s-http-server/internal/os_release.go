@@ -2,6 +2,7 @@ package internal
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -39,4 +40,8 @@ func InitOsRelease(fileName string) {
 	}
 
 	_ = readFile.Close()
+}
+
+func (osri OsReleaseInfo) String() string {
+	return fmt.Sprintf("<%s,%s,%s>", osri.Name, osri.Id, osri.VersionId)
 }

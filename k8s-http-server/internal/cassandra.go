@@ -17,6 +17,8 @@ var cassandraSession *gocql.Session
 func InitCassandra(cassandraServer string) *gocql.Session {
 	var err error
 
+	log.Printf("Connecting to Cassandra server: %s\n", cassandraServer)
+
 	cassandraCluster = gocql.NewCluster(cassandraServer)
 	cassandraCluster.Keyspace = "lobo_codes"
 	cassandraCluster.Consistency = gocql.Quorum
@@ -26,6 +28,8 @@ func InitCassandra(cassandraServer string) *gocql.Session {
 		log.Fatalf("failed to create session with cassandra database: %s; %s",
 			cassandraCluster.Hosts[0], err.Error())
 	}
+
+	log.Printf("Connected to Cassandra server: %s, %s\n", cassandraServer, cassandraCluster.Hosts)
 
 	return cassandraSession
 }

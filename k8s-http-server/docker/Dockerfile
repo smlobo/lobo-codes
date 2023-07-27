@@ -22,6 +22,7 @@ COPY ./ryan ryan
 COPY ./sheldon sheldon
 COPY ./test-vue/dist test-vue/dist
 COPY ./config config
+COPY ./ssl-certificates ssl-certificates
 
 CMD ["/app/k8s-http-server"]
 

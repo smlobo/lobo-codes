@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"log"
@@ -34,4 +35,8 @@ func InitKubernetesInfo() {
 
 	log.Printf("Server version: %s", serverVersion.GitVersion)
 	Kubernetes.Version = serverVersion.GitVersion
+}
+
+func (ki KubernetesInfo) String() string {
+	return fmt.Sprintf("<%s>", ki.Version)
 }
