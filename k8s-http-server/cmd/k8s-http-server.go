@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"html/template"
@@ -84,12 +83,13 @@ func main() {
 	}
 
 	// Setup OpenTelemetry tracer
-	tp := internal.InitTracerProvider("lobo-codes")
-	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			log.Fatal(err)
-		}
-	}()
+	log.Printf("Sheldon: before otel\n")
+	//tp := internal.InitTracerProvider("lobo-codes")
+	//defer func() {
+	//	if err := tp.Shutdown(context.Background()); err != nil {
+	//		log.Fatal(err)
+	//	}
+	//}()
 
 	// Not found template
 	internal.NotFoundTemplate = template.Must(template.ParseFiles("common/notfound.html"))
