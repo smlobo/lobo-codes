@@ -8,7 +8,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-var Config map[string]string
+var config map[string]string
 
 func SetupConfig() {
 	// Open the config file
@@ -21,17 +21,17 @@ func SetupConfig() {
 
 	// Unmarshal into the map
 	decoder := yaml.NewDecoder(configFile)
-	err = decoder.Decode(&Config)
+	err = decoder.Decode(&config)
 	if err != nil {
 		fmt.Println("Error unmarshalling config file:", err)
 		os.Exit(1)
 	}
 
 	// Override with environment variables
-	for variable, _ := range Config {
+	for variable, _ := range config {
 		envVarSet := os.Getenv(variable)
 		if len(envVarSet) != 0 {
-			Config[variable] = envVarSet
+			config[variable] = envVarSet
 			log.Println("From environment: [", variable, "] =", envVarSet)
 		}
 	}

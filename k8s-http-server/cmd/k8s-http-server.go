@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"html/template"
@@ -29,7 +30,7 @@ func main() {
 
 	flag.Parse()
 
-	// Config (currently traces only; TODO all above flags)
+	// config (currently traces only; TODO all above flags)
 	internal.SetupConfig()
 
 	// Ip2location db file init
@@ -84,12 +85,13 @@ func main() {
 
 	// Setup OpenTelemetry tracer
 	log.Printf("Sheldon: before otel\n")
-	//tp := internal.InitTracerProvider("lobo-codes")
-	//defer func() {
-	//	if err := tp.Shutdown(context.Background()); err != nil {
-	//		log.Fatal(err)
-	//	}
-	//}()
+	tp := internal.InitTracerProvider("lobo-codes")
+	defer func() {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			log.Fatal(err)
+		}
+	}()
+	log.Printf("Sheldon: after otel\n")
 
 	// Not found template
 	internal.NotFoundTemplate = template.Must(template.ParseFiles("common/notfound.html"))

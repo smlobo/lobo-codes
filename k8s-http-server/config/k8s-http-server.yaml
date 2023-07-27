@@ -1,5 +1,5 @@
 # Exporter
-EXPORTER: otlp-grpc
+EXPORTER: otlp
 
 # Jaeger endpoint
 JAEGER_SERVER: localhost

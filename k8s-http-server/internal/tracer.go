@@ -30,7 +30,7 @@ func InitTracerProvider(serviceName string) (*trace.TracerProvider) {
 	// Desired exporter
 	var exp trace.SpanExporter
 	var err error
-	switch Config["EXPORTER"] {
+	switch config["EXPORTER"] {
 	case "jaeger":
 		exp, err = jaegerExporter()
 	case "file":
@@ -85,29 +85,32 @@ func fileExporter(w io.Writer) (trace.SpanExporter, error) {
 
 // Jaeger exporter
 func jaegerExporter() (trace.SpanExporter, error) {
-	jaegerServer := Config["JAEGER_SERVER"]
-	jaegerPort := Config["JAEGER_PORT"]
-	jaegerPath := Config["JAEGER_PATH"]
+	jaegerServer := config["JAEGER_SERVER"]
+	jaegerPort := config["JAEGER_PORT"]
+	jaegerPath := config["JAEGER_PATH"]
 	jaegerEndpoint := "http://" + jaegerServer + ":" + jaegerPort + jaegerPath
 	return jaeger.New(jaeger.WithCollectorEndpoint(jaeger.WithEndpoint(jaegerEndpoint)))
 }
 
 // Zipkin exporter
 func zipkinExporter() (trace.SpanExporter, error) {
-	return zipkin.New(Config["ZIPKIN_ENDPOINT"])
+	return zipkin.New(config["ZIPKIN_ENDPOINT"])
 }
 
 // OTLP exporter
 func otlpExporter() (trace.SpanExporter, error) {
+	log.Printf("Setting up OTLP HTTP exporter: %s:%s %s\n", config["OTLP_SERVER"], config["OTLP_HTTP_PORT"],
+		config["OTLP_URL"])
 	client := otlptracehttp.NewClient(otlptracehttp.WithInsecure(),
-		otlptracehttp.WithEndpoint(Config["OTLP_SERVER"] + ":" + Config["OTLP_HTTP_PORT"]),
-		otlptracehttp.WithURLPath(Config["OTLP_URL"]))
+		otlptracehttp.WithEndpoint(config["OTLP_SERVER"] + ":" + config["OTLP_HTTP_PORT"]),
+		otlptracehttp.WithURLPath(config["OTLP_URL"]))
 	return otlptrace.New(context.Background(), client)
 }
 
 // OTLP grpc exporter
 func otlpGrpcExporter() (trace.SpanExporter, error) {
-	conn, err := grpc.Dial(Config["OTLP_SERVER"] + ":" + Config["OTLP_GRPC_PORT"],
+	log.Printf("Setting up OTLP GRPC exporter: %s:%s\n", config["OTLP_SERVER"], config["OTLP_GRPC_PORT"])
+	conn, err := grpc.Dial(config["OTLP_SERVER"] + ":" + config["OTLP_GRPC_PORT"],
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithBlock(),
 	)
