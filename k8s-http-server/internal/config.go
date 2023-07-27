@@ -12,9 +12,9 @@ var Config map[string]string
 
 func SetupConfig() {
 	// Open the Config file
-	configFile, err := os.Open("Config/k8s-http-server.yaml")
+	configFile, err := os.Open("config/k8s-http-server.yaml")
 	if err != nil {
-		fmt.Println("Error opening Config file:", err)
+		fmt.Println("Error opening config file:", err)
 		os.Exit(1)
 	}
 	defer configFile.Close()
@@ -23,7 +23,7 @@ func SetupConfig() {
 	decoder := yaml.NewDecoder(configFile)
 	err = decoder.Decode(&Config)
 	if err != nil {
-		fmt.Println("Error unmarshalling Config file:", err)
+		fmt.Println("Error unmarshalling config file:", err)
 		os.Exit(1)
 	}
 
