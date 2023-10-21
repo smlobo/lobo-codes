@@ -32,7 +32,7 @@ spec:
             - name: OTLP_SERVER
               value: jaeger-cassandra-collector
             - name: EXPORTER
-              value: otlp-grpc
+              value: otlp
             - name: CASSANDRA_SERVER
               value: cassandra-internal
             - name: HTTP_PORT
