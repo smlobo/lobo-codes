@@ -19,6 +19,7 @@ COPY ./common common
 COPY ./domain domain
 COPY ./amelia amelia
 COPY ./ryan ryan
+COPY ./bliu bliu
 COPY ./sheldon sheldon
 COPY ./test-vue/dist test-vue/dist
 COPY ./config config

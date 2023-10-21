@@ -62,6 +62,7 @@ func main() {
 	internal.HandlerInfoMap = map[string]internal.HandlerInfo{
 		"amelia":   {},
 		"ryan":     {},
+		"bliu":     {},
 		"sheldon":  {},
 		"domain":   {},
 		"test-vue": {},
@@ -114,6 +115,7 @@ func main() {
 
 	hostRouter.Map("amelia.lobo.codes", ameliaRouter())
 	hostRouter.Map("ryan.lobo.codes", ryanRouter())
+	hostRouter.Map("bliu.lobo.codes", bliuRouter())
 	hostRouter.Map("sheldon.lobo.codes", sheldonRouter())
 	hostRouter.Map("lobo.codes", domainRouter())
 	hostRouter.Map("test-vue.lobo.codes", testVueRouter())
@@ -122,6 +124,7 @@ func main() {
 	// Testing locally
 	hostRouter.Map("amelia.lobo.codes"+port, ameliaRouter())
 	hostRouter.Map("ryan.lobo.codes"+port, ryanRouter())
+	hostRouter.Map("bliu.lobo.codes"+port, bliuRouter())
 	hostRouter.Map("sheldon.lobo.codes"+port, sheldonRouter())
 	hostRouter.Map("lobo.codes"+port, domainRouter())
 	hostRouter.Map("test-vue.lobo.codes"+port, testVueRouter())
@@ -186,6 +189,21 @@ func ryanRouter() chi.Router {
 	// Other static content
 	ryanFileServer := http.FileServer(http.Dir("./ryan"))
 	r.Handle("/static/*", ryanFileServer)
+
+	return r
+}
+
+func bliuRouter() chi.Router {
+	r := chi.NewRouter()
+
+	bliuWrappedHandler := otelhttp.NewHandler(internal.BliuHandler(), "bliu-handler")
+	r.Method("GET", "/", bliuWrappedHandler)
+
+	r.NotFound(internal.NotFoundHandlerFunc)
+
+	// Other static content
+	bliuFileServer := http.FileServer(http.Dir("./bliu"))
+	r.Handle("/static/*", bliuFileServer)
 
 	return r
 }

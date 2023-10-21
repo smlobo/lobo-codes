@@ -107,6 +107,14 @@ func RyanHandler() http.HandlerFunc {
 	}
 }
 
+func BliuHandler() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		directory := "bliu"
+		handleIndexHtml(directory, writer, request)
+		//handleVisitorHtml(directory, writer, request)
+	}
+}
+
 func SheldonHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		directory := "sheldon"
