@@ -21,8 +21,14 @@ docker:
 	docker push localhost:32000/lobo-codes:$(tag)
 	docker push localhost:32000/lobo-codes:latest
 
+apply:
+	microk8s kubectl apply -f ./k8s/lobo-codes-deployment.yaml
+
+delete:
+	microk8s kubectl delete -f ./k8s/lobo-codes-deployment.yaml
+
 rollout:
-	microk8s kubectl rollout restart  -f ./k8s/lobo-codes-deployment.yaml
+	microk8s kubectl rollout restart -f ./k8s/lobo-codes-deployment.yaml
 
 transfer:
 	go run cmd/transfer-sqlite-cassandra.go -sqliteDb=requests-db/$(name).db -cassandraDb=10.1.1.42 -cassandraTbl=$(name)
