@@ -82,6 +82,8 @@ func main() {
 	// Other HTML templates
 	internal.HandlerInfoMap["sheldon"].PathMap["graph"] = template.Must(template.ParseFiles("sheldon/graph.html"))
 	internal.HandlerInfoMap["sheldon"].PathMap["resume"] = template.Must(template.ParseFiles("sheldon/resume.html"))
+	internal.HandlerInfoMap["bliu"].PathMap["generic"] = template.Must(template.ParseFiles("bliu/generic.html"))
+	//internal.HandlerInfoMap["bliu"].PathMap["elements"] = template.Must(template.ParseFiles("bliu/elements.html"))
 
 	// Setup OpenTelemetry tracer
 	tp := internal.InitTracerProvider("lobo-codes")
@@ -198,12 +200,16 @@ func bliuRouter() chi.Router {
 
 	bliuWrappedHandler := otelhttp.NewHandler(internal.BliuHandler(), "bliu-handler")
 	r.Method("GET", "/", bliuWrappedHandler)
+	r.Method("GET", "/index.html", bliuWrappedHandler)
+	r.Method("GET", "/generic.html", bliuWrappedHandler)
+	//r.Method("GET", "/elements.html", bliuWrappedHandler)
 
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
 	bliuFileServer := http.FileServer(http.Dir("./bliu"))
-	r.Handle("/static/*", bliuFileServer)
+	r.Handle("/images/*", bliuFileServer)
+	r.Handle("/assets/*", bliuFileServer)
 
 	return r
 }

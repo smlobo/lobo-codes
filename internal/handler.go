@@ -112,6 +112,16 @@ func BliuHandler() http.HandlerFunc {
 		directory := "bliu"
 		handleIndexHtml(directory, writer, request)
 		//handleVisitorHtml(directory, writer, request)
+		url := request.URL
+		if url.Path == "/generic.html" {
+			pageData := IndexPage{}
+			//getpoweredBy(&pageData.PoweredBy)
+			_ = HandlerInfoMap[directory].PathMap["generic"].Execute(writer, pageData)
+		} else if url.Path == "/elements.html" {
+			pageData := IndexPage{}
+			//getpoweredBy(&pageData.PoweredBy)
+			_ = HandlerInfoMap[directory].PathMap["elements"].Execute(writer, pageData)
+		}
 	}
 }
 
