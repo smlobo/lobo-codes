@@ -4,10 +4,18 @@ TARGET = k8s-http-server
 build:
 	go build -o bin/${TARGET} cmd/${TARGET}.go
 
+debug:
+	go build -gcflags "all=-N -l" -o bin/${TARGET} cmd/${TARGET}.go
+
 .PHONY: test
 test:
 	HOSTNAME="lobo-codes-abcdef1234-vwxyz" NODE_NAME="work-macbook" go run cmd/${TARGET}.go \
 		-os-release="test/os-release" -go-version="test/golang_version.txt"
+
+test-debug:
+	HOSTNAME="lobo-codes-abcdef1234-vwxyz" NODE_NAME="work-macbook" \
+		dlv --listen=:2345 --headless=true --api-version=2 --accept-multiclient exec ./bin/${TARGET} \
+		-- -os-release="test/os-release" -go-version="test/golang_version.txt"
 
 module:
 	rm -f go.mod go.sum
