@@ -41,6 +41,12 @@ rollout:
 transfer:
 	go run cmd/transfer-sqlite-cassandra.go -sqliteDb=requests-db/$(name).db -cassandraDb=10.1.1.42 -cassandraTbl=$(name)
 
+build-transfer2:
+	go build -o bin/transfer-cassandra-rqlite cmd/transfer-cassandra-rqlite.go
+
+run-transfer2:
+	./bin/transfer-cassandra-rqlite -cassandraTbl=$(name)
+
 k8s-test:
 	docker build -t localhost:32000/k8s-test:latest -f docker/Dockerfile.k8s-test .
 	docker push localhost:32000/k8s-test:latest
