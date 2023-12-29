@@ -7,24 +7,18 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 )
+
+const RqlitePort = "4001"
 
 var rqliteURL string
 
 func InitRqlite() {
 	// Set the URL
-	rqliteHost := os.Getenv("RQLITE_SVC_SERVICE_HOST")
-	if rqliteHost == "" {
-		rqliteHost = Config["RQLITE_HOST"]
-	}
-	rqlitePort := os.Getenv("RQLITE_SVC_SERVICE_PORT")
-	if rqlitePort == "" {
-		rqlitePort = Config["RQLITE_PORT"]
-	}
-	rqliteURL = "http://" + rqliteHost + ":" + rqlitePort
+	rqliteURL = "http://" + Config["RQLITE_SERVER"] + ":" + RqlitePort
+	log.Printf("Using Rqlite URL: %s", rqliteURL)
 }
 
 func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request) {

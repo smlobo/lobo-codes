@@ -68,6 +68,9 @@ func main() {
 		"test-vue": {},
 	}
 
+	// Init rqlite
+	internal.InitRqlite()
+
 	// Init cassandra db
 	cassandraSession := internal.InitCassandra()
 	defer cassandraSession.Close()

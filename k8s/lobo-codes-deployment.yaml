@@ -35,6 +35,8 @@ spec:
               value: otlp
             - name: CASSANDRA_SERVER
               value: cassandra-internal
+            - name: RQLITE_SERVER
+              value: rqlite-svc
             - name: HTTP_PORT
               value: "80"
             - name: HTTPS_PORT
