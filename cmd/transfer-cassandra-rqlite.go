@@ -98,6 +98,11 @@ func main() {
 		"country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation) VALUES ('%s', '%s', " +
 		"'%s', '%s', %d, '%s', '%s', '%s', '%s', %f, %f, '%s', '%s', %f)"
 	for i, requestInfo := range requestInfos {
+		// Weird Mozilliqa"<?=print... User-Agent
+		if strings.HasPrefix(requestInfo.UserAgent, "Mozilliqa") {
+			log.Printf("Skipping: [%d] %s", i, requestInfo)
+			continue
+		}
 		//statements[i] = fmt.Sprintf(pattern, requestInfo.CreatedAt, requestInfo.UpdatedAt, requestInfo.RemoteAddress,
 		//	requestInfo.UserAgent, requestInfo.Count, requestInfo.CountryShort, requestInfo.CountryLong,
 		//	requestInfo.City, requestInfo.Region, requestInfo.Latitude, requestInfo.Longitude, requestInfo.Zipcode,
@@ -111,7 +116,7 @@ func main() {
 
 		err := internal.RqliteExecute(insertQuery)
 		if err != nil {
-			log.Fatalf("Error inserting [%d]; %s", i, err)
+			log.Fatalf("Error inserting [%d] %s; %s", i, insertQuery, err)
 		} else {
 			log.Printf("[%d] success: %s", i, insertQuery)
 		}
