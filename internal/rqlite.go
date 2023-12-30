@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strings"
 	"time"
+
+	"go.opentelemetry.io/otel"
 )
 
 const RqlitePort = "4001"
@@ -88,6 +90,58 @@ func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request
 		}
 		log.Printf("INFO: Updated in %s: %s [count: %d, id: %d]", tableName, info, newCount, id)
 	}
+}
+
+func rqliteGetCountriesCities(tableName string, request *http.Request) (countryCount map[string]int,
+	cityCount map[string]City) {
+
+	// Getting info from DB
+	_, span := otel.Tracer("k8s-http-server").Start(request.Context(), "db-query")
+
+	// Read country name & count
+	// Also, the city & region to count
+	queryString := fmt.Sprintf("SELECT country_short, city, region FROM %s", tableName)
+	rows, err := RqliteQuery(queryString)
+	if err != nil {
+		log.Printf("WARNING: Error during country/city/region lookup for %s; %s", tableName, err.Error())
+		return
+	}
+
+	// Processing the data
+	span.End()
+	_, span = otel.Tracer("k8s-http-server").Start(request.Context(), "db-process")
+	defer span.End()
+
+	countryCount = make(map[string]int)
+	cityCount = make(map[string]City)
+
+	// Iterate over result rows
+	for _, row := range rows {
+		rowMap, _ := row.(map[string]interface{})
+		country := rowMap["country_short"].(string)
+		city := rowMap["city"].(string)
+		region := rowMap["region"].(string)
+
+		if count, ok := countryCount[country]; !ok {
+			countryCount[country] = 1
+		} else {
+			countryCount[country] = count + 1
+		}
+
+		if count, ok := cityCount[city]; !ok {
+			cityCount[city] = City{
+				City:         city,
+				Region:       region,
+				CountryShort: country,
+				Count:        1,
+			}
+		} else {
+			count.Count += 1
+			cityCount[city] = count
+		}
+	}
+
+	return
 }
 
 func RqliteQuery(queryString string) ([]interface{}, error) {

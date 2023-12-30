@@ -19,6 +19,6 @@ func requestInfo(request *http.Request, tableName string) {
 
 	// Once the information is extracted from the request, the remainder of processing can be
 	// done concurrently
-	go cassandraLogRequest(&info, tableName, request)
+	//go cassandraLogRequest(&info, tableName, request)
 	go rqliteLogRequest(&info, tableName, request)
 }

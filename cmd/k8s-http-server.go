@@ -72,8 +72,8 @@ func main() {
 	internal.InitRqlite()
 
 	// Init cassandra db
-	cassandraSession := internal.InitCassandra()
-	defer cassandraSession.Close()
+	//cassandraSession := internal.InitCassandra()
+	//defer cassandraSession.Close()
 
 	// Init cassandra table for each subdomain
 	// Also, save and parse html templates
@@ -205,6 +205,8 @@ func bliuRouter() chi.Router {
 	r.Method("GET", "/", bliuWrappedHandler)
 	r.Method("GET", "/index.html", bliuWrappedHandler)
 	r.Method("GET", "/generic.html", bliuWrappedHandler)
+	r.Method("GET", "/visitors", bliuWrappedHandler)
+	r.Method("GET", "/visitors.html", bliuWrappedHandler)
 	//r.Method("GET", "/elements.html", bliuWrappedHandler)
 
 	r.NotFound(internal.NotFoundHandlerFunc)
@@ -213,6 +215,7 @@ func bliuRouter() chi.Router {
 	bliuFileServer := http.FileServer(http.Dir("./bliu"))
 	r.Handle("/images/*", bliuFileServer)
 	r.Handle("/assets/*", bliuFileServer)
+	r.Handle("/static/*", bliuFileServer)
 
 	return r
 }

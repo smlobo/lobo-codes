@@ -53,7 +53,8 @@ func handleVisitorHtml(directory string, writer http.ResponseWriter, request *ht
 		// Get Visitor page data for template processing
 		visitorPageData := VisitorsPage{}
 
-		countryCountMap, cityCountMap := cassandraGetCountriesCities(directory, request)
+		//countryCountMap, cityCountMap := cassandraGetCountriesCities(directory, request)
+		countryCountMap, cityCountMap := rqliteGetCountriesCities(directory, request)
 
 		// HTML Template processing
 		_, span := otel.Tracer("k8s-http-server").Start(request.Context(), "template-process")
@@ -111,7 +112,7 @@ func BliuHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		directory := "bliu"
 		handleIndexHtml(directory, writer, request)
-		//handleVisitorHtml(directory, writer, request)
+		handleVisitorHtml(directory, writer, request)
 		url := request.URL
 		if url.Path == "/generic.html" {
 			pageData := IndexPage{}
