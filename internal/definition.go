@@ -34,18 +34,19 @@ type PoweredBy struct {
 	GoVersion         string
 	KubernetesVersion string
 	OsVersion         string
+	RqliteVersion     string
 	PodName           string
 	NodeName          string
 }
 
 type RequestInfo struct {
-	Id            uuid.UUID
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	RemoteAddress string
+	Id                uuid.UUID
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	RemoteAddress     string
 	OrigRemoteAddress string
-	UserAgent     string
-	Count         int64
+	UserAgent         string
+	Count             int64
 	GeoLocation
 }
 

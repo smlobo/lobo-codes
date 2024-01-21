@@ -185,4 +185,6 @@ func getpoweredBy(poweredByPtr *PoweredBy) {
 	poweredByPtr.KubernetesVersion = Kubernetes.Version
 
 	poweredByPtr.GoVersion = string(GoVersion)
+
+	poweredByPtr.RqliteVersion = RqliteVersion
 }

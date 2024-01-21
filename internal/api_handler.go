@@ -10,9 +10,9 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
-const FRED_API = "https://api.stlouisfed.org/fred/series"
+const FredApi = "https://api.stlouisfed.org/fred/series"
 
-const API_KEY = "e12c0787f51ff6db24ac8029710fa175"
+const ApiKey = "e12c0787f51ff6db24ac8029710fa175"
 
 func GraphApiHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
@@ -45,8 +45,8 @@ func GraphApiHandler() http.HandlerFunc {
 
 		// Get the title & units
 		go func() {
-			response, err := otelhttp.Get(request.Context(), FRED_API+"?file_type=json&series_id="+fredSeries+
-				"&api_key="+API_KEY)
+			response, err := otelhttp.Get(request.Context(), FredApi+"?file_type=json&series_id="+fredSeries+
+				"&api_key="+ApiKey)
 			if err != nil || response.StatusCode > http.StatusOK {
 				writer.WriteHeader(http.StatusBadRequest)
 				return
@@ -68,11 +68,11 @@ func GraphApiHandler() http.HandlerFunc {
 			seriesMap := series0.(map[string]interface{})
 			titleChan <- seriesMap["title"].(string)
 			unitsChan <- seriesMap["units"].(string)
-		} ()
+		}()
 
 		// Get the data
-		response, err := otelhttp.Get(request.Context(), FRED_API + "/observations?file_type=json&series_id=" +
-			fredSeries + "&api_key=" + API_KEY)
+		response, err := otelhttp.Get(request.Context(), FredApi+"/observations?file_type=json&series_id="+
+			fredSeries+"&api_key="+ApiKey)
 		if err != nil || response.StatusCode > http.StatusOK {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
@@ -100,8 +100,8 @@ func GraphApiHandler() http.HandlerFunc {
 		}
 
 		// Block on the earlier request
-		returnData.Title = <- titleChan
-		returnData.Units = <- unitsChan
+		returnData.Title = <-titleChan
+		returnData.Units = <-unitsChan
 		log.Printf("Got: %d : %s", response.StatusCode, returnData.Title)
 
 		encodedReturnData, _ := json.Marshal(returnData)

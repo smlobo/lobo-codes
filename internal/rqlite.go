@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -17,10 +17,46 @@ const RqlitePort = "4001"
 
 var rqliteURL string
 
+const RqliteDefaultVersion = "vX.Y.Z"
+
+var RqliteVersion string
+
 func InitRqlite() {
 	// Set the URL
 	rqliteURL = "http://" + Config["RQLITE_SERVER"] + ":" + RqlitePort
 	log.Printf("Using Rqlite URL: %s", rqliteURL)
+
+	// Get the version
+	resp, err := http.Get(rqliteURL + "/status")
+	if err != nil {
+		log.Printf("Error getting rqlite version: %s", err)
+		RqliteVersion = RqliteDefaultVersion
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("Unexpected status code from rqlite GET to /status endpoint: %s", resp.Status)
+		RqliteVersion = RqliteDefaultVersion
+		return
+	}
+
+	// Parse json response
+	var statusJson map[string]map[string]interface{}
+	respBytes, _ := io.ReadAll(resp.Body)
+	err = json.Unmarshal(respBytes, &statusJson)
+	if err != nil {
+		log.Printf("Error parsing rqlite GET /status: %s", err)
+		RqliteVersion = RqliteDefaultVersion
+		return
+	}
+	var ok bool
+	RqliteVersion, ok = statusJson["build"]["version"].(string)
+	if !ok {
+		log.Printf("Rqlite GET /status has no build.version field")
+		RqliteVersion = RqliteDefaultVersion
+	}
+	log.Printf("Got Rqlite version: %s", RqliteVersion)
 }
 
 func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request) {
@@ -160,7 +196,7 @@ func RqliteQuery(queryString string) ([]interface{}, error) {
 
 	// Unmarshal response into Json
 	var resultsJson map[string][]map[string]interface{}
-	bytes, _ := ioutil.ReadAll(resp.Body)
+	bytes, _ := io.ReadAll(resp.Body)
 	err = json.Unmarshal(bytes, &resultsJson)
 	if err != nil {
 		return nil, err
