@@ -1,5 +1,7 @@
 TARGET = wasm-rotating-cube
 
+GOROOT := $(shell go env GOROOT)
+
 all: ${TARGET}
 
 wasm-rotating-cube: output.wasm main.go
