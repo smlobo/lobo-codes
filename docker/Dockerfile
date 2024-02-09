@@ -22,6 +22,7 @@ COPY ./ryan ryan
 COPY ./bliu bliu
 COPY ./sheldon sheldon
 COPY ./test-vue/dist test-vue/dist
+COPY ./wasm wasm
 COPY ./config config
 COPY ./ssl-certificates ssl-certificates
 
