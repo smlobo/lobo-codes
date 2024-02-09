@@ -66,6 +66,7 @@ func main() {
 		"sheldon":  {},
 		"domain":   {},
 		"test-vue": {},
+		"wasm":     {},
 	}
 
 	// Init rqlite
@@ -125,6 +126,7 @@ func main() {
 	hostRouter.Map("lobo.codes", domainRouter())
 	hostRouter.Map("test-vue.lobo.codes", testVueRouter())
 	hostRouter.Map("api.lobo.codes", apiRouter())
+	hostRouter.Map("wasm.lobo.codes", wasmRouter())
 
 	// Testing locally
 	hostRouter.Map("amelia.lobo.codes"+port, ameliaRouter())
@@ -134,6 +136,7 @@ func main() {
 	hostRouter.Map("lobo.codes"+port, domainRouter())
 	hostRouter.Map("test-vue.lobo.codes"+port, testVueRouter())
 	hostRouter.Map("api.lobo.codes"+port, apiRouter())
+	hostRouter.Map("wasm.lobo.codes"+port, wasmRouter())
 
 	hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
@@ -278,6 +281,24 @@ func apiRouter() chi.Router {
 	r.Method("GET", "/graph/{fredSeries}", graphApiWrappedHandler)
 
 	r.NotFound(internal.ApiNotFoundHandler)
+
+	return r
+}
+
+func wasmRouter() chi.Router {
+	r := chi.NewRouter()
+
+	wasmWrappedHandler := otelhttp.NewHandler(internal.WasmHandler(), "wasm-handler")
+	r.Method("GET", "/", wasmWrappedHandler)
+
+	r.NotFound(internal.NotFoundHandlerFunc)
+
+	// Other static content
+	wasmFileServer := http.FileServer(http.Dir("./wasm"))
+	r.Handle("/static/*", wasmFileServer)
+
+	// wasm-rotating-cube
+	r.Handle("/wasm-rotating-cube/*", wasmFileServer)
 
 	return r
 }

@@ -168,6 +168,21 @@ func TestVueHandler() http.HandlerFunc {
 	}
 }
 
+func WasmHandler() http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		directory := "wasm"
+		url := request.URL
+		if url.Path == "" || url.Path == "/" {
+			// Todo: Log request to the Cassandra db
+			//requestInfo(request, directory)
+
+			indexPageData := IndexPage{}
+			getpoweredBy(&indexPageData.PoweredBy)
+			_ = HandlerInfoMap[directory].PathMap["index"].Execute(writer, indexPageData)
+		}
+	}
+}
+
 var NotFoundTemplate *template.Template
 
 func NotFoundHandlerFunc(writer http.ResponseWriter, request *http.Request) {
