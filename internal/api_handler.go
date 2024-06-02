@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	//"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 const FredApi = "https://api.stlouisfed.org/fred/series"
@@ -45,8 +45,9 @@ func GraphApiHandler() http.HandlerFunc {
 
 		// Get the title & units
 		go func() {
-			response, err := otelhttp.Get(request.Context(), FredApi+"?file_type=json&series_id="+fredSeries+
-				"&api_key="+ApiKey)
+			//response, err := otelhttp.Get(request.Context(), FredApi+"?file_type=json&series_id="+fredSeries+
+			//	"&api_key="+ApiKey)
+			response, err := http.Get(FredApi + "?file_type=json&series_id=" + fredSeries + "&api_key=" + ApiKey)
 			if err != nil || response.StatusCode > http.StatusOK {
 				writer.WriteHeader(http.StatusBadRequest)
 				return
@@ -71,8 +72,9 @@ func GraphApiHandler() http.HandlerFunc {
 		}()
 
 		// Get the data
-		response, err := otelhttp.Get(request.Context(), FredApi+"/observations?file_type=json&series_id="+
-			fredSeries+"&api_key="+ApiKey)
+		//response, err := otelhttp.Get(request.Context(), FredApi+"/observations?file_type=json&series_id="+
+		//	fredSeries+"&api_key="+ApiKey)
+		response, err := http.Get(FredApi + "/observations?file_type=json&series_id=" + fredSeries + "&api_key=" + ApiKey)
 		if err != nil || response.StatusCode > http.StatusOK {
 			writer.WriteHeader(http.StatusBadRequest)
 			return
