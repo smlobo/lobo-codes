@@ -278,7 +278,8 @@ func apiRouter() chi.Router {
 	r := chi.NewRouter()
 
 	graphApiWrappedHandler := otelhttp.NewHandler(internal.GraphApiHandler(), "api-handler")
-	r.Method("GET", "/graph/{fredSeries}", graphApiWrappedHandler)
+	r.Method("GET", "/graph/fred/{fredSeries}", graphApiWrappedHandler)
+	r.Method("GET", "/graph/census/{censusSeries}", graphApiWrappedHandler)
 
 	r.NotFound(internal.ApiNotFoundHandler)
 
