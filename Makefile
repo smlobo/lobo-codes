@@ -1,6 +1,8 @@
 
 TARGET = k8s-http-server
 
+DOCKER = /usr/bin/docker
+
 build:
 	go build -o bin/${TARGET} cmd/${TARGET}.go
 
@@ -24,10 +26,10 @@ module:
 
 .PHONY: docker
 docker:
-	docker build -t localhost:32000/lobo-codes:$(tag) -f docker/Dockerfile .
-	docker tag localhost:32000/lobo-codes:$(tag) localhost:32000/lobo-codes:latest
-	docker push localhost:32000/lobo-codes:$(tag)
-	docker push localhost:32000/lobo-codes:latest
+	${DOCKER} build -t localhost:32000/lobo-codes:$(tag) -f docker/Dockerfile .
+	${DOCKER} tag localhost:32000/lobo-codes:$(tag) localhost:32000/lobo-codes:latest
+	${DOCKER} push localhost:32000/lobo-codes:$(tag)
+	${DOCKER} push localhost:32000/lobo-codes:latest
 
 apply:
 	microk8s kubectl apply -f ./k8s/lobo-codes-deployment.yaml
