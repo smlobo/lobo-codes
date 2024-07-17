@@ -263,13 +263,19 @@ func testVueRouter() chi.Router {
 
 	testVueWrappedHandler := otelhttp.NewHandler(internal.TestVueHandler(), "test-vue-handler")
 	r.Method("GET", "/", testVueWrappedHandler)
+	r.Method("GET", "/visitors", testVueWrappedHandler)
+	r.Method("GET", "/visitors.html", testVueWrappedHandler)
 
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
-	testVueFileServer := http.FileServer(http.Dir("./test-vue/dist"))
-	r.Handle("/assets/*", testVueFileServer)
-	r.Handle("/js/*", testVueFileServer)
+	testVueFileServer := http.FileServer(http.Dir("./test-vue"))
+	r.Handle("/static/*", testVueFileServer)
+
+	// Vue distribution static content
+	testVueDistFileServer := http.FileServer(http.Dir("./test-vue/dist"))
+	r.Handle("/assets/*", testVueDistFileServer)
+	r.Handle("/js/*", testVueDistFileServer)
 
 	return r
 }
@@ -291,6 +297,8 @@ func wasmRouter() chi.Router {
 
 	wasmWrappedHandler := otelhttp.NewHandler(internal.WasmHandler(), "wasm-handler")
 	r.Method("GET", "/", wasmWrappedHandler)
+	r.Method("GET", "/visitors", wasmWrappedHandler)
+	r.Method("GET", "/visitors.html", wasmWrappedHandler)
 
 	r.NotFound(internal.NotFoundHandlerFunc)
 

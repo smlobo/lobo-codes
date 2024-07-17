@@ -19,14 +19,14 @@ func GetPathMap(directory string) map[string]*template.Template {
 	// Todo: iterate over all html files in directory
 	pathMap := map[string]*template.Template{}
 
-	// Special case test-vue
-	if directory == "test-vue" {
-		pathMap["index"] = template.Must(template.ParseFiles(directory + "/dist/index.html"))
-		return pathMap
-	}
-
 	// Domain/sub-domain specific html templates
-	pathMap["index"] = template.Must(template.ParseFiles(directory + "/index.html"))
+	// Some are in a different path
+	switch directory {
+	case "test-vue":
+		pathMap["index"] = template.Must(template.ParseFiles(directory + "/dist/index.html"))
+	default:
+		pathMap["index"] = template.Must(template.ParseFiles(directory + "/index.html"))
+	}
 
 	// Common html templates
 	pathMap["visitors"] = template.Must(template.ParseFiles("common/visitors.html"))
@@ -156,30 +156,16 @@ func DomainHandler() http.HandlerFunc {
 func TestVueHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		directory := "test-vue"
-		url := request.URL
-		if url.Path == "" || url.Path == "/" {
-			// Todo: Log request to the Cassandra db
-			//requestInfo(request, directory)
-
-			//indexPageData := IndexPage{}
-			//getpoweredBy(&indexPageData.PoweredBy)
-			_ = HandlerInfoMap[directory].PathMap["index"].Execute(writer, nil)
-		}
+		handleIndexHtml(directory, writer, request)
+		handleVisitorHtml(directory, writer, request)
 	}
 }
 
 func WasmHandler() http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		directory := "wasm"
-		url := request.URL
-		if url.Path == "" || url.Path == "/" {
-			// Todo: Log request to the Cassandra db
-			//requestInfo(request, directory)
-
-			indexPageData := IndexPage{}
-			getpoweredBy(&indexPageData.PoweredBy)
-			_ = HandlerInfoMap[directory].PathMap["index"].Execute(writer, indexPageData)
-		}
+		handleIndexHtml(directory, writer, request)
+		handleVisitorHtml(directory, writer, request)
 	}
 }
 

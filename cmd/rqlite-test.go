@@ -16,7 +16,7 @@ func main() {
 
 	// Get the first 5 entries
 	for i := 1; i <= 5; i++ {
-		queryString := fmt.Sprintf("SELECT id,count,country_short,city FROM sheldon WHERE id = %d", i)
+		queryString := fmt.Sprintf("SELECT id,count,country_short,city FROM 'sheldon' WHERE id = %d", i)
 		rows, err := internal.RqliteQuery(queryString)
 		if err != nil {
 			log.Printf("WARNING: Error during lookup of id 1; %s", err.Error())
@@ -32,7 +32,7 @@ func main() {
 		log.Printf("[%d]: %s", i, rows[0])
 	}
 
-	queryString := fmt.Sprintf("SELECT id,count FROM sheldon WHERE id = 40")
+	queryString := fmt.Sprintf("SELECT id,count FROM 'sheldon' WHERE id = 40")
 	rows, _ := internal.RqliteQuery(queryString)
 	log.Printf("Test: %s", rows[0])
 	rowMap, ok := rows[0].(map[string]interface{})
@@ -42,10 +42,10 @@ func main() {
 	log.Printf("  count: %d", int(rowMap["count"].(float64)))
 	log.Printf("  id: %d", int(rowMap["id"].(float64)))
 
-	newCount := int(rowMap["count"].(float64)) + 1000
+	newCount := int(rowMap["count"].(float64)) + 1
 	id := int(rowMap["id"].(float64))
 
-	insertUpdate := fmt.Sprintf("UPDATE sheldon SET count = %d, updated_at = '%s' WHERE id = %d", newCount,
+	insertUpdate := fmt.Sprintf("UPDATE 'sheldon' SET count = %d, updated_at = '%s' WHERE id = %d", newCount,
 		time.Now().Format(time.RFC3339Nano), id)
 	//insertUpdate := fmt.Sprintf("UPDATE sheldon SET count = %d WHERE id = %d", newCount, id)
 	log.Printf("Update string: %s", insertUpdate)

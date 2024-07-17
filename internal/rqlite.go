@@ -70,7 +70,7 @@ func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request
 	}
 
 	// Find a pre-existing IP Address & UserAgent entry
-	queryString := fmt.Sprintf("SELECT id,count FROM %s WHERE remote_address=%s AND user_agent=%s", tableName,
+	queryString := fmt.Sprintf("SELECT id,count FROM '%s' WHERE remote_address=%s AND user_agent=%s", tableName,
 		info.RemoteAddress, info.UserAgent)
 	rows, err := RqliteQuery(queryString)
 	if err != nil {
@@ -93,11 +93,11 @@ func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request
 		info.CreatedAt = info.UpdatedAt
 		info.Count = 1
 
-		pattern := "INSERT INTO " + tableName + " (created_at,updated_at,remote_address,user_agent,count," +
-			"country_short,country_long,region,city,latitude,longitude,zipcode,timezone,elevation) VALUES ('%s', '%s', " +
+		pattern := "INSERT INTO '%s' (created_at,updated_at,remote_address,user_agent,count,country_short," +
+			"country_long,region,city,latitude,longitude,zipcode,timezone,elevation) VALUES ('%s', '%s', " +
 			"'%s', '%s', %d, '%s', '%s', '%s', '%s', %f, %f, '%s', '%s', %f)"
 
-		insertQuery := fmt.Sprintf(pattern, info.CreatedAt.Format(time.RFC3339Nano),
+		insertQuery := fmt.Sprintf(pattern, tableName, info.CreatedAt.Format(time.RFC3339Nano),
 			info.UpdatedAt.Format(time.RFC3339Nano), info.RemoteAddress, strings.Trim(info.UserAgent, "\""),
 			info.Count, info.CountryShort, info.CountryLong, info.Region, info.City, info.Latitude, info.Longitude,
 			info.Zipcode, info.Timezone, info.Elevation)
@@ -116,7 +116,7 @@ func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request
 		newCount := int(rowMap["count"].(float64)) + 1
 		id := int(rowMap["id"].(float64))
 
-		insertUpdate := fmt.Sprintf("UPDATE %s SET count = %d, updated_at = \"%s\" WHERE id = %d", tableName,
+		insertUpdate := fmt.Sprintf("UPDATE '%s' SET count = %d, updated_at = \"%s\" WHERE id = %d", tableName,
 			newCount, info.UpdatedAt.Format(time.RFC3339Nano), id)
 
 		err = RqliteExecute(insertUpdate)
@@ -136,7 +136,7 @@ func rqliteGetCountriesCities(tableName string, request *http.Request) (countryC
 
 	// Read country name & count
 	// Also, the city & region to count
-	queryString := fmt.Sprintf("SELECT country_short, city, region FROM %s", tableName)
+	queryString := fmt.Sprintf("SELECT country_short, city, region FROM '%s'", tableName)
 	rows, err := RqliteQuery(queryString)
 	if err != nil {
 		log.Printf("WARNING: Error during country/city/region lookup for %s; %s", tableName, err.Error())
