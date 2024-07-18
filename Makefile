@@ -31,6 +31,9 @@ docker:
 	${DOCKER} push localhost:32000/lobo-codes:$(tag)
 	${DOCKER} push localhost:32000/lobo-codes:latest
 
+test-docker:
+	${DOCKER} run --rm  -p 3000:3000 -e HOSTNAME="lobo-codes-docker1234-abcde" -e NODE_NAME="docker-node" localhost:32000/lobo-codes:latest
+
 apply:
 	microk8s kubectl apply -f ./k8s/lobo-codes-deployment.yaml
 
