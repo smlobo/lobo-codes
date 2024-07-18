@@ -307,9 +307,12 @@ func wasmRouter() chi.Router {
 	r.Handle("/static/*", wasmFileServer)
 
 	// wasm-rotating-cube
-	r.Handle("/wasm-rotating-cube/*", wasmFileServer)
+	wasmRotatingCubeFileServer := http.FileServer(http.Dir("./wasm/wasm-rotating-cube/dist"))
+	r.Handle("/wasm-rotating-cube/*", wasmRotatingCubeFileServer)
+
 	// h-tree
-	r.Handle("/h-tree/*", wasmFileServer)
+	wasmHTreeFileServer := http.FileServer(http.Dir("./wasm/h-tree/dist"))
+	r.Handle("/h-tree/*", wasmHTreeFileServer)
 
 	return r
 }

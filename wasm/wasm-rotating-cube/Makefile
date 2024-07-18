@@ -4,14 +4,21 @@ GOROOT := $(shell go env GOROOT)
 
 all: ${TARGET}
 
-wasm-rotating-cube: output.wasm main.go
-	go build -o wasm-rotating-cube main.go
+${TARGET}: bundle.wasm main.go
+	go build -o $@ main.go
 
-output.wasm: bundle.go wasm_exec.js
-	GOOS=js GOARCH=wasm go build -o bundle.wasm bundle.go
+bundle.wasm: bundle.go wasm_exec.js
+	GOOS=js GOARCH=wasm go build -o $@ bundle.go
 
-run: output.wasm wasm-rotating-cube
-	./wasm-rotating-cube
+run: ${TARGET} index.html
+	python3 -m http.server 9000
+
+dist: ${TARGET} index.html
+	mkdir -p $@/${TARGET}
+	cp index.html $@/${TARGET}
+	cp wasm_exec.js $@/${TARGET}
+	cp bundle.wasm $@/${TARGET}
+	cp $< $@/${TARGET}
 
 wasm_exec.js:
 	cp $(GOROOT)/misc/wasm/wasm_exec.js .
@@ -22,5 +29,5 @@ module:
 	go mod tidy
 
 clean:
-	rm -f wasm-rotating-cube wasm_exec.js *.wasm
+	rm -f ${TARGET} wasm_exec.js *.wasm
 	rm -f go.mod go.sum

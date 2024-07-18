@@ -13,12 +13,14 @@ target_compile_options(${PROJECT_NAME} PRIVATE -O2 -sUSE_SDL=2)
 target_link_options(${PROJECT_NAME} PRIVATE -O2 -sUSE_SDL=2 -sEXPORTED_FUNCTIONS=["_mainf"])
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_SOURCE_DIR}/h-tree.html" "${CMAKE_BINARY_DIR}/h-tree.html"
-        DEPENDS h-tree.html
+        COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.html" "${CMAKE_BINARY_DIR}/index.html"
+        DEPENDS ${PROJECT_NAME}.html
         VERBATIM ON
 )
 
-# Does not work with emcmake
-install(TARGETS
-        ${PROJECT_NAME}
+install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.js
+        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.wasm
+        ${CMAKE_BINARY_DIR}/index.html
+        CONFIGURATIONS Release
+        DESTINATION dist/${PROJECT_NAME}
 )
