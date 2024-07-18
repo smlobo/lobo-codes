@@ -20,7 +20,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.js
         ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.wasm
-        ${CMAKE_BINARY_DIR}/index.html
         CONFIGURATIONS Release
         DESTINATION dist/${PROJECT_NAME}
+)
+
+install(FILES ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.html
+        CONFIGURATIONS Release
+        DESTINATION dist/${PROJECT_NAME}
+        RENAME index.html
 )

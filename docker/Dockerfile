@@ -29,6 +29,7 @@ COPY ./sheldon sheldon
 COPY ./test-vue/dist test-vue/dist
 COPY ./test-vue/static test-vue/static
 
+COPY ./wasm/index.html wasm/index.html
 COPY ./wasm/static wasm/static
 COPY ./wasm/wasm-rotating-cube/dist wasm/wasm-rotating-cube/dist
 COPY ./wasm/h-tree/dist wasm/h-tree/dist
