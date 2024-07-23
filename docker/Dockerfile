@@ -33,6 +33,7 @@ COPY ./wasm/index.html wasm/index.html
 COPY ./wasm/static wasm/static
 COPY ./wasm/wasm-rotating-cube/dist wasm/wasm-rotating-cube/dist
 COPY ./wasm/h-tree/dist wasm/h-tree/dist
+COPY ./wasm/fractal-circle/dist wasm/fractal-circle/dist
 
 CMD ["/app/k8s-http-server"]
 

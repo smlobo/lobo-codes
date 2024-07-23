@@ -314,6 +314,10 @@ func wasmRouter() chi.Router {
 	wasmHTreeFileServer := http.FileServer(http.Dir("./wasm/h-tree/dist"))
 	r.Handle("/h-tree/*", wasmHTreeFileServer)
 
+	// fractal-circle
+	wasmFractalCircleFileServer := http.FileServer(http.Dir("./wasm/fractal-circle/dist"))
+	r.Handle("/fractal-circle/*", wasmFractalCircleFileServer)
+
 	return r
 }
 

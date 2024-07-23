@@ -22,39 +22,54 @@ const RqliteDefaultVersion = "vX.Y.Z"
 var RqliteVersion string
 
 func InitRqlite() {
-	// Set the URL
-	rqliteURL = "http://" + Config["RQLITE_SERVER"] + ":" + RqlitePort
-	log.Printf("Using Rqlite URL: %s", rqliteURL)
 
-	// Get the version
-	resp, err := http.Get(rqliteURL + "/status")
-	if err != nil {
-		log.Printf("Error getting rqlite version: %s", err)
-		RqliteVersion = RqliteDefaultVersion
-		return
-	}
-	defer resp.Body.Close()
+	// Closure
+	getRqliteVersion := func() bool {
+		// Set the URL
+		rqliteURL = "http://" + Config["RQLITE_SERVER"] + ":" + RqlitePort
+		log.Printf("Using Rqlite URL: %s", rqliteURL)
 
-	if resp.StatusCode != http.StatusOK {
-		log.Printf("Unexpected status code from rqlite GET to /status endpoint: %s", resp.Status)
-		RqliteVersion = RqliteDefaultVersion
-		return
+		// Get the version
+		resp, err := http.Get(rqliteURL + "/status")
+		if err != nil {
+			log.Printf("Error getting rqlite version: %s", err)
+			RqliteVersion = RqliteDefaultVersion
+			return false
+		}
+		defer resp.Body.Close()
+
+		if resp.StatusCode != http.StatusOK {
+			log.Printf("Unexpected status code from rqlite GET to /status endpoint: %s", resp.Status)
+			RqliteVersion = RqliteDefaultVersion
+			return false
+		}
+
+		// Parse json response
+		var statusJson map[string]map[string]interface{}
+		respBytes, _ := io.ReadAll(resp.Body)
+		err = json.Unmarshal(respBytes, &statusJson)
+		if err != nil {
+			log.Printf("Error parsing rqlite GET /status: %s", err)
+			RqliteVersion = RqliteDefaultVersion
+			return false
+		}
+		var ok bool
+		RqliteVersion, ok = statusJson["build"]["version"].(string)
+		if !ok {
+			log.Printf("Rqlite GET /status has no build.version field")
+			RqliteVersion = RqliteDefaultVersion
+			return false
+		}
+
+		return true
 	}
 
-	// Parse json response
-	var statusJson map[string]map[string]interface{}
-	respBytes, _ := io.ReadAll(resp.Body)
-	err = json.Unmarshal(respBytes, &statusJson)
-	if err != nil {
-		log.Printf("Error parsing rqlite GET /status: %s", err)
-		RqliteVersion = RqliteDefaultVersion
-		return
-	}
-	var ok bool
-	RqliteVersion, ok = statusJson["build"]["version"].(string)
-	if !ok {
-		log.Printf("Rqlite GET /status has no build.version field")
-		RqliteVersion = RqliteDefaultVersion
+	// Try 3 times
+	for i := 0; i < 3; i++ {
+		if getRqliteVersion() {
+			log.Printf("  [%d] %s", i, RqliteVersion)
+			break
+		}
 	}
 	log.Printf("Got Rqlite version: %s", RqliteVersion)
 }
