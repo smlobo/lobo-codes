@@ -23,6 +23,8 @@ var RqliteVersion string
 
 func InitRqlite() {
 
+	RqliteVersion = RqliteDefaultVersion
+
 	// Closure
 	getRqliteVersion := func() bool {
 		// Set the URL
@@ -33,31 +35,30 @@ func InitRqlite() {
 		resp, err := http.Get(rqliteURL + "/status")
 		if err != nil {
 			log.Printf("Error getting rqlite version: %s", err)
-			RqliteVersion = RqliteDefaultVersion
 			return false
 		}
 		defer resp.Body.Close()
 
 		if resp.StatusCode != http.StatusOK {
 			log.Printf("Unexpected status code from rqlite GET to /status endpoint: %s", resp.Status)
-			RqliteVersion = RqliteDefaultVersion
 			return false
 		}
 
 		// Parse json response
-		var statusJson map[string]map[string]interface{}
+		var statusJson map[string]interface{}
 		respBytes, _ := io.ReadAll(resp.Body)
 		err = json.Unmarshal(respBytes, &statusJson)
 		if err != nil {
 			log.Printf("Error parsing rqlite GET /status: %s", err)
-			RqliteVersion = RqliteDefaultVersion
 			return false
 		}
-		var ok bool
-		RqliteVersion, ok = statusJson["build"]["version"].(string)
+		buildJson, ok := statusJson["build"].(map[string]interface{})
 		if !ok {
-			log.Printf("Rqlite GET /status has no build.version field")
-			RqliteVersion = RqliteDefaultVersion
+			log.Printf("Rqlite GET /status has no build field that type asserts into map[string]interface{}")
+		}
+		RqliteVersion, ok = buildJson["version"].(string)
+		if !ok {
+			log.Printf("Rqlite GET /status build has no version field that type asserts into string")
 			return false
 		}
 
@@ -65,7 +66,10 @@ func InitRqlite() {
 	}
 
 	// Try 3 times
-	for i := 0; i < 3; i++ {
+	// Update: The unmarshal problem was the entire structure was not map[string]map[string]interface{}
+	// map["build"] fits this, but not all the others.
+	// But, using a closure to retry is a good idea, so leaving this with a single try.
+	for i := 0; i < 1; i++ {
 		if getRqliteVersion() {
 			log.Printf("  [%d] %s", i, RqliteVersion)
 			break
