@@ -34,6 +34,7 @@ COPY ./wasm/static wasm/static
 COPY ./wasm/wasm-rotating-cube/dist wasm/wasm-rotating-cube/dist
 COPY ./wasm/h-tree/dist wasm/h-tree/dist
 COPY ./wasm/fractal-circle/dist wasm/fractal-circle/dist
+COPY ./wasm/julia-set/dist wasm/julia-set/dist
 
 CMD ["/app/k8s-http-server"]
 
