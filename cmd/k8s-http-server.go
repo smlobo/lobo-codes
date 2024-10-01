@@ -318,6 +318,10 @@ func wasmRouter() chi.Router {
 	wasmFractalCircleFileServer := http.FileServer(http.Dir("./wasm/fractal-circle/dist"))
 	r.Handle("/fractal-circle/*", wasmFractalCircleFileServer)
 
+	// julia-set
+	wasmJuliaSetFileServer := http.FileServer(http.Dir("./wasm/julia-set/dist"))
+	r.Handle("/julia-set/*", wasmJuliaSetFileServer)
+
 	return r
 }
 
