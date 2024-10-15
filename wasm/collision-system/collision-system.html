@@ -1,7 +1,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Fractal Circle</title>
+  <title>Collision System</title>
   <style>
     canvas {
       position: absolute;
@@ -18,7 +18,7 @@
 </head>
 <body>
 <br>
-<h5>Press →/mouse click/finger tap to go forward, ← to go back.</h5>
+<h5>Press Space / Mouse Click / Finger Tap to toggle Play / Pause. → / ← to go faster / slower. ↑ / ↓ to add / remove a ball.</h5>
 <canvas id="canvas" style="border:2px solid #000000;"></canvas>
 <script type='text/javascript'>
   var Module = {
@@ -29,15 +29,13 @@
   };
   Module.onRuntimeInitialized = function()
   {
-      var w = window.innerWidth - 50;
+      var w = window.innerWidth - 100;
       var h = window.innerHeight - 100;
-      var form = document.getElementById("radio-value");
       console.log("Width: %d", w);
       console.log("Height: %d", h);
-      console.log("Radio Val: %s", form);
       Module._mainf(w, h);
   };
 </script>
-<script type="text/javascript" src="fractal-circle.js"></script>
+<script type="text/javascript" src="collision-system.js"></script>
 </body>
 </html>

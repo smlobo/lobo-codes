@@ -322,6 +322,10 @@ func wasmRouter() chi.Router {
 	wasmJuliaSetFileServer := http.FileServer(http.Dir("./wasm/julia-set/dist"))
 	r.Handle("/julia-set/*", wasmJuliaSetFileServer)
 
+	// collision-system
+	wasmCollisionSystemFileServer := http.FileServer(http.Dir("./wasm/collision-system/dist"))
+	r.Handle("/collision-system/*", wasmCollisionSystemFileServer)
+
 	return r
 }
 
