@@ -100,6 +100,9 @@ func main() {
 	// Not found template
 	internal.NotFoundTemplate = template.Must(template.ParseFiles("common/notfound.html"))
 
+	// Footer template
+	internal.FooterTemplate = template.Must(template.ParseFiles("common/footer.html"))
+
 	// Setup chi with hostrouter
 	router := chi.NewRouter()
 
@@ -174,7 +177,7 @@ func ameliaRouter() chi.Router {
 	r.Method("GET", "/", ameliaWrappedHandler)
 	r.Method("GET", "/visitors", ameliaWrappedHandler)
 	r.Method("GET", "/visitors.html", ameliaWrappedHandler)
-
+	r.Get("/footer.html", internal.FooterHandlerFunc)
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
@@ -191,7 +194,7 @@ func ryanRouter() chi.Router {
 	r.Method("GET", "/", ryanWrappedHandler)
 	r.Method("GET", "/visitors", ryanWrappedHandler)
 	r.Method("GET", "/visitors.html", ryanWrappedHandler)
-
+	r.Get("/footer.html", internal.FooterHandlerFunc)
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
@@ -211,7 +214,7 @@ func bliuRouter() chi.Router {
 	r.Method("GET", "/visitors", bliuWrappedHandler)
 	r.Method("GET", "/visitors.html", bliuWrappedHandler)
 	//r.Method("GET", "/elements.html", bliuWrappedHandler)
-
+	r.Get("/footer.html", internal.FooterHandlerFunc)
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
@@ -231,7 +234,7 @@ func sheldonRouter() chi.Router {
 	r.Method("GET", "/visitors", sheldonWrappedHandler)
 	r.Method("GET", "/graph", sheldonWrappedHandler)
 	r.Method("GET", "/resume", sheldonWrappedHandler)
-
+	r.Get("/footer.html", internal.FooterHandlerFunc)
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
@@ -248,7 +251,7 @@ func domainRouter() chi.Router {
 	r.Method("GET", "/", domainWrappedHandler)
 	r.Method("GET", "/visitors", domainWrappedHandler)
 	r.Method("GET", "/visitors.html", domainWrappedHandler)
-
+	r.Get("/footer.html", internal.FooterHandlerFunc)
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
@@ -265,7 +268,7 @@ func testVueRouter() chi.Router {
 	r.Method("GET", "/", testVueWrappedHandler)
 	r.Method("GET", "/visitors", testVueWrappedHandler)
 	r.Method("GET", "/visitors.html", testVueWrappedHandler)
-
+	r.Get("/footer.html", internal.FooterHandlerFunc)
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content
@@ -299,7 +302,7 @@ func wasmRouter() chi.Router {
 	r.Method("GET", "/", wasmWrappedHandler)
 	r.Method("GET", "/visitors", wasmWrappedHandler)
 	r.Method("GET", "/visitors.html", wasmWrappedHandler)
-
+	r.Get("/footer.html", internal.FooterHandlerFunc)
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// Other static content

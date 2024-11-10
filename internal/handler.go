@@ -177,6 +177,14 @@ func NotFoundHandlerFunc(writer http.ResponseWriter, request *http.Request) {
 	_ = NotFoundTemplate.Execute(writer, notFoundPageData)
 }
 
+var FooterTemplate *template.Template
+
+func FooterHandlerFunc(writer http.ResponseWriter, request *http.Request) {
+	footerPageData := IndexPage{}
+	getpoweredBy(&footerPageData.PoweredBy)
+	_ = FooterTemplate.Execute(writer, footerPageData)
+}
+
 func getpoweredBy(poweredByPtr *PoweredBy) {
 	poweredByPtr.PodName = os.Getenv("HOSTNAME")
 	poweredByPtr.NodeName = os.Getenv("NODE_NAME")
