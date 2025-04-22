@@ -14,8 +14,7 @@
 #include "sdl-helpers/circle.h"
 
 Ball::Ball(double x, double y, double vx, double vy, double radius, double mass) :
-    x(x), y(y), vx(vx), vy(vy), radius(radius), mass(mass), count(0) {
-}
+    x(x), y(y), vx(vx), vy(vy), radius(radius), mass(mass), count(0) {}
 
 void Ball::move(double dt) {
     x += vx * dt;
@@ -30,6 +29,13 @@ double Ball::timeToHit(const Ball *that) const {
 
     double dx = that->x - this->x;
     double dy = that->y - this->y;
+    double sigma = this->radius + that->radius;
+
+    // Already overlapping
+    if (std::abs(dx) < sigma && std::abs(dy) < sigma) {
+        return std::numeric_limits<double>::infinity();
+    }
+
     double dvx = that->vx - this->vx;
     double dvy = that->vy - this->vy;
     double dvdr = dx*dvx + dy*dvy;
@@ -40,35 +46,37 @@ double Ball::timeToHit(const Ball *that) const {
 
     double dvdv = dvx*dvx + dvy*dvy;
     double drdr = dx*dx + dy*dy;
-    double sigma = this->radius + that->radius;
     double d = (dvdr*dvdr) - dvdv * (drdr - sigma*sigma);
     if (d < 0) {
         return std::numeric_limits<double>::infinity();
     }
 
     double rv = -(dvdr + std::sqrt(d)) / dvdv;
+    // std::cout << *this << " <-> " << *that << " = " << std::fixed << std::setprecision(2) << rv << std::endl;
     assert (rv >= 0.0);
     return rv;
 }
 
 double Ball::timeToHitVertical() const {
+    // Always return a +ve time
+    double time = std::numeric_limits<double>::infinity();
     if (vx > 0.0) {
-        return (1.0 - x - radius) / vx;
+        time = (1.0 - x - radius) / vx;
     } else if (vx < 0.0) {
-        return (0.0 - (x - radius)) / vx;
-    } else {
-        return std::numeric_limits<double>::infinity();
+        time = (0.0 - (x - radius)) / vx;
     }
+    return std::abs(time);
 }
 
 double Ball::timeToHitHorizontal() const {
+    // Always return a +ve time
+    double time = std::numeric_limits<double>::infinity();
     if (vy > 0.0) {
-        return (1.0 - y - radius) / vy;
+        time = (1.0 - y - radius) / vy;
     } else if (vy < 0.0) {
-        return (0.0 - (y - radius)) / vy;
-    } else {
-        return std::numeric_limits<double>::infinity();
+        time = (0.0 - (y - radius)) / vy;
     }
+    return std::abs(time);
 }
 
 void Ball::bounceOff(Ball *that) {

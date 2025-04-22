@@ -11,6 +11,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE -O2 -sUSE_SDL=2)
 target_link_options(${PROJECT_NAME} PRIVATE -O2 -sUSE_SDL=2 -sEXPORTED_FUNCTIONS=["_mainf"])
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMENT "Symbolic link for index.html to ${PROJECT_NAME}.html"
         COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.html" "${CMAKE_BINARY_DIR}/index.html"
         DEPENDS ${PROJECT_NAME}.html
         VERBATIM ON

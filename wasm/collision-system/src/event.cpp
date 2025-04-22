@@ -14,6 +14,7 @@ Event::Event() :
 
 Event::Event(double time, Ball *a, Ball *b) :
     time(time), a(a), b(b) {
+    // std::cout << "Event: " << *a << " <-> " << *b << " t: " << std::fixed << std::setprecision(2) << time << std::endl;
     assert(time >= 0.0);
 
     if (a != nullptr) {
