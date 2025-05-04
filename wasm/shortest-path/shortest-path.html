@@ -1,0 +1,41 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Shortest Path</title>
+  <style>
+    canvas {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    h5 {
+      text-align: center;
+    }
+  </style>
+  <link rel="icon" href="../static/images/web-assembly-icon-128px.png">
+  <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<br>
+<h5>TODO Instructions</h5>
+<canvas id="canvas" style="border:2px solid #000000;"></canvas>
+<script type='text/javascript'>
+  var Module = {
+    canvas: (() => {
+      var canvas = document.getElementById('canvas');
+      return canvas;
+    })(),
+  };
+  Module.onRuntimeInitialized = function()
+  {
+      var w = window.innerWidth - 100;
+      var h = window.innerHeight - 100;
+      console.log("Width: %d", w);
+      console.log("Height: %d", h);
+      Module._mainf(w, h);
+  };
+</script>
+<script type="text/javascript" src="shortest-path.js"></script>
+</body>
+</html>
