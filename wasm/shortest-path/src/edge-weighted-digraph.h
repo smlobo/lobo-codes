@@ -10,13 +10,12 @@
 #include <vector>
 
 struct Context;
-// class Vertex;
 
 class EdgeWeightedDigraph {
-private:
+public:
     std::vector<Vertex> vertices;
     unsigned nEdges;
-public:
+
     explicit EdgeWeightedDigraph(unsigned nVertices, Context& context);
     void render(Context *ctx);
 };

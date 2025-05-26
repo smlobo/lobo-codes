@@ -10,14 +10,21 @@
 
 EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) {
 
+    nEdges = 0;
+
     // Create random vertices
-    for (int i = 0; i < nVertices; i++) {
+    for (unsigned i = 0; i < nVertices; i++) {
         vertices.emplace_back(ctx.uniformXLocation(ctx.re), ctx.uniformYLocation(ctx.re));
     }
 
     // Sort by distance from the origin
     // The shortest is the 'source', the longest is the 'destination' of the graph
     std::sort(vertices.begin(), vertices.end(), EuclideanDistanceComparator());
+
+    // Assign ids to the sorted verctor of Vertices
+    for (unsigned i = 0; i < vertices.size(); i++) {
+        vertices[i].id = i;
+    }
 
     // Draw edges from source to destination
     for (std::vector<int>::size_type i = 0; i < vertices.size() - 1; i++) {
@@ -27,6 +34,7 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) {
         from.edgesFrom.insert(edge);
         to.edgesTo.insert(edge);
         std::cout << "Created edge: " << i << " " << from << " -> " << (i + 1) << " " << to << std::endl;
+        nEdges++;
     }
 
     // Now draw additional edges to vertices at a shorter distance to the existing
@@ -41,10 +49,11 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) {
             Vertex &other = vertices[j];
             double distance = vertex.distanceTo(other);
             if (distance < minWeight) {
-                DirectedEdge *edge = new DirectedEdge(&vertex, &other);
-                vertex.edgesFrom.insert(edge);
-                other.edgesTo.insert(edge);
+                auto *newEdge = new DirectedEdge(&vertex, &other);
+                vertex.edgesFrom.insert(newEdge);
+                other.edgesTo.insert(newEdge);
                 std::cout << "Created shorter edge: " << i << " " << vertex << " -> " << j << " " << other << std::endl;
+                nEdges++;
             }
         }
     }
@@ -73,8 +82,13 @@ void EdgeWeightedDigraph::render(Context *ctx) {
     // Draw the edges
     for (auto v : vertices) {
         for (auto edge : v.edgesFrom) {
-            edge->draw(ctx);
-            std::cout << "    E: " << *edge << std::endl;
+            if (ctx->shortestPath->count(edge)) {
+                edge->draw(ctx, SDL_Color{0, 255, 0, SDL_ALPHA_OPAQUE});
+                std::cout << "    GE: " << *edge << std::endl;
+            } else {
+                edge->draw(ctx);
+                std::cout << "    E: " << *edge << std::endl;
+            }
         }
     }
 

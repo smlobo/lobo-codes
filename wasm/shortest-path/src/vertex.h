@@ -15,6 +15,7 @@ struct Context;
 
 class Vertex {
 public:
+    unsigned id;
     int x, y;
     unsigned euclideanDistance;
     std::set<DirectedEdge *, EdgeWeightComparator> edgesFrom;

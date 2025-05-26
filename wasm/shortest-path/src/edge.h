@@ -35,4 +35,9 @@ public:
     bool operator()(const DirectedEdge *e1, const DirectedEdge *e2) const;
 };
 
+class EdgeFromComparator {
+public:
+    bool operator()(const DirectedEdge *e1, const DirectedEdge *e2) const;
+};
+
 #endif //EDGE_H

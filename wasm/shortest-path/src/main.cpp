@@ -1,9 +1,10 @@
 //
-// Created by Sheldon Lobo on 04/22/25.
+// Created by Sheldon Lobo on 4/22/25.
 //
 
 #include "main.h"
 #include "edge-weighted-digraph.h"
+#include "dijkstra-shortest-path.h"
 
 #include <iostream>
 #include <emscripten/emscripten.h>
@@ -36,7 +37,17 @@ void loop_handler(void *arg)
     process_input(ctx);
 
     if (ctx->modified) {
+        // Calculate the shortest path
+        DijkstraShortestPath dsp(ctx->graph);
+        ctx->shortestPath = dsp.shortestPath(ctx->graph->vertices.size() - 1);
+        // Print to console
+        std::cout << "Shortest Path:\n";
+        for (DirectedEdge *e : *ctx->shortestPath) {
+            std::cout << "  " << *e << "\n";
+        }
         ctx->graph->render(ctx);
+        delete ctx->shortestPath;
+        ctx->shortestPath = nullptr;
         ctx->modified = false;
     }
 
@@ -71,6 +82,7 @@ int mainf(int xDim, int yDim) {
 
     EdgeWeightedDigraph edgeWeightedDigraph(NODES, ctx);
     ctx.graph = &edgeWeightedDigraph;
+    ctx.shortestPath = nullptr;
     // edgeWeightedDigraph.render(&ctx);
 
     /**

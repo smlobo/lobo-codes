@@ -1,5 +1,5 @@
 //
-// Created by Sheldon Lobo on 04/22/25.
+// Created by Sheldon Lobo on 4/22/25.
 //
 
 #ifndef MAIN_H
@@ -7,11 +7,14 @@
 
 #include <random>
 #include <SDL_render.h>
+#include <set>
 
 extern const unsigned RADIUS;
 extern const unsigned ARROW;
 
 class EdgeWeightedDigraph;
+class DirectedEdge;
+class EdgeFromComparator;
 
 struct Context {
     SDL_Renderer *renderer;
@@ -21,6 +24,7 @@ struct Context {
     unsigned sleep;
     bool modified;
     EdgeWeightedDigraph *graph;
+    std::set<DirectedEdge*, EdgeFromComparator> *shortestPath;
 
     std::mt19937 re;
     std::uniform_int_distribution<> uniformXLocation;

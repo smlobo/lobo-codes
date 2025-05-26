@@ -53,3 +53,10 @@ std::ostream& operator<<(std::ostream &strm, const DirectedEdge &e) {
 bool EdgeWeightComparator::operator()(const DirectedEdge *e1, const DirectedEdge *e2) const {
     return e1->weight < e2->weight;
 }
+
+bool EdgeFromComparator::operator()(const DirectedEdge *e1, const DirectedEdge *e2) const {
+    if (e1->from->id != e2->from->id) {
+        return e1->from->id < e2->from->id;
+    }
+    return e1->to->id < e2->to->id;
+}

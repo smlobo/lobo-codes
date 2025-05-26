@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-Vertex::Vertex(unsigned x, unsigned y) : x(x), y(y) {
+Vertex::Vertex(unsigned x, unsigned y) : id(0), x(x), y(y) {
     euclideanDistance = x*x + y*y;
 }
 
@@ -23,7 +23,8 @@ void Vertex::draw(Context *ctx, SDL_Color color) {
 }
 
 std::ostream& operator<<(std::ostream &strm, const Vertex &v) {
-    strm << "[" << v.x << "," << v.y << "; From:" << v.edgesFrom.size() << ", To:" << v.edgesTo.size() << "]";
+    strm << "{" << v.id << "} [" << v.x << "," << v.y << "; Froms:" << v.edgesFrom.size() << ", Tos:" <<
+        v.edgesTo.size() << "]";
     return strm;
 }
 

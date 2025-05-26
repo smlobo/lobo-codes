@@ -8,6 +8,7 @@ add_executable(${PROJECT_NAME}
         src/edge-weighted-digraph.cpp
         src/vertex.cpp
         src/edge.cpp
+        src/dijkstra-shortest-path.cpp
         src/sdl-helpers/circle.cpp
 )
 
