@@ -329,6 +329,10 @@ func wasmRouter() chi.Router {
 	wasmCollisionSystemFileServer := http.FileServer(http.Dir("./wasm/collision-system/dist"))
 	r.Handle("/collision-system/*", wasmCollisionSystemFileServer)
 
+	// shortest-path
+	wasmShortestPathFileServer := http.FileServer(http.Dir("./wasm/shortest-path/dist"))
+	r.Handle("/shortest-path/*", wasmShortestPathFileServer)
+
 	return r
 }
 

@@ -36,6 +36,7 @@ COPY ./wasm/h-tree/dist wasm/h-tree/dist
 COPY ./wasm/fractal-circle/dist wasm/fractal-circle/dist
 COPY ./wasm/julia-set/dist wasm/julia-set/dist
 COPY ./wasm/collision-system/dist wasm/collision-system/dist
+COPY ./wasm/shortest-path/dist wasm/shortest-path/dist
 
 CMD ["/app/k8s-http-server"]
 
