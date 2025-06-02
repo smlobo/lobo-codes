@@ -20,6 +20,23 @@ double Vertex::distanceTo(Vertex &v) {
 
 void Vertex::draw(Context *ctx, SDL_Color color) {
     DrawFilledCircle(ctx->renderer, x, y, ctx->vertexRadius, color);
+
+    // Write id in circle
+    SDL_Color black = {0, 0, 0};
+    std::string idString = std::to_string(id);
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(ctx->font, idString.c_str(), black);
+    SDL_Texture* Message = SDL_CreateTextureFromSurface(ctx->renderer, surfaceMessage);
+
+    SDL_Rect Message_rect; //create a rect
+    Message_rect.x = x - RADIUS/2;  //controls the rect's x coordinate
+    Message_rect.y = y - RADIUS/2; // controls the rect's y coordinte
+    Message_rect.w = RADIUS; // controls the width of the rect
+    Message_rect.h = RADIUS; // controls the height of the rect
+
+    SDL_RenderCopy(ctx->renderer, Message, NULL, &Message_rect);
+
+    SDL_FreeSurface(surfaceMessage);
+    SDL_DestroyTexture(Message);
 }
 
 std::ostream& operator<<(std::ostream &strm, const Vertex &v) {

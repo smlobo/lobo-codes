@@ -7,6 +7,7 @@
 
 #include <random>
 #include <SDL_render.h>
+#include <SDL_ttf.h>
 #include <set>
 
 extern const unsigned RADIUS;
@@ -18,6 +19,8 @@ class EdgeFromComparator;
 
 struct Context {
     SDL_Renderer *renderer;
+    TTF_Font *font;
+
     bool firstTime;
     unsigned xDimension, yDimension, scale;
     unsigned vertexRadius;

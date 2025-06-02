@@ -71,7 +71,7 @@ void EdgeWeightedDigraph::render(Context *ctx) {
         Vertex &v = vertices[i];
         // Color the source and destination red; the rest are blue
         if (i == 0 || i == vertices.size() - 1) {
-            v.draw(ctx, SDL_Color{255, 0, 0, SDL_ALPHA_OPAQUE});
+            v.draw(ctx, SDL_Color{255, 150, 150, SDL_ALPHA_OPAQUE});
             std::cout << "  R: {" << i << "} " << v << std::endl;
         } else {
             v.draw(ctx);
