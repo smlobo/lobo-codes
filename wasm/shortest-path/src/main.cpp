@@ -12,13 +12,20 @@
 constexpr unsigned SLEEP_DEFAULT = 100;
 constexpr unsigned SLEEP_DELTA = 5;
 constexpr unsigned NODES = 10;
-constexpr unsigned RADIUS = 20;
+constexpr unsigned RADIUS = 15;
 constexpr unsigned ARROW = 10;
 
 void process_input(Context *ctx) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_FINGERDOWN ||
+            event.type == SDL_FINGERUP) {
+            // std::cout << std::boolalpha << "Click: " << event.button.x << ", " << event.button.y << "\n";
+            ctx->mouseX = event.button.x;
+            ctx->mouseY = event.button.y;
+            ctx->modified = true;
+        }
     }
 }
 
@@ -31,14 +38,18 @@ void loop_handler(void *arg)
         SDL_RenderClear(ctx->renderer);
         SDL_RenderPresent(ctx->renderer);
     }
-    ctx->firstTime = false;
 
     process_input(ctx);
 
     if (ctx->modified) {
+        // Update the graph with user input - not the first time
+        if (!ctx->firstTime) {
+            ctx->graph->update(ctx);
+        }
+
         // Calculate the shortest path
         DijkstraShortestPath dsp(ctx->graph);
-        ctx->shortestPath = dsp.shortestPath(ctx->graph->vertices.size() - 1);
+        ctx->shortestPath = dsp.shortestPath(ctx->graph->destinationId);
         // Print to console
         std::cout << "Shortest Path:\n";
         for (DirectedEdge *e : *ctx->shortestPath) {
@@ -49,6 +60,8 @@ void loop_handler(void *arg)
         ctx->shortestPath = nullptr;
         ctx->modified = false;
     }
+
+    ctx->firstTime = false;
 
     emscripten_sleep(ctx->sleep);
 }
@@ -67,6 +80,8 @@ int mainf(int xDim, int yDim) {
     ctx.sleep = SLEEP_DEFAULT;
     ctx.vertexRadius = RADIUS;
     ctx.modified = true;
+    ctx.mouseX = 0;
+    ctx.mouseY = 0;
 
     // Location random generator
     std::random_device rd;
@@ -82,10 +97,9 @@ int mainf(int xDim, int yDim) {
     EdgeWeightedDigraph edgeWeightedDigraph(NODES, ctx);
     ctx.graph = &edgeWeightedDigraph;
     ctx.shortestPath = nullptr;
-    // edgeWeightedDigraph.render(&ctx);
 
     TTF_Init();
-    ctx.font = TTF_OpenFont("fonts/Roboto-Regular.ttf", 14);
+    ctx.font = TTF_OpenFont("fonts/SpaceMono-Regular.ttf", 25);
     if (ctx.font == nullptr) {
         std::cout << "TTF_OpenFont error: " << SDL_GetError() << std::endl;
         std::exit(1);

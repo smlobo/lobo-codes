@@ -26,6 +26,8 @@ struct Context {
     unsigned vertexRadius;
     unsigned sleep;
     bool modified;
+    unsigned mouseX, mouseY;
+
     EdgeWeightedDigraph *graph;
     std::set<DirectedEdge*, EdgeFromComparator> *shortestPath;
 

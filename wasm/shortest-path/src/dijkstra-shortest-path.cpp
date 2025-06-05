@@ -12,14 +12,14 @@ DijkstraShortestPath::DijkstraShortestPath(EdgeWeightedDigraph *g) : g(g) {
     edgeTo = std::vector<DirectedEdge*>(g->vertices.size(), nullptr);
     distTo = std::vector<double>(g->vertices.size(), std::numeric_limits<double>::infinity());
 
-    distTo[0] = 0.0;
+    distTo[g->sourceId] = 0.0;
 
-    pq.emplace(0, 0.0);
+    pq.emplace(g->sourceId, 0.0);
     while (!pq.empty()) {
         RelaxEdge rEdge = pq.top();
         pq.pop();
         unsigned toId = rEdge.v;
-        for (DirectedEdge *e : g->vertices[toId].edgesFrom)
+        for (DirectedEdge *e : g->vertices[toId].get()->edgesFrom)
             relax(e, pq);
     }
 
@@ -27,11 +27,12 @@ DijkstraShortestPath::DijkstraShortestPath(EdgeWeightedDigraph *g) : g(g) {
     for (unsigned i = 0; i < edgeTo.size(); i++) {
         std::cout << "[" << edgeTo[i]->from->id << " -> " << i << "]; " ;
     }
-    std::cout << "\nDistTo:\n";
-    std::cout << std::fixed << std::setprecision(4);
-    for (unsigned i = 0; i < distTo.size(); i++) {
-        std::cout << "    [" << i << "] " << distTo[i] << "\n" ;
-    }
+    std::cout << "\n";
+    // std::cout << "DistTo:\n";
+    // std::cout << std::fixed << std::setprecision(4);
+    // for (unsigned i = 0; i < distTo.size(); i++) {
+    //     std::cout << "    [" << i << "] " << distTo[i] << "\n" ;
+    // }
 }
 
 std::set<DirectedEdge*, EdgeFromComparator> *DijkstraShortestPath::shortestPath(unsigned d) const {

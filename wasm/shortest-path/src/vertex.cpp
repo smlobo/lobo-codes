@@ -8,13 +8,13 @@
 
 #include <iostream>
 
-Vertex::Vertex(unsigned x, unsigned y) : id(0), x(x), y(y) {
+Vertex::Vertex(unsigned x, unsigned y, unsigned id) : id(id), x(x), y(y) {
     euclideanDistance = x*x + y*y;
 }
 
-double Vertex::distanceTo(Vertex &v) {
-    int xDiff = x - v.x;
-    int yDiff = y - v.y;
+double Vertex::distanceTo(Vertex *v) const {
+    int xDiff = x - v->x;
+    int yDiff = y - v->y;
     return std::sqrt(xDiff * xDiff + yDiff * yDiff);
 }
 
@@ -28,10 +28,15 @@ void Vertex::draw(Context *ctx, SDL_Color color) {
     SDL_Texture* Message = SDL_CreateTextureFromSurface(ctx->renderer, surfaceMessage);
 
     SDL_Rect Message_rect; //create a rect
-    Message_rect.x = x - RADIUS/2;  //controls the rect's x coordinate
-    Message_rect.y = y - RADIUS/2; // controls the rect's y coordinte
-    Message_rect.w = RADIUS; // controls the width of the rect
-    Message_rect.h = RADIUS; // controls the height of the rect
+    if (id <= 9) {
+        Message_rect.x = x - RADIUS/2;
+        Message_rect.w = RADIUS;
+    } else {
+        Message_rect.x = x - RADIUS;
+        Message_rect.w = RADIUS*2;
+    }
+    Message_rect.y = y - RADIUS;
+    Message_rect.h = RADIUS*2;
 
     SDL_RenderCopy(ctx->renderer, Message, NULL, &Message_rect);
 
@@ -45,6 +50,6 @@ std::ostream& operator<<(std::ostream &strm, const Vertex &v) {
     return strm;
 }
 
-bool EuclideanDistanceComparator::operator()(const Vertex &v1, const Vertex &v2) const {
-    return v1.euclideanDistance < v2.euclideanDistance;
+bool EuclideanDistanceComparator::operator()(const std::unique_ptr<Vertex>& v1, const std::unique_ptr<Vertex>& v2) const {
+    return v1->euclideanDistance < v2->euclideanDistance;
 }

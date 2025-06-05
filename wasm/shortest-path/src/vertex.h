@@ -21,8 +21,8 @@ public:
     std::set<DirectedEdge *, EdgeWeightComparator> edgesFrom;
     std::set<DirectedEdge *, EdgeWeightComparator> edgesTo;
 
-    Vertex(unsigned x, unsigned y);
-    double distanceTo(Vertex &v);
+    Vertex(unsigned x, unsigned y, unsigned id = 0);
+    double distanceTo(Vertex *v) const;
     void draw(Context *ctx, SDL_Color color = SDL_Color{150, 150, 255, SDL_ALPHA_OPAQUE});
 
     friend std::ostream& operator<<(std::ostream &strm, const Vertex &v);
@@ -30,7 +30,7 @@ public:
 
 class EuclideanDistanceComparator {
 public:
-    bool operator()(const Vertex &v1, const Vertex &v2) const;
+    bool operator()(const std::unique_ptr<Vertex>& v1, const std::unique_ptr<Vertex>& v2) const;
 };
 
 #endif //VERTEX_H
