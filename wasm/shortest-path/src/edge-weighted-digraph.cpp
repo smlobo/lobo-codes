@@ -8,7 +8,8 @@
 #include <cassert>
 #include <iostream>
 
-EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEdges(0), sourceId(0), destinationId(0) {
+EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEdges(0), sourceId(0), destinationId(0),
+    nextId(0) {
 
     // Create random vertices
     for (unsigned i = 0; i < nVertices; i++) {
@@ -20,8 +21,8 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEd
     std::sort(vertices.begin(), vertices.end(), EuclideanDistanceComparator());
 
     // Assign ids to the sorted vector of Vertices
-    for (unsigned i = 0; i < vertices.size(); i++) {
-        vertices[i]->id = i;
+    for (auto &v : vertices) {
+        v->setId(nextId++);
     }
 
     // Set the source and destination Vertex id's
@@ -33,8 +34,8 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEd
         Vertex *from = vertices[i].get();
         Vertex *to = vertices[i+1].get();
         DirectedEdge *edge = new DirectedEdge(from, to);
-        from->edgesFrom.insert(edge);
-        to->edgesTo.insert(edge);
+        from->edgesFrom.push_back(edge);
+        to->edgesTo.push_back(edge);
         // std::cout << "Created edge: " << *from << " -> " << to << std::endl;
         nEdges++;
     }
@@ -51,9 +52,9 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEd
             Vertex *other = vertices[j].get();
             double distance = vertex->distanceTo(other);
             if (distance < minWeight) {
-                auto *newEdge = new DirectedEdge(vertex, other);
-                vertex->edgesFrom.insert(newEdge);
-                other->edgesTo.insert(newEdge);
+                DirectedEdge *newEdge = new DirectedEdge(vertex, other);
+                vertex->edgesFrom.push_back(newEdge);
+                other->edgesTo.push_back(newEdge);
                 // std::cout << "Created shorter edge: " << i << " " << *vertex << " -> " << j << " " << other << std::endl;
                 nEdges++;
             }
@@ -61,10 +62,68 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEd
     }
 }
 
+// Re-assign ids to match the index in the new vertices vector
+// Also, update the source & destination id's
+void EdgeWeightedDigraph::reassignVertexIds() {
+    for (unsigned i = 0; i < vertices.size(); i++) {
+        Vertex *vertex = vertices[i].get();
+        if (vertex->id == sourceId) {
+            sourceId = i;
+        } else if (vertex->id == destinationId) {
+            destinationId = i;
+        }
+        vertex->id = i;
+    }
+}
+
+void EdgeWeightedDigraph::removeVertex(unsigned index) {
+    // Remove edges
+    Vertex *vertex = vertices[index].get();
+
+    // Remove incoming
+    for (unsigned i = 0; i < vertex->edgesTo.size(); i++) {
+        DirectedEdge *incomingEdge = vertex->edgesTo[i];
+        std::cout << "  Removing incoming edge: " << *incomingEdge << std::endl;
+        incomingEdge->from->removeOutgoingEdge(incomingEdge);
+        delete incomingEdge;
+        nEdges--;
+    }
+    vertex->edgesTo.clear();
+    // Remove outcoming
+    for (unsigned i = 0; i < vertex->edgesFrom.size(); i++) {
+        DirectedEdge *outgoingEdge = vertex->edgesFrom[i];
+        std::cout << "  Removing outgoing edge: " << *outgoingEdge << std::endl;
+        outgoingEdge->to->removeIncomingEdge(outgoingEdge);
+        delete outgoingEdge;
+        nEdges--;
+    }
+    vertex->edgesFrom.clear();
+
+    vertices.erase(vertices.begin() + index);
+
+    reassignVertexIds();
+}
+
 void EdgeWeightedDigraph::update(Context *ctx) {
+    // Delete a vertex and all incoming/outgoing edges if mouse click on
+    // Brute force
+    // TODO: kd tree
+    for (unsigned i = 0; i < vertices.size(); i++) {
+        Vertex *vertex = vertices[i].get();
+        if (vertex->inRange(ctx->mouseX, ctx->mouseY)) {
+            if (vertex->id == sourceId || vertex->id == destinationId) {
+                std::cout << "NOT Removing source/destination vertex: " << *vertex << std::endl;
+                return;
+            }
+            std::cout << "Removing vertex: " << *vertex << std::endl;
+            removeVertex(i);
+            return;
+        }
+    }
+
     // Create a vertex
-    // TODO: Delete if vertex at same coords
-    vertices.push_back(std::make_unique<Vertex>(ctx->mouseX, ctx->mouseY, vertices.size()));
+    // At the end of the vector, but without a conflicting 'origId'
+    vertices.push_back(std::make_unique<Vertex>(ctx->mouseX, ctx->mouseY, vertices.size(), nextId++));
     Vertex *newVertex = vertices.back().get();
     std::cout << "Created vertex: " << *newVertex << std::endl;
 
@@ -96,8 +155,8 @@ void EdgeWeightedDigraph::update(Context *ctx) {
         Vertex *prior = vertices[priorCandidate.first].get();
         // std::cout << "Prior vertex: " << *prior << std::endl;
         DirectedEdge *priorEdge = new DirectedEdge(prior, newVertex);
-        prior->edgesFrom.insert(priorEdge);
-        newVertex->edgesTo.insert(priorEdge);
+        prior->edgesFrom.push_back(priorEdge);
+        newVertex->edgesTo.push_back(priorEdge);
         std::cout << "New prior edge: " << *priorEdge << std::endl;
         nEdges++;
     }
@@ -107,8 +166,8 @@ void EdgeWeightedDigraph::update(Context *ctx) {
         Vertex *subsequent = vertices[subsequentCandidate.first].get();
         // std::cout << "Subsequent vertex: " << *subsequent << std::endl;
         DirectedEdge *subsequentEdge = new DirectedEdge(newVertex, subsequent);
-        newVertex->edgesFrom.insert(subsequentEdge);
-        subsequent->edgesTo.insert(subsequentEdge);
+        newVertex->edgesFrom.push_back(subsequentEdge);
+        subsequent->edgesTo.push_back(subsequentEdge);
         std::cout << "New subsequent edge: " << *subsequentEdge << std::endl;
         nEdges++;
     }

@@ -8,22 +8,30 @@
 
 #include <iostream>
 #include <emscripten.h>
+#include <iomanip>
 
 constexpr unsigned SLEEP_DEFAULT = 100;
 constexpr unsigned SLEEP_DELTA = 5;
 constexpr unsigned NODES = 10;
 constexpr unsigned RADIUS = 15;
+constexpr int SEPARATION = RADIUS * 2;
 constexpr unsigned ARROW = 10;
 
 void process_input(Context *ctx) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_FINGERDOWN ||
-            event.type == SDL_FINGERUP) {
-            // std::cout << std::boolalpha << "Click: " << event.button.x << ", " << event.button.y << "\n";
+        if (event.type == SDL_MOUSEBUTTONDOWN) {
             ctx->mouseX = event.button.x;
             ctx->mouseY = event.button.y;
+            std::cout << std::boolalpha << "Click: " << event.button.x << ", " << event.button.y << "\n";
+            ctx->modified = true;
+        } else if (event.type == SDL_FINGERDOWN) {
+            ctx->mouseX = event.tfinger.x * ctx->xDimension;
+            ctx->mouseY = event.tfinger.y * ctx->yDimension;
+            std::cout << std::fixed << std::setprecision(4);
+            std::cout << std::boolalpha << "Touch: " << event.tfinger.x << "[" << ctx->mouseX << "], " <<
+                event.tfinger.y << "[" << ctx->mouseY << "]\n";
             ctx->modified = true;
         }
     }
@@ -75,7 +83,6 @@ int mainf(int xDim, int yDim) {
     ctx.firstTime = true;
     ctx.xDimension = xDim;
     ctx.yDimension = yDim;
-    ctx.scale = std::min(xDim, yDim);
     std::cout << "xDim: " << ctx.xDimension << "; yDim: " << ctx.yDimension << "\n";
     ctx.sleep = SLEEP_DEFAULT;
     ctx.vertexRadius = RADIUS;

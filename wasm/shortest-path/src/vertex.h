@@ -15,14 +15,18 @@ struct Context;
 
 class Vertex {
 public:
-    unsigned id;
+    unsigned id, origId;
     int x, y;
     unsigned euclideanDistance;
-    std::set<DirectedEdge *, EdgeWeightComparator> edgesFrom;
-    std::set<DirectedEdge *, EdgeWeightComparator> edgesTo;
+    std::vector<DirectedEdge *> edgesFrom;
+    std::vector<DirectedEdge *> edgesTo;
 
-    Vertex(unsigned x, unsigned y, unsigned id = 0);
+    Vertex(unsigned x, unsigned y, unsigned id = 0, unsigned oridId = 0);
+    void setId(unsigned id);
     double distanceTo(Vertex *v) const;
+    bool inRange(int x, int y) const;
+    void removeIncomingEdge(const DirectedEdge *edge);
+    void removeOutgoingEdge(const DirectedEdge *edge);
     void draw(Context *ctx, SDL_Color color = SDL_Color{150, 150, 255, SDL_ALPHA_OPAQUE});
 
     friend std::ostream& operator<<(std::ostream &strm, const Vertex &v);

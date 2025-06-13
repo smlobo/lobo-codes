@@ -11,6 +11,7 @@
 #include <set>
 
 extern const unsigned RADIUS;
+extern const int SEPARATION;
 extern const unsigned ARROW;
 
 class EdgeWeightedDigraph;
@@ -22,7 +23,7 @@ struct Context {
     TTF_Font *font;
 
     bool firstTime;
-    unsigned xDimension, yDimension, scale;
+    unsigned xDimension, yDimension;
     unsigned vertexRadius;
     unsigned sleep;
     bool modified;

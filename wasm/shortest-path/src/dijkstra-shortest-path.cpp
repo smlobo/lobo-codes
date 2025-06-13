@@ -41,7 +41,7 @@ std::set<DirectedEdge*, EdgeFromComparator> *DijkstraShortestPath::shortestPath(
 
     unsigned v = d;
     while (v != 0) {
-        std::cout << v << ", ";
+        std::cout << v << "/" << g->vertices[v]->origId << ", ";
         // Impossible
         if (edgeTo[v] == nullptr) {
             std::cout << "Impossible edge to: " << v << std::endl;

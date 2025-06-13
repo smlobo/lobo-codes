@@ -16,9 +16,12 @@ public:
     std::vector<std::unique_ptr<Vertex>> vertices;
     unsigned nEdges;
     unsigned sourceId, destinationId;
+    unsigned nextId;
 
     explicit EdgeWeightedDigraph(unsigned nVertices, Context& context);
     void update(Context *context);
+    void removeVertex(unsigned index);
+    void reassignVertexIds();
     void render(Context *ctx);
 };
 
