@@ -30,7 +30,7 @@ bool Vertex::inRange(int givenX, int givenY) const {
 
 void Vertex::removeIncomingEdge(const DirectedEdge *edge) {
     for (unsigned i = 0; i < edgesTo.size(); i++) {
-        if (edgesTo[i] == edge) {
+        if (edgesTo[i].get() == edge) {
             std::cout << "    Removing from successor: " << *edgesTo[i] << std::endl;
             edgesTo.erase(edgesTo.begin() + i);
             break;
@@ -40,7 +40,7 @@ void Vertex::removeIncomingEdge(const DirectedEdge *edge) {
 
 void Vertex::removeOutgoingEdge(const DirectedEdge *edge) {
     for (unsigned i = 0; i < edgesFrom.size(); i++) {
-        if (edgesFrom[i] == edge) {
+        if (edgesFrom[i].get() == edge) {
             std::cout << "    Removing from predecessor: " << *edgesFrom[i] << std::endl;
             edgesFrom.erase(edgesFrom.begin() + i);
             break;

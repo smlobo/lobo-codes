@@ -19,8 +19,8 @@ DijkstraShortestPath::DijkstraShortestPath(EdgeWeightedDigraph *g) : g(g) {
         RelaxEdge rEdge = pq.top();
         pq.pop();
         unsigned toId = rEdge.v;
-        for (DirectedEdge *e : g->vertices[toId].get()->edgesFrom)
-            relax(e, pq);
+        for (auto &e : g->vertices[toId].get()->edgesFrom)
+            relax(e.get(), pq);
     }
 
     std::cout << "EdgeTo: ";

@@ -33,10 +33,9 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEd
     for (std::vector<int>::size_type i = 0; i < vertices.size() - 1; i++) {
         Vertex *from = vertices[i].get();
         Vertex *to = vertices[i+1].get();
-        DirectedEdge *edge = new DirectedEdge(from, to);
-        from->edgesFrom.push_back(edge);
-        to->edgesTo.push_back(edge);
-        // std::cout << "Created edge: " << *from << " -> " << to << std::endl;
+        from->edgesFrom.emplace_back(std::make_shared<DirectedEdge>(from, to));
+        to->edgesTo.emplace_back(from->edgesFrom.back());
+        std::cout << "Created edge: " << *from->edgesFrom.back() << std::endl;
         nEdges++;
     }
 
@@ -44,18 +43,16 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEd
     for (std::vector<int>::size_type i = 0; i < vertices.size() - 1; i++) {
         Vertex *vertex = vertices[i].get();
         assert(vertex->edgesFrom.size() == 1);
-        DirectedEdge *edge = *vertex->edgesFrom.begin();
-        double minWeight = edge->weight;
+        double minWeight = (*vertex->edgesFrom.begin())->weight;
 
         // Iterate over next vertices (NOT prior to avoid cycles)
         for (std::vector<int>::size_type j = i + 2; j < vertices.size(); j++) {
             Vertex *other = vertices[j].get();
             double distance = vertex->distanceTo(other);
             if (distance < minWeight) {
-                DirectedEdge *newEdge = new DirectedEdge(vertex, other);
-                vertex->edgesFrom.push_back(newEdge);
-                other->edgesTo.push_back(newEdge);
-                // std::cout << "Created shorter edge: " << i << " " << *vertex << " -> " << j << " " << other << std::endl;
+                vertex->edgesFrom.emplace_back(std::make_shared<DirectedEdge>(vertex, other));
+                other->edgesTo.emplace_back(vertex->edgesFrom.back());
+                std::cout << "Created shorter edge: " << *vertex->edgesFrom.back() << std::endl;
                 nEdges++;
             }
         }
@@ -82,19 +79,17 @@ void EdgeWeightedDigraph::removeVertex(unsigned index) {
 
     // Remove incoming
     for (unsigned i = 0; i < vertex->edgesTo.size(); i++) {
-        DirectedEdge *incomingEdge = vertex->edgesTo[i];
+        DirectedEdge *incomingEdge = vertex->edgesTo[i].get();
         std::cout << "  Removing incoming edge: " << *incomingEdge << std::endl;
         incomingEdge->from->removeOutgoingEdge(incomingEdge);
-        delete incomingEdge;
         nEdges--;
     }
     vertex->edgesTo.clear();
     // Remove outcoming
     for (unsigned i = 0; i < vertex->edgesFrom.size(); i++) {
-        DirectedEdge *outgoingEdge = vertex->edgesFrom[i];
+        DirectedEdge *outgoingEdge = vertex->edgesFrom[i].get();
         std::cout << "  Removing outgoing edge: " << *outgoingEdge << std::endl;
         outgoingEdge->to->removeIncomingEdge(outgoingEdge);
-        delete outgoingEdge;
         nEdges--;
     }
     vertex->edgesFrom.clear();
@@ -154,10 +149,9 @@ void EdgeWeightedDigraph::update(Context *ctx) {
     if (priorCandidate.first < vertices.size()) {
         Vertex *prior = vertices[priorCandidate.first].get();
         // std::cout << "Prior vertex: " << *prior << std::endl;
-        DirectedEdge *priorEdge = new DirectedEdge(prior, newVertex);
-        prior->edgesFrom.push_back(priorEdge);
-        newVertex->edgesTo.push_back(priorEdge);
-        std::cout << "New prior edge: " << *priorEdge << std::endl;
+        prior->edgesFrom.emplace_back(std::make_shared<DirectedEdge>(prior, newVertex));
+        newVertex->edgesTo.emplace_back(prior->edgesFrom.back());
+        std::cout << "New prior edge: " << *prior->edgesFrom.back() << std::endl;
         nEdges++;
     }
 
@@ -165,10 +159,9 @@ void EdgeWeightedDigraph::update(Context *ctx) {
     if (subsequentCandidate.first < vertices.size()) {
         Vertex *subsequent = vertices[subsequentCandidate.first].get();
         // std::cout << "Subsequent vertex: " << *subsequent << std::endl;
-        DirectedEdge *subsequentEdge = new DirectedEdge(newVertex, subsequent);
-        newVertex->edgesFrom.push_back(subsequentEdge);
-        subsequent->edgesTo.push_back(subsequentEdge);
-        std::cout << "New subsequent edge: " << *subsequentEdge << std::endl;
+        newVertex->edgesFrom.emplace_back(std::make_shared<DirectedEdge>(newVertex, subsequent));
+        subsequent->edgesTo.emplace_back(newVertex->edgesFrom.back());
+        std::cout << "New subsequent edge: " << *newVertex->edgesFrom.back() << std::endl;
         nEdges++;
     }
 }
@@ -199,7 +192,7 @@ void EdgeWeightedDigraph::render(Context *ctx) {
     // Draw the edges
     for (const auto& v : vertices) {
         for (auto edge : v->edgesFrom) {
-            if (ctx->shortestPath->count(edge)) {
+            if (ctx->shortestPath->count(edge.get())) {
                 edge->draw(ctx, SDL_Color{0, 255, 0, SDL_ALPHA_OPAQUE});
                 // std::cout << "    GE: " << *edge << std::endl;
             } else {

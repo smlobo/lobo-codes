@@ -18,8 +18,8 @@ public:
     unsigned id, origId;
     int x, y;
     unsigned euclideanDistance;
-    std::vector<DirectedEdge *> edgesFrom;
-    std::vector<DirectedEdge *> edgesTo;
+    std::vector<std::shared_ptr<DirectedEdge>> edgesFrom;
+    std::vector<std::shared_ptr<DirectedEdge>> edgesTo;
 
     Vertex(unsigned x, unsigned y, unsigned id = 0, unsigned oridId = 0);
     void setId(unsigned id);
