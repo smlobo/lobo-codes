@@ -1,0 +1,4 @@
+baseURL = 'https://hikes.lobo.codes/'
+languageCode = 'en-us'
+title = 'Family Hikes'
+theme = 'hugo-theme-monochrome'

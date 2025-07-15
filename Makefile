@@ -32,7 +32,14 @@ docker:
 	${DOCKER} push localhost:32000/lobo-codes:latest
 
 test-docker:
-	${DOCKER} run --rm  -p 3000:3000 -e HOSTNAME="lobo-codes-docker1234-abcde" -e NODE_NAME="docker-node" localhost:32000/lobo-codes:latest
+	${DOCKER} run --rm -p 3000:3000 -e HOSTNAME="lobo-codes-docker1234-abcde" -e NODE_NAME="docker-node" localhost:32000/lobo-codes:latest
+
+local-docker:
+	${DOCKER} build -t lobo-codes:$(tag) -f docker/Dockerfile .
+	${DOCKER} tag lobo-codes:$(tag) lobo-codes:latest
+
+test-local-docker:
+	${DOCKER} run --rm -p 3000:3000 -e HOSTNAME="lobo-codes-docker1234-abcde" -e NODE_NAME="docker-node" lobo-codes:latest
 
 apply:
 	microk8s kubectl apply -f ./k8s/lobo-codes-deployment.yaml

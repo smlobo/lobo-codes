@@ -21,7 +21,7 @@ dist: ${TARGET} index.html
 	cp $< $@/${TARGET}
 
 wasm_exec.js:
-	cp $(GOROOT)/misc/wasm/wasm_exec.js .
+	cp $(GOROOT)/lib/wasm/wasm_exec.js .
 
 module:
 	rm -f go.mod go.sum

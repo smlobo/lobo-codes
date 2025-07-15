@@ -130,6 +130,7 @@ func main() {
 	hostRouter.Map("test-vue.lobo.codes", testVueRouter())
 	hostRouter.Map("api.lobo.codes", apiRouter())
 	hostRouter.Map("wasm.lobo.codes", wasmRouter())
+	hostRouter.Map("hikes.lobo.codes", hikesRouter())
 
 	// Testing locally
 	hostRouter.Map("amelia.lobo.codes"+port, ameliaRouter())
@@ -140,6 +141,7 @@ func main() {
 	hostRouter.Map("test-vue.lobo.codes"+port, testVueRouter())
 	hostRouter.Map("api.lobo.codes"+port, apiRouter())
 	hostRouter.Map("wasm.lobo.codes"+port, wasmRouter())
+	hostRouter.Map("hikes.lobo.codes"+port, hikesRouter())
 
 	hostRouter.Map("*", notFoundRouter())
 	router.Mount("/", hostRouter)
@@ -332,6 +334,18 @@ func wasmRouter() chi.Router {
 	// shortest-path
 	wasmShortestPathFileServer := http.FileServer(http.Dir("./wasm/shortest-path/dist"))
 	r.Handle("/shortest-path/*", wasmShortestPathFileServer)
+
+	return r
+}
+
+func hikesRouter() chi.Router {
+	r := chi.NewRouter()
+
+	r.NotFound(internal.NotFoundHandlerFunc)
+
+	// All static content
+	hikesFileServer := http.FileServer(http.Dir("./hikes"))
+	r.Handle("/*", hikesFileServer)
 
 	return r
 }

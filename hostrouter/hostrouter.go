@@ -10,6 +10,11 @@ import (
 
 type Routes map[string]chi.Router
 
+func (hr Routes) Find(rctx *chi.Context, method, path string) string {
+	//TODO implement me
+	panic("implement me")
+}
+
 var _ chi.Routes = Routes{}
 
 func New() Routes {

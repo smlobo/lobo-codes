@@ -38,5 +38,7 @@ COPY ./wasm/julia-set/dist wasm/julia-set/dist
 COPY ./wasm/collision-system/dist wasm/collision-system/dist
 COPY ./wasm/shortest-path/dist wasm/shortest-path/dist
 
+COPY ./hikes/public hikes/
+
 CMD ["/app/k8s-http-server"]
 
