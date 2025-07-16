@@ -2,11 +2,3 @@ baseURL = 'https://hikes.lobo.codes/'
 languageCode = 'en-us'
 title = 'Family Hikes'
 theme = 'hugo-theme-monochrome'
-
-[taxonomies]
-category = "categories"
-tag = "tags"
-series = "series"
-
-[outputs]
-home = ["HTML", "RSS", "JSON"]
