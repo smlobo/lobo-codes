@@ -1,7 +1,7 @@
 
 TARGET = k8s-http-server
 
-DOCKER = docker
+DOCKER = $(shell which docker)
 
 build:
 	go build -o bin/${TARGET} cmd/${TARGET}.go

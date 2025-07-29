@@ -344,7 +344,7 @@ func hikesRouter() chi.Router {
 	r.NotFound(internal.NotFoundHandlerFunc)
 
 	// All static content
-	hikesFileServer := http.FileServer(http.Dir("./hikes"))
+	hikesFileServer := http.FileServer(http.Dir("./hikes/public"))
 	r.Handle("/*", hikesFileServer)
 
 	return r

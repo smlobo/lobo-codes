@@ -9,33 +9,48 @@
 <body>
 <div class="col-lg-8 mx-auto p-3 py-md-5">
     <h1>Oops ... not found</h1>
+
+    <script>
+        function addPort(url) {
+            if (location.port != null && !url.href.includes("lobo.codes:" + location.port)) {
+                let splitHref = url.href.split("lobo.codes");
+                url.href = splitHref[0] + "lobo.codes:" + location.port + splitHref[1];
+                console.log("href with port: " + url.href);
+            }
+            return false;
+        }
+    </script>
+
     <br>
     You probably are looking for:
     <br><br>
     <ul>
-        <li><a href="//amelia.lobo.codes">amelia.lobo.codes</a></li>
+        <li><a href="//amelia.lobo.codes" onclick="addPort(this)">amelia.lobo.codes</a></li>
         <ul>
-            <li><a href="//amelia.lobo.codes/visitors">amelia.lobo.codes/visitors</a></li>
+            <li><a href="//amelia.lobo.codes/visitors" onclick="addPort(this)">amelia.lobo.codes/visitors</a></li>
         </ul>
-        <li><a href="//ryan.lobo.codes">ryan.lobo.codes</a></li>
+        <li><a href="//ryan.lobo.codes" onclick="addPort(this)">ryan.lobo.codes</a></li>
         <ul>
-            <li><a href="//ryan.lobo.codes/visitors">ryan.lobo.codes/visitors</a></li>
+            <li><a href="//ryan.lobo.codes/visitors" onclick="addPort(this)">ryan.lobo.codes/visitors</a></li>
         </ul>
-        <li><a href="//bliu.lobo.codes">bliu.lobo.codes</a></li>
+        <li><a href="//bliu.lobo.codes" onclick="addPort(this)">bliu.lobo.codes</a></li>
         <ul>
-            <li><a href="//bliu.lobo.codes/visitors">bliu.lobo.codes/visitors</a></li>
+            <li><a href="//bliu.lobo.codes/visitors" onclick="addPort(this)">bliu.lobo.codes/visitors</a></li>
         </ul>
-        <li><a href="//sheldon.lobo.codes">sheldon.lobo.codes</a></li>
+        <li><a href="//sheldon.lobo.codes" onclick="addPort(this)">sheldon.lobo.codes</a></li>
         <ul>
-            <li><a href="//sheldon.lobo.codes/resume">sheldon.lobo.codes/resume</a></li>
-            <li><a href="//sheldon.lobo.codes/visitors">sheldon.lobo.codes/visitors</a></li>
+            <li><a href="//sheldon.lobo.codes/resume" onclick="addPort(this)">sheldon.lobo.codes/resume</a></li>
+            <li><a href="//sheldon.lobo.codes/visitors" onclick="addPort(this)">sheldon.lobo.codes/visitors</a></li>
         </ul>
-        <li><a href="//wasm.lobo.codes">wasm.lobo.codes</a></li>
+        <li><a href="//hikes.lobo.codes" onclick="addPort(this)">hikes.lobo.codes</a></li>
+        <li><a href="//wasm.lobo.codes" onclick="addPort(this)">wasm.lobo.codes</a></li>
         <ul>
-            <li><a href="//wasm.lobo.codes/wasm-rotating-cube/">wasm.lobo.codes/wasm-rotating-cube</a></li>
-            <li><a href="//wasm.lobo.codes/visitors">wasm.lobo.codes/visitors</a></li>
+            <li><a href="//wasm.lobo.codes/visitors" onclick="addPort(this)">wasm.lobo.codes/visitors</a></li>
         </ul>
-        <li><a href="//test-vue.lobo.codes">test-vue.lobo.codes</a></li>
+        <li><a href="//test-vue.lobo.codes" onclick="addPort(this)">test-vue.lobo.codes</a></li>
+        <ul>
+            <li><a href="//test-vue.lobo.codes/visitors" onclick="addPort(this)">test-vue.lobo.codes/visitors</a></li>
+        </ul>
     </ul>
     <footer class="pt-5 my-5 text-muted border-top">
         <iframe src="footer.html" width="100%" height="100%"></iframe>
