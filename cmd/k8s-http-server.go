@@ -186,6 +186,9 @@ func ameliaRouter() chi.Router {
 	ameliaFileServer := http.FileServer(http.Dir("./amelia"))
 	r.Handle("/static/*", ameliaFileServer)
 
+	// HEAD requests
+	r.Head("/*", internal.HeadHandler)
+
 	return r
 }
 
@@ -202,6 +205,9 @@ func ryanRouter() chi.Router {
 	// Other static content
 	ryanFileServer := http.FileServer(http.Dir("./ryan"))
 	r.Handle("/static/*", ryanFileServer)
+
+	// HEAD requests
+	r.Head("/*", internal.HeadHandler)
 
 	return r
 }
@@ -225,6 +231,9 @@ func bliuRouter() chi.Router {
 	r.Handle("/assets/*", bliuFileServer)
 	r.Handle("/static/*", bliuFileServer)
 
+	// HEAD requests
+	r.Head("/*", internal.HeadHandler)
+
 	return r
 }
 
@@ -243,6 +252,9 @@ func sheldonRouter() chi.Router {
 	sheldonFileServer := http.FileServer(http.Dir("./sheldon"))
 	r.Handle("/static/*", sheldonFileServer)
 
+	// HEAD requests
+	r.Head("/*", internal.HeadHandler)
+
 	return r
 }
 
@@ -259,6 +271,9 @@ func domainRouter() chi.Router {
 	// Other static content
 	domainFileServer := http.FileServer(http.Dir("./domain"))
 	r.Handle("/static/*", domainFileServer)
+
+	// HEAD requests
+	r.Head("/*", internal.HeadHandler)
 
 	return r
 }
@@ -282,6 +297,9 @@ func testVueRouter() chi.Router {
 	r.Handle("/assets/*", testVueDistFileServer)
 	r.Handle("/js/*", testVueDistFileServer)
 
+	// HEAD requests
+	r.Head("/*", internal.HeadHandler)
+
 	return r
 }
 
@@ -293,6 +311,9 @@ func apiRouter() chi.Router {
 	r.Method("GET", "/graph/census/{censusSeries}", graphApiWrappedHandler)
 
 	r.NotFound(internal.ApiNotFoundHandler)
+
+	// HEAD requests
+	r.Head("/*", internal.HeadHandler)
 
 	return r
 }
@@ -334,6 +355,9 @@ func wasmRouter() chi.Router {
 	// shortest-path
 	wasmShortestPathFileServer := http.FileServer(http.Dir("./wasm/shortest-path/dist"))
 	r.Handle("/shortest-path/*", wasmShortestPathFileServer)
+
+	// HEAD requests
+	r.Head("/*", internal.HeadHandler)
 
 	return r
 }

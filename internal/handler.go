@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"sort"
+	"time"
 
 	"go.opentelemetry.io/otel"
 )
@@ -183,6 +184,12 @@ func FooterHandlerFunc(writer http.ResponseWriter, request *http.Request) {
 	footerPageData := IndexPage{}
 	getpoweredBy(&footerPageData.PoweredBy)
 	_ = FooterTemplate.Execute(writer, footerPageData)
+}
+
+func HeadHandler(writer http.ResponseWriter, request *http.Request) {
+	writer.Header().Add("Content-Length", "0")
+	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
+	writer.Header().Add("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
 }
 
 func getpoweredBy(poweredByPtr *PoweredBy) {
