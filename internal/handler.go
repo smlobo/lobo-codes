@@ -2,9 +2,12 @@ package internal
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -15,46 +18,51 @@ type HandlerInfo struct {
 }
 
 var HandlerInfoMap map[string]HandlerInfo
+var VisitorTemplate *template.Template
+var NotFoundTemplate *template.Template
+var FooterTemplate *template.Template
 
 func GetPathMap(directory string) map[string]*template.Template {
-	// Todo: iterate over all html files in directory
+	log.Printf("Templating: %s", directory)
+
 	pathMap := map[string]*template.Template{}
 
 	// Domain/sub-domain specific html templates
 	// Some are in a different path
+	searchDir := directory
 	switch directory {
 	case "test-vue":
-		pathMap["index"] = template.Must(template.ParseFiles(directory + "/dist/index.html"))
+		searchDir = directory + "/dist"
+	case "hikes":
+		searchDir = directory + "/public"
 	default:
-		pathMap["index"] = template.Must(template.ParseFiles(directory + "/index.html"))
 	}
 
-	// Common html templates
-	pathMap["visitors"] = template.Must(template.ParseFiles("common/visitors.html"))
+	// Add all html files to pathMap
+	err := filepath.WalkDir(searchDir, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() || !strings.HasSuffix(path, ".html") {
+			return nil
+		}
+		fileKey := path[len(searchDir)+len("/") : len(path)-len(".html")]
+		log.Printf("  ~ %s -> %s", path, fileKey)
+		pathMap[fileKey] = template.Must(template.ParseFiles(path))
+		return nil
+	})
+	if err != nil {
+		log.Fatalf("Error walking dir: %s, %v", searchDir, err)
+	}
 
 	return pathMap
 }
 
-func handleIndexHtml(directory string, writer http.ResponseWriter, request *http.Request) {
-	url := request.URL
-	if url.Path == "" || url.Path == "/" || url.Path == "/index.html" {
-		// Log request to the Cassandra db
-		requestInfo(request, directory)
-
-		indexPageData := IndexPage{}
-		getpoweredBy(&indexPageData.PoweredBy)
-		_ = HandlerInfoMap[directory].PathMap["index"].Execute(writer, indexPageData)
-	}
-}
-
-func handleVisitorHtml(directory string, writer http.ResponseWriter, request *http.Request) {
-	url := request.URL
-	if url.Path == "/visitors" {
-
+func VisitorsHandlerGenerator(directory string) func(writer http.ResponseWriter, request *http.Request) {
+	return func(writer http.ResponseWriter, request *http.Request) {
 		// Get Visitor page data for template processing
 		visitorPageData := VisitorsPage{}
 
-		//countryCountMap, cityCountMap := cassandraGetCountriesCities(directory, request)
 		countryCountMap, cityCountMap := rqliteGetCountriesCities(directory, request)
 
 		// HTML Template processing
@@ -87,106 +95,39 @@ func handleVisitorHtml(directory string, writer http.ResponseWriter, request *ht
 		}
 
 		getpoweredBy(&visitorPageData.PoweredBy)
-
-		tmpl := HandlerInfoMap[directory].PathMap["visitors"]
-		_ = tmpl.Execute(writer, visitorPageData)
+		_ = VisitorTemplate.Execute(writer, visitorPageData)
 	}
 }
 
-func AmeliaHandler() http.HandlerFunc {
+func GenericHandlerGenerator(subDomain string) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		directory := "amelia"
-		handleIndexHtml(directory, writer, request)
-		handleVisitorHtml(directory, writer, request)
-	}
-}
-
-func RyanHandler() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		directory := "ryan"
-		handleIndexHtml(directory, writer, request)
-		handleVisitorHtml(directory, writer, request)
-	}
-}
-
-func BliuHandler() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		directory := "bliu"
-		handleIndexHtml(directory, writer, request)
-		handleVisitorHtml(directory, writer, request)
-		url := request.URL
-		if url.Path == "/generic.html" {
-			pageData := IndexPage{}
-			//getpoweredBy(&pageData.PoweredBy)
-			_ = HandlerInfoMap[directory].PathMap["generic"].Execute(writer, pageData)
-		} else if url.Path == "/elements.html" {
-			pageData := IndexPage{}
-			//getpoweredBy(&pageData.PoweredBy)
-			_ = HandlerInfoMap[directory].PathMap["elements"].Execute(writer, pageData)
+		pathKey := strings.TrimSuffix(strings.TrimLeft(request.URL.Path, "/"), ".html")
+		if pathKey == "" {
+			pathKey = "index"
 		}
-	}
-}
+		log.Printf("handle any html: [%s] %s", subDomain, pathKey)
 
-func SheldonHandler() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		directory := "sheldon"
-		handleIndexHtml(directory, writer, request)
-		handleVisitorHtml(directory, writer, request)
-
-		url := request.URL
-		if url.Path == "/graph" {
-			pageData := IndexPage{}
-			getpoweredBy(&pageData.PoweredBy)
-			_ = HandlerInfoMap[directory].PathMap["graph"].Execute(writer, pageData)
-		} else if url.Path == "/resume" {
-			pageData := IndexPage{}
-			getpoweredBy(&pageData.PoweredBy)
-			_ = HandlerInfoMap[directory].PathMap["resume"].Execute(writer, pageData)
+		// Only log requests to index.html
+		if pathKey == "index" {
+			// Log request to the rqlite db
+			requestInfo(request, subDomain)
 		}
+
+		indexPageData := IndexPage{}
+		getpoweredBy(&indexPageData.PoweredBy)
+		_ = HandlerInfoMap[subDomain].PathMap[pathKey].Execute(writer, indexPageData)
 	}
 }
 
-func DomainHandler() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		directory := "domain"
-		handleIndexHtml(directory, writer, request)
-		handleVisitorHtml(directory, writer, request)
+func CommonHandlerGenerator(template *template.Template) http.HandlerFunc {
+	return func(writer http.ResponseWriter, _ *http.Request) {
+		poweredByData := IndexPage{}
+		getpoweredBy(&poweredByData.PoweredBy)
+		_ = template.Execute(writer, poweredByData)
 	}
 }
 
-func TestVueHandler() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		directory := "test-vue"
-		handleIndexHtml(directory, writer, request)
-		handleVisitorHtml(directory, writer, request)
-	}
-}
-
-func WasmHandler() http.HandlerFunc {
-	return func(writer http.ResponseWriter, request *http.Request) {
-		directory := "wasm"
-		handleIndexHtml(directory, writer, request)
-		handleVisitorHtml(directory, writer, request)
-	}
-}
-
-var NotFoundTemplate *template.Template
-
-func NotFoundHandlerFunc(writer http.ResponseWriter, request *http.Request) {
-	notFoundPageData := IndexPage{}
-	getpoweredBy(&notFoundPageData.PoweredBy)
-	_ = NotFoundTemplate.Execute(writer, notFoundPageData)
-}
-
-var FooterTemplate *template.Template
-
-func FooterHandlerFunc(writer http.ResponseWriter, request *http.Request) {
-	footerPageData := IndexPage{}
-	getpoweredBy(&footerPageData.PoweredBy)
-	_ = FooterTemplate.Execute(writer, footerPageData)
-}
-
-func HeadHandler(writer http.ResponseWriter, request *http.Request) {
+func HeadHandler(writer http.ResponseWriter, _ *http.Request) {
 	writer.Header().Add("Content-Length", "0")
 	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
 	writer.Header().Add("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
