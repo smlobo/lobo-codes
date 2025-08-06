@@ -86,6 +86,7 @@ func main() {
 	internal.VisitorTemplate = template.Must(template.ParseFiles("common/visitors.html"))
 	internal.NotFoundTemplate = template.Must(template.ParseFiles("common/notfound.html"))
 	internal.FooterTemplate = template.Must(template.ParseFiles("common/footer.html"))
+	internal.HikesNotFoundTemplate = template.Must(template.ParseFiles("hikes/public/404.html"))
 
 	// Setup OpenTelemetry tracer
 	tp := internal.InitTracerProvider("lobo-codes")

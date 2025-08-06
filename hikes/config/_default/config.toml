@@ -2,3 +2,11 @@ baseURL = 'http://hikes.lobo.codes:3000/'
 languageCode = 'en-us'
 title = 'Family Hikes'
 theme = 'hugo-theme-monochrome'
+
+[server]
+[[server.redirects]]
+force = false
+from = '/**'
+fromRe = ''
+status = 404
+to = '/404.html'

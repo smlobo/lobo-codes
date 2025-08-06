@@ -1,12 +1,14 @@
 package internal
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -21,6 +23,7 @@ var HandlerInfoMap map[string]HandlerInfo
 var VisitorTemplate *template.Template
 var NotFoundTemplate *template.Template
 var FooterTemplate *template.Template
+var HikesNotFoundTemplate *template.Template
 
 func GetPathMap(directory string) map[string]*template.Template {
 	log.Printf("Templating: %s", directory)
@@ -58,12 +61,12 @@ func GetPathMap(directory string) map[string]*template.Template {
 	return pathMap
 }
 
-func VisitorsHandlerGenerator(directory string) func(writer http.ResponseWriter, request *http.Request) {
+func VisitorsHandlerGenerator(dbTable string) func(writer http.ResponseWriter, request *http.Request) {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		// Get Visitor page data for template processing
 		visitorPageData := VisitorsPage{}
 
-		countryCountMap, cityCountMap := rqliteGetCountriesCities(directory, request)
+		countryCountMap, cityCountMap := rqliteGetCountriesCities(dbTable, request)
 
 		// HTML Template processing
 		_, span := otel.Tracer("k8s-http-server").Start(request.Context(), "template-process")
@@ -102,8 +105,8 @@ func VisitorsHandlerGenerator(directory string) func(writer http.ResponseWriter,
 func GenericHandlerGenerator(subDomain string) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		pathKey := strings.TrimSuffix(strings.TrimLeft(request.URL.Path, "/"), ".html")
-		if pathKey == "" {
-			pathKey = "index"
+		if pathKey == "" || pathKey[len(pathKey)-1] == '/' {
+			pathKey += "index"
 		}
 		log.Printf("handle any html: [%s] %s", subDomain, pathKey)
 
@@ -127,9 +130,59 @@ func CommonHandlerGenerator(template *template.Template) http.HandlerFunc {
 	}
 }
 
+func CommonNotFoundHandler(writer http.ResponseWriter, request *http.Request) {
+	poweredByData := IndexPage{}
+	getpoweredBy(&poweredByData.PoweredBy)
+	_ = NotFoundTemplate.Execute(writer, poweredByData)
+
+}
+
+func CommonNotAllowedHandler(writer http.ResponseWriter, request *http.Request) {
+	if request.Method == "GET" {
+		CommonNotFoundHandler(writer, request)
+		return
+	}
+
+	writer.WriteHeader(http.StatusMethodNotAllowed)
+
+	responseString := fmt.Sprintf("Method Not Allowed: %s\n", request.Method)
+
+	// Headers
+	writer.Header().Add("Content-Length", strconv.Itoa(len(responseString)))
+	writer.Header().Set("Content-Type", "text/plain")
+	writer.Header().Add("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
+
+	_, _ = writer.Write([]byte(responseString))
+}
+
+func HikesNotFoundHandler(writer http.ResponseWriter, request *http.Request) {
+	poweredByData := IndexPage{}
+	getpoweredBy(&poweredByData.PoweredBy)
+	_ = HikesNotFoundTemplate.Execute(writer, poweredByData)
+
+}
+
+func HikesNotAllowedHandler(writer http.ResponseWriter, request *http.Request) {
+	if request.Method == "GET" {
+		HikesNotFoundHandler(writer, request)
+		return
+	}
+
+	writer.WriteHeader(http.StatusMethodNotAllowed)
+
+	responseString := fmt.Sprintf("Method Not Allowed: %s\n", request.Method)
+
+	// Headers
+	writer.Header().Add("Content-Length", strconv.Itoa(len(responseString)))
+	writer.Header().Set("Content-Type", "text/plain")
+	writer.Header().Add("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
+
+	_, _ = writer.Write([]byte(responseString))
+}
+
 func HeadHandler(writer http.ResponseWriter, _ *http.Request) {
 	writer.Header().Add("Content-Length", "0")
-	writer.Header().Add("Content-Type", "text/html; charset=utf-8")
+	writer.Header().Add("Content-Type", "text/plain")
 	writer.Header().Add("Last-Modified", time.Now().UTC().Format(http.TimeFormat))
 }
 
