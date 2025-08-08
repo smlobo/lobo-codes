@@ -6,7 +6,7 @@ build:
 
 module:
 	go mod tidy
-	cp "${GOROOT}/lib/wasm/wasm_exec.js" .
+	cp "$(shell go env GOROOT)/lib/wasm/wasm_exec.js" .
 
 install: ${TARGET}.html ${TARGET}.wasm wasm_exec.js
 	mkdir -p dist/${TARGET}
