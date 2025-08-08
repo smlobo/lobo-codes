@@ -108,7 +108,7 @@ func GenericHandlerGenerator(subDomain string) http.HandlerFunc {
 		if pathKey == "" || pathKey[len(pathKey)-1] == '/' {
 			pathKey += "index"
 		}
-		log.Printf("handle any html: [%s] %s", subDomain, pathKey)
+		//log.Printf("handle any html: [%s] %s", subDomain, pathKey)
 
 		// Only log requests to index.html
 		if pathKey == "index" {
