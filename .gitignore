@@ -17,3 +17,6 @@ node_modules
 CMakeUserPresets.json
 build*
 
+# Wasm
+*.wasm
+
