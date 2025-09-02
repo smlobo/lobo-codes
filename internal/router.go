@@ -136,6 +136,10 @@ func WasmRouter() chi.Router {
 	wasmKochSnowflakeFileServer := http.FileServer(http.Dir("./wasm/koch-snowflake/dist"))
 	r.Handle("/koch-snowflake/*", wasmKochSnowflakeFileServer)
 
+	// koch-snowflake
+	wasmKdTreeFileServer := http.FileServer(http.Dir("./wasm/kd-tree/dist"))
+	r.Handle("/kd-tree/*", wasmKdTreeFileServer)
+
 	// HEAD requests
 	r.Head("/*", HeadHandler)
 

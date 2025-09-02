@@ -38,6 +38,7 @@ COPY ./wasm/julia-set/dist wasm/julia-set/dist
 COPY ./wasm/collision-system/dist wasm/collision-system/dist
 COPY ./wasm/shortest-path/dist wasm/shortest-path/dist
 COPY ./wasm/koch-snowflake/dist wasm/koch-snowflake/dist
+COPY ./wasm/kd-tree/dist wasm/kd-tree/dist
 
 COPY ./hikes/public hikes/public
 
