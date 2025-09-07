@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"image/color"
+	"math"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
@@ -12,10 +13,11 @@ import (
 
 type MouseTracker struct {
 	widget.BaseWidget
-	label        *widget.Label
-	pointTree    *KdTree
-	container    *fyne.Container
-	previousLine *canvas.Line
+	label            *widget.Label
+	pointTree        *KdTree
+	container        *fyne.Container
+	previousNearest  *canvas.Line
+	previousFarthest *canvas.Line
 }
 
 func NewMouseTracker(label *widget.Label, container *fyne.Container) *MouseTracker {
@@ -33,25 +35,51 @@ func (m *MouseTracker) SetPointTree(t *KdTree) {
 
 // Implement desktop.Mouseable to get mouse move events
 func (m *MouseTracker) MouseMoved(ev *desktop.MouseEvent) {
-	m.label.SetText(fmt.Sprintf("Mouse at: %.0f, %.0f", ev.Position.X, ev.Position.Y))
+	var nearestTxt, farthestTxt string
 
 	// Search for the nearest Point
 	nearest := m.pointTree.Nearest(&Point{ev.Position.X, ev.Position.Y})
 
 	// Draw a line to the nearest point
-	if nearest == nil {
-		return
+	if nearest != nil {
+		m.container.Remove(m.previousNearest)
+
+		m.previousNearest = &canvas.Line{
+			Position1:   fyne.Position{ev.Position.X, ev.Position.Y},
+			Position2:   fyne.Position{nearest.x, nearest.y},
+			StrokeColor: color.RGBA{R: 0x2b, G: 0xbb, B: 0x21, A: 0xFF},
+			StrokeWidth: 2,
+		}
+		m.container.Add(m.previousNearest)
+
+		dx := ev.Position.X - nearest.x
+		dy := ev.Position.Y - nearest.y
+		nearestDistance := math.Sqrt(float64(dx*dx + dy*dy))
+		nearestTxt = fmt.Sprintf("Nearest: %.2f\n", nearestDistance)
 	}
 
-	m.container.Remove(m.previousLine)
+	// Search for the farthest Point
+	farthest := m.pointTree.Farthest(&Point{ev.Position.X, ev.Position.Y})
 
-	m.previousLine = &canvas.Line{
-		Position1:   fyne.Position{ev.Position.X, ev.Position.Y},
-		Position2:   fyne.Position{nearest.x, nearest.y},
-		StrokeColor: color.RGBA{R: 0x2b, G: 0xbb, B: 0x21, A: 0xFF},
-		StrokeWidth: 2,
+	// Draw a line to the farthest point
+	if farthest != nil {
+		m.container.Remove(m.previousFarthest)
+
+		m.previousFarthest = &canvas.Line{
+			Position1:   fyne.Position{ev.Position.X, ev.Position.Y},
+			Position2:   fyne.Position{farthest.x, farthest.y},
+			StrokeColor: color.RGBA{R: 0xbb, G: 0x2b, B: 0x21, A: 0xFF},
+			StrokeWidth: 2,
+		}
+		m.container.Add(m.previousFarthest)
+
+		dx := ev.Position.X - farthest.x
+		dy := ev.Position.Y - farthest.y
+		farthestDistance := math.Sqrt(float64(dx*dx + dy*dy))
+		farthestTxt = fmt.Sprintf("Farthest: %.2f", farthestDistance)
 	}
-	m.container.Add(m.previousLine)
+
+	m.label.SetText(nearestTxt + farthestTxt)
 }
 
 func (m *MouseTracker) MouseIn(ev *desktop.MouseEvent) {

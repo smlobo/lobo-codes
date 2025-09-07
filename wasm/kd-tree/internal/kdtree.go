@@ -92,7 +92,7 @@ func (t *KdTree) nearest(n *kdNode, p *Point, currentNearest *distancePair, r *R
 	}
 
 	// Rectangle further than shortest distance, ignore Node and subtree
-	if currentNearest.distance < r.distanceSquaredTo(p) {
+	if currentNearest.distance < r.distanceSquaredNearest(p) {
 		return
 	}
 
@@ -124,11 +124,68 @@ func (t *KdTree) nearest(n *kdNode, p *Point, currentNearest *distancePair, r *R
 		}
 	}
 
-	if lesserRectangle.distanceSquaredTo(p) < r.distanceSquaredTo(p) {
-		t.nearest(n.left, p, currentNearest, &lesserRectangle, !xcoord)
-		t.nearest(n.right, p, currentNearest, &greaterRectangle, !xcoord)
-	} else {
-		t.nearest(n.right, p, currentNearest, &greaterRectangle, !xcoord)
-		t.nearest(n.left, p, currentNearest, &lesserRectangle, !xcoord)
+	t.nearest(n.left, p, currentNearest, &lesserRectangle, !xcoord)
+	t.nearest(n.right, p, currentNearest, &greaterRectangle, !xcoord)
+}
+
+func (t *KdTree) Farthest(p *Point) *Point {
+	if p == nil {
+		return nil
 	}
+
+	currentFarthest := distancePair{
+		t.root.point,
+		t.root.point.distanceSquaredTo(p),
+	}
+	currentRectangle := Rectangle{
+		Point{0.0, 0.0},
+		Point{float32(WindowWidth), float32(WindowHeight)},
+	}
+
+	t.farthest(t.root, p, &currentFarthest, &currentRectangle, true)
+
+	return currentFarthest.point
+}
+
+func (t *KdTree) farthest(n *kdNode, p *Point, currentFarthest *distancePair, r *Rectangle, xcoord bool) {
+	// Kd-Tree leaf
+	if n == nil {
+		return
+	}
+
+	// Rectangle closer than longest distance, ignore Node and subtree
+	if currentFarthest.distance > r.distanceSquaredFarthest(p) {
+		return
+	}
+
+	// Check current Node distance
+	currentDistance := n.point.distanceSquaredTo(p)
+	if currentDistance > currentFarthest.distance {
+		currentFarthest.distance = currentDistance
+		currentFarthest.point = n.point
+	}
+
+	var lesserRectangle, greaterRectangle Rectangle
+	if xcoord {
+		lesserRectangle = Rectangle{
+			r.topLeft,
+			Point{n.point.x, r.bottomRight.y},
+		}
+		greaterRectangle = Rectangle{
+			Point{n.point.x, r.topLeft.y},
+			r.bottomRight,
+		}
+	} else {
+		lesserRectangle = Rectangle{
+			r.topLeft,
+			Point{r.bottomRight.x, n.point.y},
+		}
+		greaterRectangle = Rectangle{
+			Point{r.topLeft.x, n.point.y},
+			r.bottomRight,
+		}
+	}
+
+	t.farthest(n.left, p, currentFarthest, &lesserRectangle, !xcoord)
+	t.farthest(n.right, p, currentFarthest, &greaterRectangle, !xcoord)
 }
