@@ -7,7 +7,7 @@ title = 'Deception Pass State Park'
 ## Rosario Head Trail
 
 * 1.3 mi
-* 200" elevation gain
+* 200' elevation gain
 * 30 mins
 
 ### Bowman Bay & Lottie Point

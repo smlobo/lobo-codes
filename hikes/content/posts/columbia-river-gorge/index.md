@@ -7,7 +7,7 @@ title = 'Columbia River Gorge'
 ## Multnomah and Wahkeena Falls Loop
 
 * 5 mi
-* 1600" elevation gain
+* 1600' elevation gain
 * 3 hours
 
 ### From the base of the Multnomah Falls

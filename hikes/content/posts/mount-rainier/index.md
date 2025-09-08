@@ -7,7 +7,7 @@ title = 'Mount Rainier'
 ## Skyline Loop
 
 * 5.6 mi
-* 1800" elevation gain
+* 1800' elevation gain
 * 4 hours
 
 ### Panorama Point with Mount Adams & Mount St. Helens

@@ -9,7 +9,7 @@ title = 'North Cascades'
 ## Maple Pass Trail
 
 * 6.5 mi
-* 2200" elevation gain
+* 2200' elevation gain
 * 4 hours
 
 ### Above Lake Ann

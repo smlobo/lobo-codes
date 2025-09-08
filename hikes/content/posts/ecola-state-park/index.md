@@ -7,7 +7,7 @@ title = 'Ecola State Park'
 ## Indian Beach Trail
 
 * 4 mi
-* 850" elevation gain
+* 850' elevation gain
 * 2 hours
 
 ### View of Sea Lion Rock
