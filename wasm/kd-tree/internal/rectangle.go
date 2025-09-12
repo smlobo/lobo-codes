@@ -23,14 +23,14 @@ func (r *Rectangle) distanceSquaredNearest(p *Point) float32 {
 	} else {
 		dxLeft := math.Abs(float64(p.x - r.topLeft.x))
 		dxRight := math.Abs(float64(p.x - r.bottomRight.x))
-		dx = float32(math.Max(dxLeft, dxRight))
+		dx = float32(math.Min(dxLeft, dxRight))
 	}
 	if p.y >= r.topLeft.y && p.y <= r.bottomRight.y {
 		dx = 0.0
 	} else {
 		dyLeft := math.Abs(float64(p.y - r.topLeft.y))
 		dyRight := math.Abs(float64(p.y - r.bottomRight.y))
-		dy = float32(math.Max(dyLeft, dyRight))
+		dy = float32(math.Min(dyLeft, dyRight))
 	}
 
 	return dx*dx + dy*dy

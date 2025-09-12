@@ -20,11 +20,13 @@ func main() {
 
 	fContainer := container.NewWithoutLayout()
 
-	label := widget.NewLabel("Move the mouse inside the window")
-	tracker := internal.NewMouseTracker(label, fContainer)
+	mouseLabel := widget.NewLabel("Move the mouse inside the window")
+	mouseTracker := internal.NewMouseTracker(mouseLabel, fContainer)
+	touchLabel := widget.NewLabel("Touch inside the window")
+	touchTracker := internal.NewTouchTracker(touchLabel)
 
-	// Put the tracker behind everything and expand to fill
-	content := container.NewMax(tracker, fContainer, container.NewVBox(label))
+	// Put the mouseTracker & touchTracker behind everything and expand to fill
+	content := container.NewMax(mouseTracker, touchTracker, fContainer, container.NewVBox(mouseLabel, touchLabel))
 	w.SetContent(content)
 
 	internal.WindowWidth = int64(js.Global().Get("innerWidth").Int())
@@ -38,8 +40,9 @@ func main() {
 	internal.DrawPoints(fContainer, pointSet)
 
 	kdTree := internal.KdTree{}
-	tracker.SetPointTree(&kdTree)
+	mouseTracker.SetPointTree(&kdTree)
 	kdTree.Populate(pointSet)
+	kdTree.Draw(fContainer)
 
 	w.ShowAndRun()
 }

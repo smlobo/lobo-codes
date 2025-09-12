@@ -47,7 +47,7 @@ func (m *MouseTracker) MouseMoved(ev *desktop.MouseEvent) {
 		m.previousNearest = &canvas.Line{
 			Position1:   fyne.Position{ev.Position.X, ev.Position.Y},
 			Position2:   fyne.Position{nearest.x, nearest.y},
-			StrokeColor: color.RGBA{R: 0x2b, G: 0xbb, B: 0x21, A: 0xFF},
+			StrokeColor: color.RGBA{R: 0x2b, G: 0xbb, B: 0x21, A: 0xff},
 			StrokeWidth: 2,
 		}
 		m.container.Add(m.previousNearest)
@@ -68,7 +68,7 @@ func (m *MouseTracker) MouseMoved(ev *desktop.MouseEvent) {
 		m.previousFarthest = &canvas.Line{
 			Position1:   fyne.Position{ev.Position.X, ev.Position.Y},
 			Position2:   fyne.Position{farthest.x, farthest.y},
-			StrokeColor: color.RGBA{R: 0xbb, G: 0x2b, B: 0x21, A: 0xFF},
+			StrokeColor: color.RGBA{R: 0xbb, G: 0x2b, B: 0x21, A: 0xff},
 			StrokeWidth: 2,
 		}
 		m.container.Add(m.previousFarthest)
@@ -94,7 +94,5 @@ func (m *MouseTracker) MouseOut() {
 // Needed to render something visible
 func (m *MouseTracker) CreateRenderer() fyne.WidgetRenderer {
 	//rect := canvas.NewRectangle(color.NRGBA{R: 200, G: 200, B: 255, A: 255})
-	rect := canvas.NewRectangle(color.RGBA{R: 251, G: 233, B: 183, A: 255})
-	rect.SetMinSize(fyne.NewSize(300, 300))
-	return widget.NewSimpleRenderer(rect)
+	return renderer()
 }

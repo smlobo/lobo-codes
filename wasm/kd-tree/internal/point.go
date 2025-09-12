@@ -47,7 +47,9 @@ func GenerateRandomPoints() map[int64]Point {
 
 	// Generate 20 random points
 	for len(pointSet) < 20 {
-		point := Point{float32(rand.Int64N(WindowWidth)), float32(rand.Int64N(WindowHeight))}
+		x := rand.Int64N(WindowWidth-margin) + margin/2
+		y := rand.Int64N(WindowHeight-margin) + margin/2
+		point := Point{float32(x), float32(y)}
 		if _, ok := pointSet[point.Key()]; !ok {
 			fmt.Printf("[%d] New %v\n", len(pointSet), point)
 			pointSet[point.Key()] = point
