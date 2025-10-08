@@ -115,7 +115,8 @@ func main() {
 	port := ":" + internal.Config["HTTP_PORT"]
 	sslPort := ":" + internal.Config["HTTPS_PORT"]
 
-	hostRouter.Map("amelia.lobo.codes", internal.GenericRouter("amelia"))
+	//hostRouter.Map("amelia.lobo.codes", internal.GenericRouter("amelia"))
+	hostRouter.Map("amelia.lobo.codes", internal.NotFoundRouter())
 	hostRouter.Map("ryan.lobo.codes", internal.GenericRouter("ryan"))
 	hostRouter.Map("bliu.lobo.codes", internal.GenericRouter("bliu"))
 	hostRouter.Map("sheldon.lobo.codes", internal.GenericRouter("sheldon"))
@@ -126,7 +127,8 @@ func main() {
 	hostRouter.Map("hikes.lobo.codes", internal.HikesRouter())
 
 	// Testing locally
-	hostRouter.Map("amelia.lobo.codes"+port, internal.GenericRouter("amelia"))
+	//hostRouter.Map("amelia.lobo.codes"+port, internal.GenericRouter("amelia"))
+	hostRouter.Map("amelia.lobo.codes"+port, internal.NotFoundRouter())
 	hostRouter.Map("ryan.lobo.codes"+port, internal.GenericRouter("ryan"))
 	hostRouter.Map("bliu.lobo.codes"+port, internal.GenericRouter("bliu"))
 	hostRouter.Map("sheldon.lobo.codes"+port, internal.GenericRouter("sheldon"))

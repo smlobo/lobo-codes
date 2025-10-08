@@ -206,6 +206,9 @@ func NotFoundRouter() chi.Router {
 
 	r.NotFound(CommonNotFoundHandler)
 
+	// Footer frame
+	r.Get("/footer.html", CommonHandlerGenerator(FooterTemplate))
+
 	// Other static content
 	notFoundFileServer := http.FileServer(http.Dir("./common"))
 	r.Handle("/static/*", notFoundFileServer)
