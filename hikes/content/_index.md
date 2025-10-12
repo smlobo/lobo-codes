@@ -1,2 +1,2 @@
 
-![RossLake.jpg](RossLake.jpg "At the Ross Lake overlook")
+![RossLake.jpg](/images/RossLake.jpg "At the Ross Lake overlook")
