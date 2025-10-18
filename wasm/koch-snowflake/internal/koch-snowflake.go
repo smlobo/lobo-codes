@@ -22,7 +22,7 @@ func randomColor() color.Color {
 	return hColor
 }
 
-func KockSnowflake(c *fyne.Container, depth int, position1, position2 fyne.Position) {
+func kockSnowflake(c *fyne.Container, depth int, position1, position2 fyne.Position) {
 	// Draw when we get to the innermost recursion
 	if depth == 0 {
 		sColor := randomColor()
@@ -77,10 +77,10 @@ func KockSnowflake(c *fyne.Container, depth int, position1, position2 fyne.Posit
 	tipPosition := fyne.Position{tipX, tipY}
 
 	// Draw 2 lines on this line - both ends
-	KockSnowflake(c, depth-1, position1, oneThirdPosition)
-	KockSnowflake(c, depth-1, twoThirdPosition, position2)
+	kockSnowflake(c, depth-1, position1, oneThirdPosition)
+	kockSnowflake(c, depth-1, twoThirdPosition, position2)
 
 	// Draw the angled lines
-	KockSnowflake(c, depth-1, oneThirdPosition, tipPosition)
-	KockSnowflake(c, depth-1, tipPosition, twoThirdPosition)
+	kockSnowflake(c, depth-1, oneThirdPosition, tipPosition)
+	kockSnowflake(c, depth-1, tipPosition, twoThirdPosition)
 }

@@ -4,12 +4,12 @@ package main
 
 import (
 	"fmt"
+	"fyne.io/fyne/v2/theme"
 	"kd-tree/internal"
 	"syscall/js"
 
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -26,7 +26,7 @@ func main() {
 	touchTracker := internal.NewTouchTracker(touchLabel)
 
 	// Put the mouseTracker & touchTracker behind everything and expand to fill
-	content := container.NewMax(mouseTracker, touchTracker, fContainer, container.NewVBox(mouseLabel, touchLabel))
+	content := container.NewStack(mouseTracker, touchTracker, fContainer, container.NewVBox(mouseLabel, touchLabel))
 	w.SetContent(content)
 
 	internal.WindowWidth = int64(js.Global().Get("innerWidth").Int())
