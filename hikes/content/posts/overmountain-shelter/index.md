@@ -2,6 +2,7 @@
 date = '2023-06-11T00:00:00-04:00'
 draft = false
 title = 'Overmountain Shelter'
+coords = [36.123947, -82.053872]
 +++
 
 ## Carver's Gap to Yellow Mountain Gap

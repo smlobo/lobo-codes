@@ -3,3 +3,13 @@
   name = "Posts"
   url = "/posts/"
   weight = 8
+[[navbar]]
+  identifier = "map"
+  name = "Map"
+  url = "/map/"
+  weight = 8
+#[[navbar]]
+#  identifier = "map2"
+#  name = "Map2"
+#  url = "/map-noframe"
+#  weight = 8

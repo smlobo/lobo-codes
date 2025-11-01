@@ -1,0 +1,14 @@
+[
+  { "name": "Columbia River Gorge", "coords": [-122.1161, 45.5769] },
+  { "name": "Deception Pass State Park", "coords": [-122.6634, 48.4165] },
+  { "name": "Ecola State Park", "coords": [-123.9729, 45.9198] },
+  { "name": "Grand Prismatic Spring", "coords": [-110.8398, 44.5235] },
+  { "name": "Grassy Ridge Bald", "coords": [-82.0935, 36.1059] },
+  { "name": "Lake Solitude", "coords": [-110.8415, 43.7924] },
+  { "name": "Lamar Valley", "coords": [-110.1466, 44.8320] },
+  { "name": "Mount Hood", "coords": [-121.7475, 45.3431] },
+  { "name": "Mount Rainier", "coords": [-121.7297, 46.8036] },
+  { "name": "North Cascades", "coords": [-120.7627, 48.5088] },
+  { "name": "Overmountain Shelter", "coords": [-82.0539, 36.1239] },
+  { "name": "Lower Yellowstone Falls", "coords": [-110.4963, 44.7182] }
+]

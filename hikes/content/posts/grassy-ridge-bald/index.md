@@ -2,6 +2,7 @@
 date = '2025-09-05T00:00:00-04:00'
 draft = false
 title = 'Grassy Ridge Bald'
+coords = [36.105858, -82.093475]
 +++
 
 ## Grassy Ridge Bald via the AT

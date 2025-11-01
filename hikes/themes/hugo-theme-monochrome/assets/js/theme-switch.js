@@ -5,10 +5,18 @@ window.addEventListener("DOMContentLoaded", function () {
     dark_mode_btn.addEventListener('click', function () {
         document.documentElement.setAttribute("data-theme", "dark");
         localStorage.theme = 'dark';
+        const mapElement = document.getElementById("mapFrame");
+        if (mapElement) {
+            mapElement.contentWindow.postMessage("theme-dark", "*");
+        }
     });
 
     light_mode_btn.addEventListener('click', function () {
         document.documentElement.setAttribute("data-theme", "light");
         localStorage.theme = 'light';
+        const mapElement = document.getElementById("mapFrame");
+        if (mapElement) {
+            mapElement.contentWindow.postMessage("theme-light", "*");
+        }
     });
 });

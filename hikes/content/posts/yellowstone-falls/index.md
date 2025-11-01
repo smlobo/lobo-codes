@@ -2,6 +2,7 @@
 date = '2023-08-15T17:00:00-04:00'
 draft = false
 title = 'Lower Yellowstone Falls'
+coords = [44.718170, -110.496300]
 +++
 
 ## Yellowstone Canyon North Rim Trail

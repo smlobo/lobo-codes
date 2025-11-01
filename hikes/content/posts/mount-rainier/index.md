@@ -2,6 +2,7 @@
 date = '2025-07-04T00:00:00-04:00'
 draft = false
 title = 'Mount Rainier'
+coords = [46.803600, -121.729700]
 +++
 
 ## Skyline Loop

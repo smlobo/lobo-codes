@@ -2,6 +2,7 @@
 date = '2025-07-05T00:00:00-04:00'
 draft = false
 title = 'North Cascades'
+coords = [48.508808, -120.762712]
 +++
 
 # North Cascades National Park

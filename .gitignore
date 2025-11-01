@@ -21,3 +21,7 @@ build*
 *.wasm
 wasm_exec.js
 
+# Personal ssl certificates + IP2Location db
+IP2LOCATION-LITE-DB11.IPV6.BIN
+ssl-certificates/
+

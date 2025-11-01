@@ -2,6 +2,7 @@
 date = '2025-07-01T00:00:00-04:00'
 draft = false
 title = 'Ecola State Park'
+coords = [45.9198, -123.9729]
 +++
 
 ## Indian Beach Trail

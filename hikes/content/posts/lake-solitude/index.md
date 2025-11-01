@@ -2,6 +2,7 @@
 date = '2023-08-17T00:00:00-04:00'
 draft = false
 title = 'Lake Solitude'
+coords = [43.792397, -110.841453]
 +++
 
 ## Lake Solitude via Cascade Canyon Trail 

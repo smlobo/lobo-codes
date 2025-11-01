@@ -2,6 +2,7 @@
 date = '2023-08-15T00:00:00-04:00'
 draft = false
 title = 'Lamar Valley'
+coords = [44.8320, -110.1466]
 +++
 
 ## Lamar Valley Trail

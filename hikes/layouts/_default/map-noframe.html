@@ -1,0 +1,27 @@
+{{- define "content" -}}
+
+{{ if .Content }}
+<div class="content-margin">
+  {{- partial "content.html" (dict "ctx" . "content" .Content) -}}
+</div>
+{{ end }}
+
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+  }
+  #map {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+
+<div id="map" style="width: 100%; height: 500px; background: #e0e0e0;">
+<script src="../js/mapbundle.js"></script>
+<script>
+  console.log("Hi from map noframe")
+</script>
+</div>
+
+{{- end -}}

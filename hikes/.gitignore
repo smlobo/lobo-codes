@@ -1,4 +1,9 @@
 # Hugo build
-public
+/public/
+/resources/
 .hugo_build.lock
+
+# (My) npm bundled js
+mapbundle.js
+mapbundle.css
 

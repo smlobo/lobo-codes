@@ -2,6 +2,7 @@
 date = '2025-06-28T00:00:00-04:00'
 draft = false
 title = 'Mount Hood'
+coords = [45.343063, -121.747458]
 +++
 
 ## Timberline Trail to Zig Zag River

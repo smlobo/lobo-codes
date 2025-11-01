@@ -15,5 +15,7 @@
   hugo new content content/posts/columbia-river-gorge.md
   hugo new content content/posts/ecola-state-park.md
   ```
+* Any change to `map.js`, need to re-generate minified via `npm run build:js`
+* Add GPS coords, & do a `make run` to re-generate `static/map/locations.json` 
 * Publish: `hugo --environment production --minify`
 * Local test: `python3 -m http.server 9000`

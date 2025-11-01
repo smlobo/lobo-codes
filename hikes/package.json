@@ -1,0 +1,16 @@
+{
+  "name": "hikes",
+  "version": "1.0.0",
+  "description": "hugo based travel blog with maps",
+  "main": "index.js",
+  "scripts": {
+    "build:js": "esbuild static/js/map.js --bundle --outfile=static/js/mapbundle.js --minify"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "maplibre-gl": "^5.9.0"
+  }
+}

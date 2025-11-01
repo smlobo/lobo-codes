@@ -1,0 +1,36 @@
+{{- define "content" -}}
+
+{{ if .Content }}
+<div class="content-margin">
+    {{- partial "content.html" (dict "ctx" . "content" .Content) -}}
+</div>
+{{ end }}
+
+<iframe id="mapFrame" src="mapframe.html" width="100%" height="500" style="border:none;"></iframe>
+
+<script>
+    const iframe = document.getElementById("mapFrame");
+    const root = document.documentElement;
+    const backgroundColor = getComputedStyle(root).getPropertyValue('--color-background').trim();
+    console.log("map.html background color: " + backgroundColor);
+
+    iframe.addEventListener("load", () => {
+        console.log("map.html: iframe has loaded! ls.theme: " + localStorage.getItem("theme"));
+    });
+
+    window.addEventListener("message", (e) => {
+        if (e.data.type === "map-ready") {
+            console.log("map.html: map-ready event received!");
+            if (localStorage.getItem("theme") === "light") {
+                document.getElementById("mapFrame").contentWindow.postMessage("theme-light", "*");
+                console.log("map.html: post message to mapFrame: theme-light");
+            } else if (localStorage.getItem("theme") === "dark") {
+                document.getElementById("mapFrame").contentWindow.postMessage("theme-dark", "*");
+                console.log("map.html: post message to mapFrame: theme-dark");
+            }
+        }
+    });
+
+</script>
+
+{{- end -}}

@@ -1,0 +1,46 @@
+{
+    "layers": [
+        {
+            "id": "background",
+            "type": "background",
+            "paint": {
+                "background-color": "#333333"
+            },
+            "filter": [
+                "all"
+            ],
+            "layout": {
+                "visibility": "visible"
+            },
+            "maxzoom": 4
+        },
+        {
+            "id": "state-fills",
+            "type": "fill",
+            "source": "us-states",
+            "paint": {
+                "fill-color": "#525252"
+            }
+        },
+        {
+            "id": "state-borders",
+            "type": "line",
+            "source": "us-states",
+            "paint": {
+                "line-color": "#ededed",
+                "line-width": 1
+            }
+        }
+    ],
+    "sources": {
+        "us-states": {
+            "type": "geojson",
+            "data": "us-states.json"
+        }
+    },
+    "version": 8,
+    "metadata": {
+        "maptiler:copyright": "This style was generated on MapTiler Cloud. Usage is governed by the license terms in https://github.com/maplibre/demotiles/blob/gh-pages/LICENSE",
+        "openmaptiles:version": "3.x"
+    }
+}

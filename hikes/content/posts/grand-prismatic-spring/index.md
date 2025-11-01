@@ -2,6 +2,7 @@
 date = '2023-08-16T00:00:00-04:00'
 draft = false
 title = 'Grand Prismatic Spring'
+coords = [44.5235, -110.8398]
 +++
 
 ## Grand Prismatic Spring
