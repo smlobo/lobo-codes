@@ -12,5 +12,8 @@
   "type": "commonjs",
   "dependencies": {
     "maplibre-gl": "^5.9.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.12"
   }
 }
