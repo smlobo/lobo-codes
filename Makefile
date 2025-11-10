@@ -42,7 +42,7 @@ test-local-docker:
 	${DOCKER} run --rm -p 3000:3000 -e HOSTNAME="lobo-codes-docker1234-abcde" -e NODE_NAME="docker-node" lobo-codes:latest
 
 deploy-local-docker:
-	${DOCKER} run --rm -p 3000:80 -e HOSTNAME="lobo-codes-docker1234-abcde" -e NODE_NAME="docker-node" lobo-codes:latest
+	${DOCKER} run --rm -p 80:3000 -e HOSTNAME="lobo-codes-docker1234-abcde" -e NODE_NAME="docker-node" lobo-codes:latest
 
 apply:
 	microk8s kubectl apply -f ./k8s/lobo-codes-deployment.yaml
