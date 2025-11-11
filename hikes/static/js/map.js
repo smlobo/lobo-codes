@@ -32,6 +32,7 @@ function markLocation(loc) {
         .setPopup(new maplibregl.Popup({ offset: 25 }).setText(loc.name))
         .addTo(map);
 
+    console.log("Mark location:", loc.name);
 }
 
 // Setup scss

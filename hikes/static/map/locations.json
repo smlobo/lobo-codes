@@ -5,11 +5,15 @@
   { "name": "Grand Prismatic Spring", "coords": [-110.8398, 44.5235] },
   { "name": "Grassy Ridge Bald", "coords": [-82.0935, 36.1059] },
   { "name": "Greybeard Mountain", "coords": [-82.2949, 35.6843] },
+  { "name": "Hawkbill Rock", "coords": [-82.4140, 35.7062] },
   { "name": "Lake Solitude", "coords": [-110.8415, 43.7924] },
   { "name": "Lamar Valley", "coords": [-110.1466, 44.8320] },
+  { "name": "Mount Cammerer", "coords": [-83.1618, 35.7633] },
   { "name": "Mount Hood", "coords": [-121.7475, 45.3431] },
   { "name": "Mount Rainier", "coords": [-121.7297, 46.8036] },
   { "name": "North Cascades", "coords": [-120.7627, 48.5088] },
   { "name": "Overmountain Shelter", "coords": [-82.0539, 36.1239] },
+  { "name": "Rainbow Falls", "coords": [-83.4644, 35.6623] },
+  { "name": "Rattlesnake Lodge", "coords": [-82.4549, 35.6664] },
   { "name": "Lower Yellowstone Falls", "coords": [-110.4963, 44.7182] }
 ]
