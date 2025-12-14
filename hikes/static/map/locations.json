@@ -5,6 +5,7 @@
   { "name": "Grand Prismatic Spring", "coords": [-110.8398, 44.5235] },
   { "name": "Grassy Ridge Bald", "coords": [-82.0935, 36.1059] },
   { "name": "Greybeard Mountain", "coords": [-82.2949, 35.6843] },
+  { "name": "Indian Creek Trail", "coords": [-80.2593, 36.4036] },
   { "name": "Hawkbill Rock", "coords": [-82.4140, 35.7062] },
   { "name": "Kephart Prong", "coords": [-83.3687, 35.6099] },
   { "name": "Lake Solitude", "coords": [-110.8415, 43.7924] },
@@ -18,5 +19,7 @@
   { "name": "Pickney Island", "coords": [-80.7798, 32.2355] },
   { "name": "Rainbow Falls", "coords": [-83.4644, 35.6623] },
   { "name": "Rattlesnake Lodge", "coords": [-82.4549, 35.6664] },
+  { "name": "Chestnut Knob Overlook", "coords": [-81.6350, 35.6036] },
+  { "name": "Sycamore Trail at Umstead State Park", "coords": [-78.7519, 35.8610] },
   { "name": "Lower Yellowstone Falls", "coords": [-110.4963, 44.7182] }
 ]
