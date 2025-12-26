@@ -108,9 +108,9 @@ func WasmRouter() chi.Router {
 	wasmFileServer := http.FileServer(http.Dir("./wasm"))
 	r.Handle("/static/*", wasmFileServer)
 
-	// wasm-rotating-cube
-	wasmRotatingCubeFileServer := http.FileServer(http.Dir("./wasm/wasm-rotating-cube/dist"))
-	r.Handle("/wasm-rotating-cube/*", wasmRotatingCubeFileServer)
+	// wasm-rotating-cube (Old Go copy)
+	//wasmRotatingCubeFileServer := http.FileServer(http.Dir("./wasm/wasm-rotating-cube/dist"))
+	//r.Handle("/wasm-rotating-cube/*", wasmRotatingCubeFileServer)
 
 	// h-tree
 	wasmHTreeFileServer := http.FileServer(http.Dir("./wasm/h-tree/dist"))
@@ -136,9 +136,13 @@ func WasmRouter() chi.Router {
 	wasmKochSnowflakeFileServer := http.FileServer(http.Dir("./wasm/koch-snowflake/dist"))
 	r.Handle("/koch-snowflake/*", wasmKochSnowflakeFileServer)
 
-	// koch-snowflake
+	// kd-tree
 	wasmKdTreeFileServer := http.FileServer(http.Dir("./wasm/kd-tree/dist"))
 	r.Handle("/kd-tree/*", wasmKdTreeFileServer)
+
+	// rotating-cube
+	wasmRotatingCubeFileServer := http.FileServer(http.Dir("./wasm/rotating-cube/dist"))
+	r.Handle("/rotating-cube/*", wasmRotatingCubeFileServer)
 
 	// HEAD requests
 	r.Head("/*", HeadHandler)
