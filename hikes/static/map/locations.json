@@ -1,7 +1,9 @@
 [
   { "name": "Columbia River Gorge", "coords": [-122.1161, 45.5769] },
+  { "name": "Curry Hammock State Park", "coords": [-80.9831, 24.7459] },
   { "name": "Deception Pass State Park", "coords": [-122.6634, 48.4165] },
   { "name": "Ecola State Park", "coords": [-123.9729, 45.9198] },
+  { "name": "Everglades", "coords": [-80.6078, 25.3821] },
   { "name": "Grand Prismatic Spring", "coords": [-110.8398, 44.5235] },
   { "name": "Grassy Ridge Bald", "coords": [-82.0935, 36.1059] },
   { "name": "Greybeard Mountain", "coords": [-82.2949, 35.6843] },
