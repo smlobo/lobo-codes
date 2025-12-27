@@ -11,7 +11,7 @@ coords = [25.382055, -80.607795]
 * 0' elevation gain
 * 1 hour
 
-### The trails namesake
+### The trail's namesake
 ![Anhinga.jpg](Anhinga.jpg "An anhinga on the trail")
 
 ### American Alligator
