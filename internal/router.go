@@ -144,6 +144,10 @@ func WasmRouter() chi.Router {
 	wasmRotatingCubeFileServer := http.FileServer(http.Dir("./wasm/rotating-cube/dist"))
 	r.Handle("/rotating-cube/*", wasmRotatingCubeFileServer)
 
+	// rotating-dodecahedron
+	wasmRotatingDodecahedronFileServer := http.FileServer(http.Dir("./wasm/rotating-dodecahedron/dist"))
+	r.Handle("/rotating-dodecahedron/*", wasmRotatingDodecahedronFileServer)
+
 	// HEAD requests
 	r.Head("/*", HeadHandler)
 

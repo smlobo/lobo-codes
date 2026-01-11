@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rotating Dodecahedron</title>
+    <meta charset="utf-8" />
+    <link rel="icon" href="../static/images/web-assembly-icon-128px.png">
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<script src="wasm_exec.js"></script>
+<script>
+    const go = new Go();
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+    console.log("In JS Width: %d", w);
+    console.log("In JS Height: %d", h);
+
+    WebAssembly.instantiateStreaming(fetch("rotating-dodecahedron.wasm"), go.importObject).then((result) => {
+        go.run(result.instance);
+    });
+</script>
+</body>
+</html>
