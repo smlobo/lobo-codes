@@ -1,4 +1,5 @@
 [
+  { "name": "Central Park", "coords": [-73.9716, 40.7755] },
   { "name": "Columbia River Gorge", "coords": [-122.1161, 45.5769] },
   { "name": "Curry Hammock State Park", "coords": [-80.9831, 24.7459] },
   { "name": "Deception Pass State Park", "coords": [-122.6634, 48.4165] },
@@ -34,6 +35,7 @@
   { "name": "Great Smoky Mountains; Smokemont", "coords": [-83.3145, 35.5585] },
   { "name": "Great Smoky Mountains; Sugarland", "coords": [-83.5367, 35.6856] },
   { "name": "Chestnut Knob Overlook at South Mountains State Park", "coords": [-81.6350, 35.6036] },
+  { "name": "Company Mill Trail at Umstead State Park", "coords": [-78.7486, 35.8535] },
   { "name": "Sycamore Trail at Umstead State Park", "coords": [-78.7519, 35.8610] },
   { "name": "Lower Yellowstone Falls", "coords": [-110.4963, 44.7182] }
 ]
