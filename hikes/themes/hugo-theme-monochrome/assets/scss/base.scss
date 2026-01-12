@@ -125,3 +125,58 @@ hr {
 .MJX_ToolTip{
   background-color: transparent !important;
 }
+
+.auto-slideshow {
+  width: 100%;
+  margin: 2rem auto;   /* centers horizontally */
+}
+
+/* Only this area is clipped */
+.slideshow-viewport {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;   /* overridden inline by shortcode */
+  width: 100%;   /* REQUIRED */
+}
+
+.slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* consistent size */
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  pointer-events: none;   /* FIX */
+}
+
+.slide.active {
+  opacity: 1;
+}
+
+ .slideshow-dots {
+   position: relative;
+   display: flex;
+   justify-content: center;
+   gap: 0.5rem;
+   margin-top: 0.75rem;
+ }
+
+ .dot {
+   width: 10px;
+   height: 10px;
+   border-radius: 50%;
+   border: none;
+   background: #{$gray-450};
+   cursor: pointer;
+ }
+
+.dot.active {
+   background: var(--color-text);
+ }

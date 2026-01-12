@@ -105,3 +105,6 @@
     {{- end -}}
     <script defer src="{{ $js.RelPermalink }}" integrity="{{- $js.Data.Integrity -}}" data-manual></script>
 {{ end }}
+
+{{ $js := resources.Get "js/auto-slideshow.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>

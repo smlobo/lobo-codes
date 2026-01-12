@@ -1,2 +1,8 @@
 
-![RossLake.jpg](/images/RossLake.jpg "At the Ross Lake overlook")
+# 
+
+{{< auto-slideshow
+images="/images/RossLake.jpg,/images/FamilyGreybeardMountain.jpg,/images/DevilsCourthouseFamily.jpg"
+interval="4000"
+alt="Family hiking photos"
+>}}

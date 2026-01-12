@@ -1,0 +1,47 @@
+{{/*
+Usage:
+{{< auto-slideshow
+images="slide1.jpg,slide2.jpg,slide3.jpg"
+interval="3000"
+alt="Example slideshow"
+>}}
+*/}}
+
+{{ $id := printf "slideshow-%d" now.UnixNano }}
+{{ $images := split (.Get "images") "," }}
+{{ $interval := .Get "interval" | default "3000" }}
+{{ $ratio := .Get "ratio" | default "16/9" }}
+{{ $alt := .Get "alt" | default "" }}
+
+<div
+        class="auto-slideshow"
+        id="{{ $id }}"
+        data-interval="{{ $interval }}"
+        style="aspect-ratio: {{ $ratio }};"
+>
+
+  <!-- Viewport (clipped) -->
+  <div class="slideshow-viewport" style="aspect-ratio: {{ $ratio }};">
+    <div class="slides">
+      {{ range $i, $img := $images }}
+      <img
+              src="{{ $img | relURL }}"
+              alt="{{ $alt }}"
+              class="slide {{ if eq $i 0 }}active{{ end }}"
+              loading="lazy"
+      />
+      {{ end }}
+    </div>
+  </div>
+
+  <div class="slideshow-dots">
+    {{ range $i, $_ := $images }}
+    <button
+            type="button"
+            class="dot {{ if eq $i 0 }}active{{ end }}"
+            data-index="{{ $i }}"
+            aria-label="Show slide {{ add $i 1 }}"
+    ></button>
+    {{ end }}
+  </div>
+</div>
