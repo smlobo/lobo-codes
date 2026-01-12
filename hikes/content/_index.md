@@ -1,5 +1,7 @@
-
-# 
+---
+title: "Family Hikes"
+draft: false
+---
 
 {{< auto-slideshow
 images="/images/RossLake.jpg,/images/FamilyGreybeardMountain.jpg,/images/DevilsCourthouseFamily.jpg"
