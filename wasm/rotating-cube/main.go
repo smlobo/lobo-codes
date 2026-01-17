@@ -3,7 +3,6 @@
 package main
 
 import (
-	"fyne.io/fyne/v2/widget"
 	"rotating-cube/internal"
 	"syscall/js"
 	"time"
@@ -12,6 +11,7 @@ import (
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
 )
 
 func main() {
@@ -21,7 +21,8 @@ func main() {
 
 	fContainer := container.NewWithoutLayout()
 
-	instrLabel := widget.NewLabel("Tap/Press any key to toggle start/stop")
+	instrLabel := widget.NewLabel("Tap/Press any key to toggle start/stop\n" +
+		"Drag the mouse to interact")
 	touchTracker := internal.NewTouchTracker()
 	content := container.NewStack(touchTracker, fContainer, container.NewVBox(instrLabel))
 	w.SetContent(content)
@@ -30,8 +31,10 @@ func main() {
 		if unicode.IsSpace(r) || unicode.IsLetter(r) {
 			if !internal.Paused {
 				internal.Paused = true
+				internal.Rotation = internal.ZeroRotationAngle
 			} else {
 				internal.Paused = false
+				internal.Rotation = internal.DefaultRotationAngle
 			}
 		}
 	})
@@ -45,10 +48,8 @@ func main() {
 		for {
 			select {
 			case <-ticker.C:
-				if !internal.Paused {
-					internal.DrawCube(fContainer)
-					internal.Rotate()
-				}
+				internal.Rotate()
+				internal.DrawCube(fContainer)
 			}
 		}
 	}()

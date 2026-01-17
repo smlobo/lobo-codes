@@ -21,18 +21,19 @@ func Initialize(width, height float32) {
 		windowWidth, windowHeight, dimension, side)
 
 	// Cube
+	halfSide := side / 2
 	centerX := windowWidth / 2.0
 	centerY := windowHeight / 2.0
-	origin := coordinates3D{centerX - side/2.0, centerY - side/2.0, side}
+	origin := coordinates3D{centerX, centerY, 0}
 	cubePoints = [8]coordinates3D{
-		{origin.x, origin.y, origin.z},
-		{origin.x + side, origin.y, origin.z},
-		{origin.x, origin.y + side, origin.z},
-		{origin.x + side, origin.y + side, origin.z},
-		{origin.x, origin.y, origin.z + side},
-		{origin.x + side, origin.y, origin.z + side},
-		{origin.x, origin.y + side, origin.z + side},
-		{origin.x + side, origin.y + side, origin.z + side},
+		{origin.x - halfSide, origin.y - halfSide, origin.z - halfSide},
+		{origin.x + halfSide, origin.y - halfSide, origin.z - halfSide},
+		{origin.x - halfSide, origin.y + halfSide, origin.z - halfSide},
+		{origin.x + halfSide, origin.y + halfSide, origin.z - halfSide},
+		{origin.x - halfSide, origin.y - halfSide, origin.z + halfSide},
+		{origin.x + halfSide, origin.y - halfSide, origin.z + halfSide},
+		{origin.x - halfSide, origin.y + halfSide, origin.z + halfSide},
+		{origin.x + halfSide, origin.y + halfSide, origin.z + halfSide},
 	}
 	cubeLines = [12]line3D{
 		{&cubePoints[0], &cubePoints[1]},
@@ -48,6 +49,14 @@ func Initialize(width, height float32) {
 		{&cubePoints[5], &cubePoints[7]},
 		{&cubePoints[6], &cubePoints[7]},
 	}
+	cubeFaces = [6][4]*coordinates3D{
+		{&cubePoints[0], &cubePoints[1], &cubePoints[2], &cubePoints[3]},
+		{&cubePoints[0], &cubePoints[1], &cubePoints[4], &cubePoints[5]},
+		{&cubePoints[0], &cubePoints[2], &cubePoints[4], &cubePoints[6]},
+		{&cubePoints[1], &cubePoints[3], &cubePoints[5], &cubePoints[7]},
+		{&cubePoints[2], &cubePoints[3], &cubePoints[6], &cubePoints[7]},
+		{&cubePoints[4], &cubePoints[5], &cubePoints[6], &cubePoints[7]},
+	}
 	for _, cubePoint := range cubePoints {
 		centroid.x += cubePoint.x
 		centroid.y += cubePoint.y
@@ -56,4 +65,16 @@ func Initialize(width, height float32) {
 	centroid.x /= float32(len(cubePoints))
 	centroid.y /= float32(len(cubePoints))
 	centroid.z /= float32(len(cubePoints))
+
+	DefaultRotationAngle = rotationAngle3D{
+		x: 0.02,
+		y: 0.01,
+		z: 0.03,
+	}
+	ZeroRotationAngle = rotationAngle3D{
+		x: 0.0,
+		y: 0.0,
+		z: 0.0,
+	}
+	Rotation = DefaultRotationAngle
 }

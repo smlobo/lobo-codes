@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"math"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/widget"
 )
@@ -16,22 +18,31 @@ func NewTouchTracker() *TouchTracker {
 	return t
 }
 
-// Implement fyne.Tappable
 func (t *TouchTracker) Tapped(ev *fyne.PointEvent) {
 	if !Paused {
 		Paused = true
+		Rotation = ZeroRotationAngle
 	} else {
 		Paused = false
+		Rotation = DefaultRotationAngle
 	}
 }
 
-// Implement fyne.Draggable
 func (t *TouchTracker) Dragged(ev *fyne.DragEvent) {
-	// Optional: handle drag
+	if ev.Dragged.IsZero() {
+		return
+	}
+	Paused = true
+	Rotation = ZeroRotationAngle
+	Rotation.y = float32(math.Atan(float64(-ev.Dragged.DX / 20.0)))
+	Rotation.x = float32(math.Atan(float64(-ev.Dragged.DY / 20.0)))
+	//fmt.Printf("Dragged: %v -> %v\n", ev, Rotation)
 }
 
 func (t *TouchTracker) DragEnd() {
-	// Optional: handle drag end
+	Paused = true
+	Rotation = ZeroRotationAngle
+	//fmt.Printf("Drag End\n")
 }
 
 // Renderer

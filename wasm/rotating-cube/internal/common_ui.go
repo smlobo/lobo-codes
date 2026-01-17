@@ -9,7 +9,7 @@ import (
 )
 
 func renderer() fyne.WidgetRenderer {
-	rect := canvas.NewRectangle(color.RGBA{R: 251, G: 233, B: 183, A: 255})
+	rect := canvas.NewRectangle(color.RGBA{R: 50, G: 50, B: 50, A: 255})
 	rect.SetMinSize(fyne.NewSize(300, 300))
 	return widget.NewSimpleRenderer(rect)
 }
