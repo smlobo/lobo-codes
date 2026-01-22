@@ -1,4 +1,6 @@
 [
+  { "name": "Appalachian Trail, Double Spring Gap", "coords": [-83.5429, 35.5652] },
+  { "name": "Calloway Peak from the Parkway", "coords": [-81.8103, 36.1115] },
   { "name": "Central Park", "coords": [-73.9716, 40.7755] },
   { "name": "Columbia River Gorge", "coords": [-122.1161, 45.5769] },
   { "name": "Curry Hammock State Park", "coords": [-80.9831, 24.7459] },
@@ -18,6 +20,7 @@
   { "name": "Kiawah Island; Mingo Point", "coords": [-80.1324, 32.5976] },
   { "name": "Lake Solitude", "coords": [-110.8415, 43.7924] },
   { "name": "Lamar Valley", "coords": [-110.1466, 44.8320] },
+  { "name": "Matheran", "coords": [73.2556, 18.9871] },
   { "name": "McAfee Knob", "coords": [-80.0369, 37.3928] },
   { "name": "Toms Thumb Trail", "coords": [-111.8025, 33.6930] },
   { "name": "Mount Cammerer", "coords": [-83.1618, 35.7633] },
@@ -32,6 +35,7 @@
   { "name": "Point Lobos", "coords": [-121.9539, 36.5222] },
   { "name": "Rainbow Falls", "coords": [-83.4644, 35.6623] },
   { "name": "Rattlesnake Lodge", "coords": [-82.4549, 35.6664] },
+  { "name": "Great Smoky Mountains, Balsam Mountain", "coords": [-83.1828, 35.5666] },
   { "name": "Great Smoky Mountains; Smokemont", "coords": [-83.3145, 35.5585] },
   { "name": "Great Smoky Mountains; Sugarland", "coords": [-83.5367, 35.6856] },
   { "name": "Chestnut Knob Overlook at South Mountains State Park", "coords": [-81.6350, 35.6036] },
