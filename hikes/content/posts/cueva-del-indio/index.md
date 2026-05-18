@@ -1,7 +1,7 @@
 +++
 date = '2026-05-05T00:00:00-04:00'
 draft = false
-title = 'Cuevo del Indio'
+title = 'Cueva del Indio'
 coords = [18.492980, -66.642533]
 +++
 
