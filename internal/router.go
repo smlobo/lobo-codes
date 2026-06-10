@@ -132,6 +132,10 @@ func WasmRouter() chi.Router {
 	wasmShortestPathFileServer := http.FileServer(http.Dir("./wasm/shortest-path/dist"))
 	r.Handle("/shortest-path/*", wasmShortestPathFileServer)
 
+	// shortest-path
+	wasmGraphColoringFileServer := http.FileServer(http.Dir("./wasm/graph-color/dist"))
+	r.Handle("/graph-color/*", wasmGraphColoringFileServer)
+
 	// koch-snowflake
 	wasmKochSnowflakeFileServer := http.FileServer(http.Dir("./wasm/koch-snowflake/dist"))
 	r.Handle("/koch-snowflake/*", wasmKochSnowflakeFileServer)

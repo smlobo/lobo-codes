@@ -1,14 +1,13 @@
 cmake_minimum_required(VERSION 3.30)
-project(shortest-path)
+project(graph-color)
 
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/edge-weighted-digraph.cpp
+        src/edge-weighted-graph.cpp
         src/vertex.cpp
         src/edge.cpp
-        src/dijkstra-shortest-path.cpp
         src/sdl-helpers/circle.cpp
 )
 
