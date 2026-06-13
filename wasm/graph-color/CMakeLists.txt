@@ -9,6 +9,7 @@ add_executable(${PROJECT_NAME}
         src/vertex.cpp
         src/edge.cpp
         src/sdl-helpers/circle.cpp
+        src/graph-coloring.cpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -O2 -sUSE_SDL=2 -sUSE_SDL_TTF=2)

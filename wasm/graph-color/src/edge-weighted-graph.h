@@ -2,8 +2,8 @@
 // Created by Sheldon Lobo on 5/29/26.
 //
 
-#ifndef EDGE_WEIGHTED_DIGRAPH_H
-#define EDGE_WEIGHTED_DIGRAPH_H
+#ifndef EDGE_WEIGHTED_GRAPH_H
+#define EDGE_WEIGHTED_GRAPH_H
 
 #include <map>
 #include <unordered_set>
@@ -19,9 +19,10 @@ public:
     unsigned nextId;
 
     explicit EdgeWeightedGraph(unsigned nVertices, Context& context);
-    void update(Context *context);
+    void update(Context* context);
     void removeVertex(unsigned id);
-    void render(Context *ctx);
+    void color() const;
+    void render(Context* ctx);
 };
 
-#endif //EDGE_WEIGHTED_DIGRAPH_H
+#endif //EDGE_WEIGHTED_GRAPH_H

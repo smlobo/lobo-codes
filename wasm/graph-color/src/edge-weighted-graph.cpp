@@ -8,7 +8,7 @@
 #include <cassert>
 #include <iostream>
 
-EdgeWeightedGraph::EdgeWeightedGraph(unsigned nVertices, Context &ctx) : nextId(0) {
+EdgeWeightedGraph::EdgeWeightedGraph(unsigned nVertices, Context& ctx) : nextId(0) {
 
     // Create random vertices
     while (vertices.size() < nVertices) {
@@ -16,7 +16,7 @@ EdgeWeightedGraph::EdgeWeightedGraph(unsigned nVertices, Context &ctx) : nextId(
         int y = ctx.uniformYLocation(ctx.re);
 
         bool tooClose = false;
-        for (const auto & idVertexPair : vertices) {
+        for (const auto& idVertexPair : vertices) {
             if (idVertexPair.second.tooClose(x, y)) {
                 std::cout << "Skipping random vertex: " << x << ", " << y << "; near: " << idVertexPair.second << std::endl;
                 tooClose = true;
@@ -54,8 +54,8 @@ EdgeWeightedGraph::EdgeWeightedGraph(unsigned nVertices, Context &ctx) : nextId(
     for (Edge& completeEdge : completeEdges) {
         std::cout << "Consider edge: " << completeEdge << std::endl;
         bool intersects = false;
-        for (auto &existingEdge : edges) {
-            if (completeEdge.intersects2(&existingEdge)) {
+        for (auto& existingEdge : edges) {
+            if (completeEdge.intersects(&existingEdge)) {
                 intersects = true;
                 std::cout << "  Intersects edge: " << existingEdge << std::endl;
                 break;
@@ -124,8 +124,8 @@ void EdgeWeightedGraph::removeVertex(unsigned id) {
     for (Edge& completeEdge : completeEdges) {
         std::cout << "Remove consider edge: " << completeEdge << std::endl;
         bool intersects = false;
-        for (auto &existingEdge : edges) {
-            if (completeEdge.intersects2(&existingEdge)) {
+        for (auto& existingEdge : edges) {
+            if (completeEdge.intersects(&existingEdge)) {
                 intersects = true;
                 std::cout << "  Remove intersects edge: " << existingEdge << std::endl;
                 break;
@@ -149,7 +149,7 @@ void EdgeWeightedGraph::update(Context *ctx) {
     // Delete a vertex and all incoming/outgoing edges if mouse click on
     // Brute force
     // TODO: kd tree
-    for (const auto &idVertexPair : vertices) {
+    for (const auto& idVertexPair : vertices) {
         if (idVertexPair.second.inRange(ctx->mouseX, ctx->mouseY)) {
             std::cout << "Removing vertex: " << idVertexPair.second << std::endl;
             removeVertex(idVertexPair.first);
@@ -166,7 +166,7 @@ void EdgeWeightedGraph::update(Context *ctx) {
 
     // Create edges for a complete graph
     std::vector<Edge> completeEdges;
-    for (auto & vertice : vertices) {
+    for (auto& vertice : vertices) {
         Vertex *v = &vertice.second;
         if (newVertex->id == v->id) {
             continue;
@@ -186,8 +186,8 @@ void EdgeWeightedGraph::update(Context *ctx) {
     for (Edge& completeEdge : completeEdges) {
         std::cout << "New consider edge: " << completeEdge << std::endl;
         bool intersects = false;
-        for (auto &existingEdge : edges) {
-            if (completeEdge.intersects2(&existingEdge)) {
+        for (auto& existingEdge : edges) {
+            if (completeEdge.intersects(&existingEdge)) {
                 intersects = true;
                 std::cout << "  New intersects edge: " << existingEdge << std::endl;
                 break;

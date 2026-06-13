@@ -8,7 +8,6 @@
 #include <random>
 #include <SDL_render.h>
 #include <SDL_ttf.h>
-#include <set>
 
 extern const unsigned RADIUS;
 extern const int IN_RANGE;

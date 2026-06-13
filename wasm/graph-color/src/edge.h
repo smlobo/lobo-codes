@@ -15,8 +15,8 @@ class Vertex;
 
 class Edge {
 public:
-    Vertex *from;
-    Vertex *to;
+    Vertex* from;
+    Vertex* to;
     double weight;
     double angle;
     double angleDegrees;
@@ -24,13 +24,13 @@ public:
     // Arrow x & y coordinates
     int xFrom, yFrom, xTo, yTo;
 
-    Edge(Vertex *from, Vertex *to);
-    bool intersects(Edge *edge);
-    bool intersects2(const Edge *edge);
+    Edge(Vertex* from, Vertex* to);
+    bool intersects(const Edge* edge);
+    Vertex* other(const Vertex* v) const;
     void draw(Context *ctx, SDL_Color color = SDL_Color{255, 150, 0, SDL_ALPHA_OPAQUE}) const;
 
-    bool operator==(const Edge &e) const;
-    friend std::ostream& operator<<(std::ostream &strm, const Edge &e);
+    bool operator==(const Edge& other) const;
+    friend std::ostream& operator<<(std::ostream& strm, const Edge& e);
 };
 
 class EdgeHash {
@@ -40,12 +40,12 @@ public:
 
 class EdgeWeightComparator {
 public:
-    bool operator()(const Edge &e1, const Edge &e2) const;
+    bool operator()(const Edge& e1, const Edge& e2) const;
 };
 
 class EdgeFromComparator {
 public:
-    bool operator()(const Edge &e1, const Edge &e2) const;
+    bool operator()(const Edge& e1, const Edge& e2) const;
 };
 
 #endif //EDGE_H

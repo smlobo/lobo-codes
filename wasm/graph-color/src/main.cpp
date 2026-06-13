@@ -11,7 +11,7 @@
 
 constexpr unsigned SLEEP_DEFAULT = 100;
 constexpr unsigned SLEEP_DELTA = 5;
-constexpr unsigned NODES = 15;
+constexpr unsigned NODES = 20;
 constexpr unsigned RADIUS = 15;
 constexpr int IN_RANGE = RADIUS * 2;
 constexpr int SEPARATION = RADIUS * 5;
@@ -55,6 +55,7 @@ void loop_handler(void *arg)
             ctx->graph->update(ctx);
         }
 
+        ctx->graph->color();
         ctx->graph->render(ctx);
         ctx->modified = false;
     }
