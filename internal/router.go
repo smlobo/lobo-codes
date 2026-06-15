@@ -132,7 +132,7 @@ func WasmRouter() chi.Router {
 	wasmShortestPathFileServer := http.FileServer(http.Dir("./wasm/shortest-path/dist"))
 	r.Handle("/shortest-path/*", wasmShortestPathFileServer)
 
-	// shortest-path
+	// graph-color
 	wasmGraphColoringFileServer := http.FileServer(http.Dir("./wasm/graph-color/dist"))
 	r.Handle("/graph-color/*", wasmGraphColoringFileServer)
 
@@ -151,6 +151,10 @@ func WasmRouter() chi.Router {
 	// rotating-dodecahedron
 	wasmRotatingDodecahedronFileServer := http.FileServer(http.Dir("./wasm/rotating-dodecahedron/dist"))
 	r.Handle("/rotating-dodecahedron/*", wasmRotatingDodecahedronFileServer)
+
+	// graph-reachability
+	wasmGraphReachabilityFileServer := http.FileServer(http.Dir("./wasm/graph-reachability/dist"))
+	r.Handle("/graph-reachability/*", wasmGraphReachabilityFileServer)
 
 	// HEAD requests
 	r.Head("/*", HeadHandler)

@@ -25,7 +25,7 @@ public:
     int xFrom, yFrom, xTo, yTo;
 
     Edge(Vertex* from, Vertex* to);
-    bool intersects(const Edge* edge);
+    bool intersects(const Edge* edge) const;
     Vertex* other(const Vertex* v) const;
     void draw(Context *ctx, SDL_Color color = SDL_Color{255, 150, 0, SDL_ALPHA_OPAQUE}) const;
 

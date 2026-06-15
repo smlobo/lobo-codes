@@ -42,6 +42,7 @@ COPY ./wasm/koch-snowflake/dist wasm/koch-snowflake/dist
 COPY ./wasm/kd-tree/dist wasm/kd-tree/dist
 COPY ./wasm/rotating-cube/dist wasm/rotating-cube/dist
 COPY ./wasm/rotating-dodecahedron/dist wasm/rotating-dodecahedron/dist
+COPY ./wasm/graph-reachability/dist wasm/graph-reachability/dist
 
 COPY ./hikes/public hikes/public
 

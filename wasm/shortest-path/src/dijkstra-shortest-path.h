@@ -13,14 +13,16 @@ class RelaxEdge;
 
 class DijkstraShortestPath {
 private:
-    void relax(DirectedEdge *e, std::priority_queue<RelaxEdge, std::vector<RelaxEdge>, RelaxEdgeComparator> &pq);
+    void relax(DirectedEdge *e);
 public:
-    EdgeWeightedDigraph *g;
+    EdgeWeightedDigraph* g;
+    // std::priority_queue<RelaxEdge, std::vector<RelaxEdge>, RelaxEdgeComparator> pq;
+    std::priority_queue<RelaxEdge> pq;
     std::vector<DirectedEdge*> edgeTo;
     std::vector<double> distTo;
 
-    explicit DijkstraShortestPath(EdgeWeightedDigraph *g);
-    std::set<DirectedEdge*, EdgeFromComparator> *shortestPath(unsigned d) const;
+    explicit DijkstraShortestPath(EdgeWeightedDigraph* g);
+    std::set<DirectedEdge*, EdgeFromComparator>* shortestPath(unsigned d) const;
 };
 
 class RelaxEdge {
@@ -29,6 +31,8 @@ public:
     double weight;
 
     RelaxEdge(unsigned v, double w);
+    bool operator<(const RelaxEdge& other) const;
+    friend std::ostream& operator<<(std::ostream& strm, const RelaxEdge& e);
 };
 
 class RelaxEdgeComparator {

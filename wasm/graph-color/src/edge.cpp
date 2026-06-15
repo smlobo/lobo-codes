@@ -36,7 +36,7 @@ Edge::Edge(Vertex* from, Vertex* to) :
     double rightArrowAngle = angle + M_PI/6;
 }
 
-bool Edge::intersects(const Edge* edge) {
+bool Edge::intersects(const Edge* edge) const {
     static constexpr double eps = 1e-9;
 
     // Edges that share a vertex are allowed to meet at that endpoint.

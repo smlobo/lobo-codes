@@ -7,8 +7,6 @@
 #include <iomanip>
 
 DijkstraShortestPath::DijkstraShortestPath(EdgeWeightedDigraph *g) : g(g) {
-    std::priority_queue<RelaxEdge, std::vector<RelaxEdge>, RelaxEdgeComparator> pq;
-
     edgeTo = std::vector<DirectedEdge*>(g->vertices.size(), nullptr);
     distTo = std::vector<double>(g->vertices.size(), std::numeric_limits<double>::infinity());
 
@@ -18,9 +16,10 @@ DijkstraShortestPath::DijkstraShortestPath(EdgeWeightedDigraph *g) : g(g) {
     while (!pq.empty()) {
         RelaxEdge rEdge = pq.top();
         pq.pop();
+        std::cout << "PQ top: " << rEdge << std::endl;
         unsigned toId = rEdge.v;
         for (auto &e : g->vertices[toId].get()->edgesFrom)
-            relax(e.get(), pq);
+            relax(e.get());
     }
 
     std::cout << "EdgeTo: ";
@@ -55,8 +54,7 @@ std::set<DirectedEdge*, EdgeFromComparator> *DijkstraShortestPath::shortestPath(
     return shortestPath;
 }
 
-void DijkstraShortestPath::relax(DirectedEdge *e, std::priority_queue<RelaxEdge, std::vector<RelaxEdge>,
-    RelaxEdgeComparator> &pq) {
+void DijkstraShortestPath::relax(DirectedEdge *e) {
 
     unsigned v = e->from->id;
     unsigned w = e->to->id;
@@ -68,10 +66,19 @@ void DijkstraShortestPath::relax(DirectedEdge *e, std::priority_queue<RelaxEdge,
 
         pq.emplace(e->to->id, distTo[w]);
     }
-
 }
 
 RelaxEdge::RelaxEdge(unsigned v, double w) : v(v), weight(w) {}
+
+bool RelaxEdge::operator<(const RelaxEdge& other) const {
+    return weight > other.weight;
+}
+
+std::ostream& operator<<(std::ostream& strm, const RelaxEdge& e) {
+    strm << std::fixed << std::setprecision(4);
+    strm << "RE: " << e.v << " (" << e.weight << ")";
+    return strm;
+}
 
 bool RelaxEdgeComparator::operator()(const RelaxEdge &e1, const RelaxEdge &e2) const {
     return e1.weight > e2.weight;

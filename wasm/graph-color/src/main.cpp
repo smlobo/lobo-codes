@@ -92,8 +92,8 @@ int mainf(int xDim, int yDim) {
     SDL_SetRenderDrawColor(ctx.renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
     SDL_RenderClear(ctx.renderer);
 
-    EdgeWeightedGraph edgeWeightedDigraph(NODES, ctx);
-    ctx.graph = &edgeWeightedDigraph;
+    EdgeWeightedGraph edgeWeightedGraph(NODES, ctx);
+    ctx.graph = &edgeWeightedGraph;
 
     TTF_Init();
     ctx.font = TTF_OpenFont("fonts/SpaceMono-Regular.ttf", 25);
