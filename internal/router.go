@@ -156,6 +156,10 @@ func WasmRouter() chi.Router {
 	wasmGraphReachabilityFileServer := http.FileServer(http.Dir("./wasm/graph-reachability/dist"))
 	r.Handle("/graph-reachability/*", wasmGraphReachabilityFileServer)
 
+	// graph-cycle
+	wasmGraphCycleFileServer := http.FileServer(http.Dir("./wasm/graph-cycle/dist"))
+	r.Handle("/graph-cycle/*", wasmGraphCycleFileServer)
+
 	// HEAD requests
 	r.Head("/*", HeadHandler)
 

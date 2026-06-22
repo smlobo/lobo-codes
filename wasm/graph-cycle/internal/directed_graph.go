@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"image/color"
 	"math/rand/v2"
 	"sort"
 
@@ -31,13 +32,19 @@ func NewDirectedGraph() *DirectedGraph {
 		point := QuantizedPoint{quantized(x), quantized(y)}
 		if existingVertex, ok := g.vertices[point]; !ok {
 			g.vertices[point] = &Vertex{
-				id:       g.nextID,
-				x:        x,
-				y:        y,
-				qPoint:   point,
-				color:    green,
-				outgoing: []*Edge{},
-				incoming: []*Edge{},
+				id:           g.nextID,
+				x:            x,
+				y:            y,
+				qPoint:       point,
+				color:        purple,
+				outlineColor: purple,
+				outline:      pointOutline,
+				outgoing:     []*Edge{},
+				incoming:     []*Edge{},
+				visited:      false,
+				cycleSlice:   [][]*Edge{},
+				nextCycle:    0,
+				timer:        nil,
 			}
 			fmt.Printf("[%d] New %v\n", len(g.vertices), g.vertices[point])
 			g.nextID++
@@ -74,7 +81,8 @@ func NewDirectedGraph() *DirectedGraph {
 				from:   fromV,
 				to:     toV,
 				weight: weight(fromV, toV),
-				color:  black,
+				color:  color.Black,
+				stroke: arrowStroke,
 			})
 		}
 	}
@@ -112,28 +120,54 @@ func (g *DirectedGraph) Draw(c *fyne.Container) {
 	}
 }
 
-func (g *DirectedGraph) HighlightReachableAt(point QuantizedPoint) {
+func (g *DirectedGraph) resetColors() {
 	for _, v := range g.vertices {
-		v.color = green
+		v.color = purple
+		v.outlineColor = purple
+		v.outline = pointOutline
 	}
 	for e, _ := range g.edges {
-		e.color = black
-	}
-	if vertex, ok := g.vertices[point]; ok {
-		reachableSlice := g.Reachable(vertex)
-		for v, _ := range reachableSlice {
-			v.color = red
-			for _, e := range v.outgoing {
-				e.color = darkRed
-			}
-		}
+		e.color = color.Black
+		e.stroke = arrowStroke
 	}
 }
 
-func (g *DirectedGraph) Reachable(vertex *Vertex) map[*Vertex]struct{} {
-	visitedSet := map[*Vertex]struct{}{}
-	vertex.dfs(&visitedSet)
-	return visitedSet
+func (g *DirectedGraph) HighlightCycleAt(point QuantizedPoint) bool {
+	g.resetColors()
+	if vertex, ok := g.vertices[point]; ok {
+		// Record the cycle slice in the vertex
+		g.Cycle(vertex)
+		// Color the 1st cycle
+		vertex.colorCycle()
+		if len(vertex.cycleSlice) > 1 {
+			return true
+		}
+	}
+	return false
+}
+
+func (g *DirectedGraph) Cycle(vertex *Vertex) {
+	// Reset visited before DFS
+	for _, v := range g.vertices {
+		v.visited = false
+	}
+
+	vertex.cycleSlice = [][]*Edge{}
+	vertex.nextCycle = 0
+	vertex.timer = nil
+	vertexStack := []*Edge{}
+	for _, edge := range vertex.outgoing {
+		edge.dfs(vertex, &vertex.cycleSlice, &vertexStack)
+	}
+}
+
+func (g *DirectedGraph) HighlightNextCycleAt(point QuantizedPoint) bool {
+	if vertex, ok := g.vertices[point]; ok && vertex.doColor() {
+		g.resetColors()
+		vertex.colorCycle()
+		return true
+	}
+	return false
 }
 
 func (g *DirectedGraph) Redraw(c *fyne.Container) {

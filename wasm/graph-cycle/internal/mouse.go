@@ -12,6 +12,7 @@ type MouseTracker struct {
 	widget.BaseWidget
 	label     *widget.Label
 	graph     *DirectedGraph
+	previous  QuantizedPoint
 	container *fyne.Container
 }
 
@@ -19,6 +20,7 @@ func NewMouseTracker(label *widget.Label, container *fyne.Container) *MouseTrack
 	m := &MouseTracker{
 		label:     label,
 		container: container,
+		previous:  QuantizedPoint{},
 	}
 	m.ExtendBaseWidget(m)
 	return m
@@ -28,7 +30,7 @@ func (m *MouseTracker) SetGraph(g *DirectedGraph) {
 	m.graph = g
 }
 
-// Implement desktop.Mouseable to get mouse move events
+// MouseMoved Implement desktop.Mouseable to get mouse move events
 func (m *MouseTracker) MouseMoved(ev *desktop.MouseEvent) {
 	m.label.SetText(fmt.Sprintf("%.1f, %.1f", ev.Position.X, ev.Position.Y))
 
@@ -36,8 +38,22 @@ func (m *MouseTracker) MouseMoved(ev *desktop.MouseEvent) {
 		x: quantized(int64(ev.Position.X)),
 		y: quantized(int64(ev.Position.Y)),
 	}
-	m.graph.HighlightReachableAt(point)
-	m.graph.Redraw(m.container)
+	if point != m.previous {
+		//if m.graph.HighlightCycleAt(point) {
+		//	m.graph.Redraw(m.container)
+		//}
+		fmt.Printf("Initial cycle: %v\n", point)
+		m.graph.HighlightCycleAt(point)
+		m.graph.Redraw(m.container)
+		m.previous = point
+	} else {
+		//if m.graph.HighlightNextCycleAt(point) {
+		//	m.graph.Redraw(m.container)
+		//}
+		fmt.Printf("Next cycle: %v\n", point)
+		m.graph.HighlightNextCycleAt(point)
+		m.graph.Redraw(m.container)
+	}
 }
 
 func (m *MouseTracker) MouseIn(ev *desktop.MouseEvent) {
@@ -49,7 +65,7 @@ func (m *MouseTracker) MouseOut() {
 	m.label.SetText("Mouse out")
 }
 
-// Needed to render something visible
+// CreateRenderer Needed to render something visible
 func (m *MouseTracker) CreateRenderer() fyne.WidgetRenderer {
 	return renderer()
 }

@@ -13,8 +13,8 @@ type Vertex struct {
 	x, y     int64
 	qPoint   QuantizedPoint
 	color    color.Color
-	outgoing []Edge
-	incoming []Edge
+	outgoing []*Edge
+	incoming []*Edge
 }
 
 func (v *Vertex) String() string {

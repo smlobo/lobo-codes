@@ -11,6 +11,8 @@ import (
 // Colors
 var green = color.RGBA{R: 50, G: 200, B: 75, A: 0xFF}
 var red = color.RGBA{R: 220, G: 50, B: 50, A: 0xFF}
+var black = color.Black
+var darkRed = color.RGBA{R: 200, G: 25, B: 25, A: 0xFF}
 
 func renderer() fyne.WidgetRenderer {
 	rect := canvas.NewRectangle(color.RGBA{R: 200, G: 180, B: 225, A: 255})

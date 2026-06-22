@@ -13,6 +13,7 @@ type Edge struct {
 	from, to *Vertex
 	weight   uint64
 	color    color.Color
+	stroke   float32
 }
 
 func (e *Edge) String() string {
@@ -53,6 +54,41 @@ func (e *Edge) intersects(other *Edge) bool {
 	return onSegment(e, intersectX, intersectY) && onSegment(other, intersectX, intersectY)
 }
 
+func (e *Edge) dfs(origin *Vertex, cycleSlice *[][]*Edge, vertexStack *[]*Edge) {
+	// Terminating condition 1; return to origin -> record cycle
+	if e.to == origin {
+		cycle := []*Edge{}
+		for _, cV := range *vertexStack {
+			cycle = append(cycle, cV)
+		}
+		cycle = append(cycle, e)
+		fmt.Printf("[%d] cycle: %v\n", len(*cycleSlice), cycle)
+		*cycleSlice = append(*cycleSlice, cycle)
+		return
+	}
+	// Terminating condition 2; other cycle
+	if e.to.visited {
+		return
+	}
+
+	// Mark visited
+	e.to.visited = true
+
+	// Push to stack
+	*vertexStack = append(*vertexStack, e)
+
+	// Recurse
+	for _, edge := range e.to.outgoing {
+		edge.dfs(origin, cycleSlice, vertexStack)
+	}
+
+	// Unmark
+	e.to.visited = false
+
+	// Pop from stack
+	*vertexStack = (*vertexStack)[:len(*vertexStack)-1]
+}
+
 func (e *Edge) draw(c *fyne.Container) {
 	const arrowAngle = math.Pi / 6
 	const arrowLength float64 = 12
@@ -79,7 +115,7 @@ func (e *Edge) draw(c *fyne.Container) {
 	endY := toY - uy*vertexRadius
 
 	shaft := canvas.NewLine(e.color)
-	shaft.StrokeWidth = 2
+	shaft.StrokeWidth = e.stroke
 	shaft.Position1 = fyne.NewPos(float32(startX), float32(startY))
 	shaft.Position2 = fyne.NewPos(float32(endX), float32(endY))
 	c.Add(shaft)
@@ -91,13 +127,13 @@ func (e *Edge) draw(c *fyne.Container) {
 	rightY := endY - arrowLength*math.Sin(theta+arrowAngle)
 
 	leftHead := canvas.NewLine(e.color)
-	leftHead.StrokeWidth = 2
+	leftHead.StrokeWidth = e.stroke
 	leftHead.Position1 = fyne.NewPos(float32(endX), float32(endY))
 	leftHead.Position2 = fyne.NewPos(float32(leftX), float32(leftY))
 	c.Add(leftHead)
 
 	rightHead := canvas.NewLine(e.color)
-	rightHead.StrokeWidth = 2
+	rightHead.StrokeWidth = e.stroke
 	rightHead.Position1 = fyne.NewPos(float32(endX), float32(endY))
 	rightHead.Position2 = fyne.NewPos(float32(rightX), float32(rightY))
 	c.Add(rightHead)

@@ -43,6 +43,7 @@ COPY ./wasm/kd-tree/dist wasm/kd-tree/dist
 COPY ./wasm/rotating-cube/dist wasm/rotating-cube/dist
 COPY ./wasm/rotating-dodecahedron/dist wasm/rotating-dodecahedron/dist
 COPY ./wasm/graph-reachability/dist wasm/graph-reachability/dist
+COPY ./wasm/graph-cycle/dist wasm/graph-cycle/dist
 
 COPY ./hikes/public hikes/public
 
