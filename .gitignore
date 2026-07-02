@@ -25,3 +25,6 @@ wasm_exec.js
 IP2LOCATION-LITE-DB11.IPV6.BIN
 ssl-certificates/
 
+# pyenv
+.python-version
+

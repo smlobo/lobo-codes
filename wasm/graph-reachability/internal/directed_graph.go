@@ -95,7 +95,7 @@ func NewDirectedGraph() *DirectedGraph {
 		if !intersects {
 			g.edges[&edge] = struct{}{}
 			edge.from.outgoing = append(edge.from.outgoing, &edge)
-			edge.from.incoming = append(edge.from.incoming, &edge)
+			edge.to.incoming = append(edge.to.incoming, &edge)
 			fmt.Printf("    Created Edge %v\n", &edge)
 		}
 	}
