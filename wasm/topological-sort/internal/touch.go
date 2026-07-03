@@ -38,7 +38,8 @@ func (t *TouchTracker) Tapped(ev *fyne.PointEvent) {
 
 	if point != t.previous {
 		t.graph.highlightVertex(point)
-		t.label.SetText(fmt.Sprintf("(%.1f, %.1f)", ev.Position.X, ev.Position.Y))
+		t.label.SetText(fmt.Sprintf("Click/Touch a vertex to highlight: (%.1f, %.1f)",
+			ev.Position.X, ev.Position.Y))
 		t.graph.Redraw(t.container)
 		t.previous = point
 	}

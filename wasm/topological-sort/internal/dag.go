@@ -141,7 +141,7 @@ func (g *DirectedAcyclicGraph) removeEdge(edge *Edge) {
 
 func (g *DirectedAcyclicGraph) Draw(c *fyne.Container) {
 	// Draw a line to divide the space into the original graph and topological sorted
-	separator := canvas.NewLine(color.RGBA{R: 255, G: 20, B: 10, A: 255})
+	separator := canvas.NewLine(brown)
 	separator.StrokeWidth = 2
 	if TopologicalOrientation == Vertical {
 		separator.Position1 = fyne.NewPos(float32(GraphWidth), float32(Margin))

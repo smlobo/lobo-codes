@@ -23,7 +23,7 @@ func main() {
 
 	//mouseLabel := widget.NewLabel("Move the mouse to a graph vertex")
 	//mouseTracker := internal.NewMouseTracker(mouseLabel, fContainer)
-	touchLabel := widget.NewLabel("Click/touch a graph vertex")
+	touchLabel := widget.NewLabel("Click/Touch a vertex to highlight")
 	touchTracker := internal.NewTouchTracker(touchLabel, fContainer)
 
 	// Put the mouseTracker & touchTracker behind everything and expand to fill
