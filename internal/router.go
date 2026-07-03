@@ -160,6 +160,10 @@ func WasmRouter() chi.Router {
 	wasmGraphCycleFileServer := http.FileServer(http.Dir("./wasm/graph-cycle/dist"))
 	r.Handle("/graph-cycle/*", wasmGraphCycleFileServer)
 
+	// topological-sort
+	wasmTopologicalSortFileServer := http.FileServer(http.Dir("./wasm/topological-sort/dist"))
+	r.Handle("/topological-sort/*", wasmTopologicalSortFileServer)
+
 	// HEAD requests
 	r.Head("/*", HeadHandler)
 
