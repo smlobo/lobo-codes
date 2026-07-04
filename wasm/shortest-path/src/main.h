@@ -5,6 +5,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "edge.h"
+
 #include <random>
 #include <SDL_render.h>
 #include <SDL_ttf.h>
@@ -15,8 +17,6 @@ extern const int SEPARATION;
 extern const unsigned ARROW;
 
 class EdgeWeightedDigraph;
-class DirectedEdge;
-class EdgeFromComparator;
 
 struct Context {
     SDL_Renderer *renderer;
@@ -30,7 +30,7 @@ struct Context {
     unsigned mouseX, mouseY;
 
     EdgeWeightedDigraph *graph;
-    std::set<DirectedEdge*, EdgeFromComparator> *shortestPath;
+    std::set<DirectedEdge*, EdgeFromComparator> shortestPath;
 
     std::mt19937 re;
     std::uniform_int_distribution<> uniformXLocation;

@@ -34,8 +34,8 @@ DijkstraShortestPath::DijkstraShortestPath(EdgeWeightedDigraph *g) : g(g) {
     // }
 }
 
-std::set<DirectedEdge*, EdgeFromComparator> *DijkstraShortestPath::shortestPath(unsigned d) const {
-    auto *shortestPath = new std::set<DirectedEdge*, EdgeFromComparator>();
+std::set<DirectedEdge*, EdgeFromComparator> DijkstraShortestPath::shortestPath(unsigned d) const {
+    auto shortestPath = std::set<DirectedEdge*, EdgeFromComparator>();
     std::cout << "Shortest Path: ";
 
     unsigned v = d;
@@ -46,7 +46,7 @@ std::set<DirectedEdge*, EdgeFromComparator> *DijkstraShortestPath::shortestPath(
             std::cout << "Impossible edge to: " << v << std::endl;
             break;
         }
-        shortestPath->insert(edgeTo[v]);
+        shortestPath.insert(edgeTo[v]);
         v = edgeTo[v]->from->id;
     }
     std::cout << v << std::endl;

@@ -22,7 +22,7 @@ public:
     std::vector<double> distTo;
 
     explicit DijkstraShortestPath(EdgeWeightedDigraph* g);
-    std::set<DirectedEdge*, EdgeFromComparator>* shortestPath(unsigned d) const;
+    std::set<DirectedEdge*, EdgeFromComparator> shortestPath(unsigned d) const;
 };
 
 class RelaxEdge {
@@ -32,8 +32,9 @@ public:
 
     RelaxEdge(unsigned v, double w);
     bool operator<(const RelaxEdge& other) const;
-    friend std::ostream& operator<<(std::ostream& strm, const RelaxEdge& e);
+    // friend std::ostream& operator<<(std::ostream& strm, const RelaxEdge& e);
 };
+std::ostream& operator<<(std::ostream& strm, const RelaxEdge& e);
 
 class RelaxEdgeComparator {
 public:

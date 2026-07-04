@@ -19,10 +19,13 @@ EdgeWeightedDigraph::EdgeWeightedDigraph(unsigned nVertices, Context &ctx) : nEd
     // Sort by distance from the origin
     // The shortest is the 'source', the longest is the 'destination' of the graph
     std::sort(vertices.begin(), vertices.end(), EuclideanDistanceComparator());
+    // Cannot use due to vertices being a vector of unique_prt<Vertex>, not a Vertex object
+    // std::ranges::sort(vertices);
 
     // Assign ids to the sorted vector of Vertices
     for (auto &v : vertices) {
         v->setId(nextId++);
+        std::cout << *v << std::endl;
     }
 
     // Set the source and destination Vertex id's
@@ -192,7 +195,7 @@ void EdgeWeightedDigraph::render(Context *ctx) {
     // Draw the edges
     for (const auto& v : vertices) {
         for (auto edge : v->edgesFrom) {
-            if (ctx->shortestPath->count(edge.get())) {
+            if (ctx->shortestPath.count(edge.get())) {
                 edge->draw(ctx, SDL_Color{0, 255, 0, SDL_ALPHA_OPAQUE});
                 // std::cout << "    GE: " << *edge << std::endl;
             } else {

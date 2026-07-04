@@ -10,9 +10,6 @@
 #include <set>
 #include <SDL2/SDL.h>
 
-class EdgeWeightComparator;
-struct Context;
-
 class Vertex {
 public:
     unsigned id, origId;
@@ -27,10 +24,12 @@ public:
     bool inRange(int x, int y) const;
     void removeIncomingEdge(const DirectedEdge *edge);
     void removeOutgoingEdge(const DirectedEdge *edge);
+    bool operator<(const Vertex& other) const;
     void draw(Context *ctx, SDL_Color color = SDL_Color{150, 150, 255, SDL_ALPHA_OPAQUE});
 
-    friend std::ostream& operator<<(std::ostream &strm, const Vertex &v);
+    // std::ostream& operator<<(std::ostream &strm, const Vertex &v);
 };
+std::ostream& operator<<(std::ostream &strm, const Vertex &v);
 
 class EuclideanDistanceComparator {
 public:

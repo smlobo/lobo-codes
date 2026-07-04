@@ -48,6 +48,10 @@ void Vertex::removeOutgoingEdge(const DirectedEdge *edge) {
     }
 }
 
+bool Vertex::operator<(const Vertex& other) const {
+    return euclideanDistance < other.euclideanDistance;
+}
+
 void Vertex::draw(Context *ctx, SDL_Color color) {
     DrawFilledCircle(ctx->renderer, x, y, ctx->vertexRadius, color);
 
@@ -75,8 +79,8 @@ void Vertex::draw(Context *ctx, SDL_Color color) {
 }
 
 std::ostream& operator<<(std::ostream &strm, const Vertex &v) {
-    strm << "{" << v.id << "/" << v.origId << "} [" << v.x << "," << v.y << "; Froms:" << v.edgesFrom.size() <<
-        ", Tos:" << v.edgesTo.size() << "]";
+    strm << "{" << v.id << "/" << v.origId << "} [" << v.x << "," << v.y << "<" << v.euclideanDistance << ">; Froms:" <<
+        v.edgesFrom.size() << ", Tos:" << v.edgesTo.size() << "]";
     return strm;
 }
 

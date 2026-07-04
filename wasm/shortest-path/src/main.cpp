@@ -60,12 +60,10 @@ void loop_handler(void *arg)
         ctx->shortestPath = dsp.shortestPath(ctx->graph->destinationId);
         // Print to console
         std::cout << "Shortest Path:\n";
-        for (DirectedEdge *e : *ctx->shortestPath) {
+        for (DirectedEdge *e : ctx->shortestPath) {
             std::cout << "  " << *e << "\n";
         }
         ctx->graph->render(ctx);
-        delete ctx->shortestPath;
-        ctx->shortestPath = nullptr;
         ctx->modified = false;
     }
 
@@ -103,7 +101,6 @@ int mainf(int xDim, int yDim) {
 
     EdgeWeightedDigraph edgeWeightedDigraph(NODES, ctx);
     ctx.graph = &edgeWeightedDigraph;
-    ctx.shortestPath = nullptr;
 
     TTF_Init();
     ctx.font = TTF_OpenFont("fonts/SpaceMono-Regular.ttf", 25);

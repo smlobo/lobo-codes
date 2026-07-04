@@ -27,8 +27,9 @@ public:
     DirectedEdge(Vertex *from, Vertex *to);
     void draw(Context *ctx, SDL_Color color = SDL_Color{0, 0, 0, SDL_ALPHA_OPAQUE});
 
-    friend std::ostream& operator<<(std::ostream &strm, const DirectedEdge &e);
+    // friend std::ostream& operator<<(std::ostream &strm, const DirectedEdge &e);
 };
+std::ostream& operator<<(std::ostream &strm, const DirectedEdge &e);
 
 class EdgeWeightComparator {
 public:

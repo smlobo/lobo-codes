@@ -31,8 +31,9 @@ public:
     void draw(Context* ctx) const;
 
     bool operator<(const Vertex& other) const;
-    friend std::ostream& operator<<(std::ostream& strm, const Vertex& v);
+    // friend std::ostream& operator<<(std::ostream& strm, const Vertex& v);
 };
+std::ostream& operator<<(std::ostream& strm, const Vertex& v);
 
 class EuclideanDistanceComparator {
 public:

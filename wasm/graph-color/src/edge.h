@@ -30,8 +30,9 @@ public:
     void draw(Context *ctx, SDL_Color color = SDL_Color{255, 150, 0, SDL_ALPHA_OPAQUE}) const;
 
     bool operator==(const Edge& other) const;
-    friend std::ostream& operator<<(std::ostream& strm, const Edge& e);
+    // friend std::ostream& operator<<(std::ostream& strm, const Edge& e);
 };
+std::ostream& operator<<(std::ostream& strm, const Edge& e);
 
 class EdgeHash {
 public:
