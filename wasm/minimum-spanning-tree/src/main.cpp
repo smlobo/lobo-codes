@@ -14,9 +14,10 @@ constexpr unsigned SLEEP_DEFAULT = 100;
 constexpr unsigned SLEEP_DELTA = 5;
 constexpr unsigned NODES = 20;
 constexpr unsigned RADIUS = 15;
-constexpr int IN_RANGE = RADIUS * 2;
-constexpr int SEPARATION = RADIUS * 5;
-constexpr unsigned ARROW = 10;
+constexpr int DIAMETER = RADIUS * 2;
+constexpr SDL_Color VERTEX_COLOR = {100, 255, 100, SDL_ALPHA_OPAQUE};
+constexpr SDL_Color EDGE_COLOR = {255, 150, 0, SDL_ALPHA_OPAQUE};
+constexpr SDL_Color HIGHLIGHT_EDGE_COLOR = {255, 50, 255, SDL_ALPHA_OPAQUE};
 
 void process_input(Context *ctx) {
     SDL_Event event;
@@ -56,7 +57,8 @@ void loop_handler(void *arg)
             ctx->graph->update(ctx);
         }
 
-        ctx->graph->render(ctx);
+        ctx->graph->computeMinimumSpanningTree();
+        ctx->graph->draw(ctx);
         ctx->modified = false;
     }
 

@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "main.h"
+#include "prims-mst.h"
 #include "vertex.h"
 
 EdgeWeightedGraph::EdgeWeightedGraph(unsigned nVertices, Context& ctx) : nextId(0) {
@@ -17,19 +18,15 @@ EdgeWeightedGraph::EdgeWeightedGraph(unsigned nVertices, Context& ctx) : nextId(
         int x = ctx.uniformXLocation(ctx.re);
         int y = ctx.uniformYLocation(ctx.re);
 
-        bool tooClose = false;
-        for (const auto& idVertexPair : vertices) {
-            if (idVertexPair.second.tooClose(x, y)) {
-                std::cout << "Skipping random vertex: " << x << ", " << y << "; near: " << idVertexPair.second << std::endl;
-                tooClose = true;
-                break;
-            }
-        }
-        if (!tooClose) {
+        // Not too close, use this vertex
+        if (cellVertexOrNeighbor(x, y) == NULL_CELL) {
             auto [idVertexPair, inserted] = vertices.emplace(nextId, Vertex(x, y, nextId));
             assert(inserted);
             nextId++;
             std::cout << "Created random vertex: " << idVertexPair->second << std::endl;
+            Cell c = cellFor(idVertexPair->second.x, idVertexPair->second.y);
+            auto [cellIdPair, cellInserted] = cellVertexIdMap.try_emplace(c, idVertexPair->first);
+            assert(cellInserted);
         }
     }
 
@@ -74,6 +71,86 @@ EdgeWeightedGraph::EdgeWeightedGraph(unsigned nVertices, Context& ctx) : nextId(
             std::cout << "  Created edge: " << *edgePtr << std::endl;
         }
     }
+}
+
+Cell EdgeWeightedGraph::cellVertex(int x, int y) const {
+    Cell c = cellFor(x, y);
+    auto cellIdPair = cellVertexIdMap.find(c);
+    if (cellIdPair != cellVertexIdMap.end()) {
+        auto idVertexPair = vertices.find(cellIdPair->second);
+        assert(idVertexPair != vertices.end());
+        return cellIdPair->first;
+    }
+    return NULL_CELL;
+}
+
+Cell EdgeWeightedGraph::cellVertexOrNeighbor(int x, int y) const {
+    Cell cell = cellVertex(x, y);
+    if (cell != NULL_CELL) {
+        return cell;
+    }
+
+    Cell c = cellFor(x, y);
+    std::vector<Cell> neighbors = {
+        Cell(c.x-1, c.y-1),
+        Cell(c.x-1, c.y),
+        Cell(c.x-1, c.y+1),
+        Cell(c.x, c.y-1),
+        Cell(c.x, c.y+1),
+        Cell(c.x+1, c.y-1),
+        Cell(c.x+1, c.y),
+        Cell(c.x+1, c.y+1),
+    };
+    for (const auto& neighbor : neighbors) {
+        auto cellIdPair = cellVertexIdMap.find(neighbor);
+        if (cellIdPair != cellVertexIdMap.end()) {
+            auto idVertexPair = vertices.find(cellIdPair->second);
+            assert(idVertexPair != vertices.end());
+            return neighbor;
+        }
+    }
+    return NULL_CELL;
+}
+
+Cell EdgeWeightedGraph::cellVertexOrCornerNeighbor(int x, int y) const {
+    Cell cell = cellVertex(x, y);
+    if (cell != NULL_CELL) {
+        return cell;
+    }
+
+    // Check neighboring corner cells
+    Cell c = cellFor(x, y);
+    std::vector<Cell> neighbors = {};
+    if (x > c.midX()) {
+        if (y > c.midY()) {
+            neighbors.push_back(Cell(c.x+1, c.y+1));
+            neighbors.push_back(Cell(c.x+1, c.y));
+            neighbors.push_back(Cell(c.x, c.y+1));
+        } else {
+            neighbors.push_back(Cell(c.x+1, c.y-1));
+            neighbors.push_back(Cell(c.x+1, c.y));
+            neighbors.push_back(Cell(c.x, c.y-1));
+        }
+    } else {
+        if (y > c.midY()) {
+            neighbors.push_back(Cell(c.x-1, c.y+1));
+            neighbors.push_back(Cell(c.x-1, c.y));
+            neighbors.push_back(Cell(c.x, c.y+1));
+        } else {
+            neighbors.push_back(Cell(c.x-1, c.y-1));
+            neighbors.push_back(Cell(c.x-1, c.y));
+            neighbors.push_back(Cell(c.x, c.y-1));
+        }
+    }
+    for (const auto& neighbor : neighbors) {
+        auto cellIdPair = cellVertexIdMap.find(neighbor);
+        if (cellIdPair != cellVertexIdMap.end()) {
+            auto idVertexPair = vertices.find(cellIdPair->second);
+            assert(idVertexPair != vertices.end());
+            return neighbor;
+        }
+    }
+    return NULL_CELL;
 }
 
 void EdgeWeightedGraph::removeVertex(unsigned id) {
@@ -148,15 +225,16 @@ void EdgeWeightedGraph::removeVertex(unsigned id) {
 }
 
 void EdgeWeightedGraph::update(Context *ctx) {
-    // Delete a vertex and all incoming/outgoing edges if mouse click on
-    // Brute force
-    // TODO: kd tree
-    for (const auto& idVertexPair : vertices) {
-        if (idVertexPair.second.inRange(ctx->mouseX, ctx->mouseY)) {
-            std::cout << "Removing vertex: " << idVertexPair.second << std::endl;
-            removeVertex(idVertexPair.first);
-            return;
-        }
+    // Remove vertex
+    Cell removeCell = cellVertexOrCornerNeighbor(ctx->mouseX, ctx->mouseY);
+    if (removeCell != NULL_CELL) {
+        auto cellIdPair = cellVertexIdMap.find(removeCell);
+        assert(cellIdPair != cellVertexIdMap.end());
+        auto removeIdVertexPair = vertices.find(cellIdPair->second);
+        assert(removeIdVertexPair != vertices.end());
+        removeVertex(removeIdVertexPair->first);
+        cellVertexIdMap.erase(cellIdPair);
+        return;
     }
 
     // Create a vertex
@@ -165,6 +243,9 @@ void EdgeWeightedGraph::update(Context *ctx) {
     nextId++;
     Vertex *newVertex = &idVertexPair->second;
     std::cout << "Created vertex: " << *newVertex << std::endl;
+    Cell c = cellFor(idVertexPair->second.x, idVertexPair->second.y);
+    auto [nCellIdPair, nCellInserted] = cellVertexIdMap.try_emplace(c, idVertexPair->first);
+    assert(nCellInserted);
 
     // Create edges for a complete graph
     std::vector<Edge> completeEdges;
@@ -184,7 +265,7 @@ void EdgeWeightedGraph::update(Context *ctx) {
         completeEdges.emplace_back(from, to);
     }
     std::sort(completeEdges.begin(), completeEdges.end(), EdgeWeightComparator());
-    // Add all non-intersecting edgers to the graph
+    // Add all non-intersecting edges to the graph
     for (Edge& completeEdge : completeEdges) {
         std::cout << "New consider edge: " << completeEdge << std::endl;
         bool intersects = false;
@@ -209,7 +290,25 @@ void EdgeWeightedGraph::update(Context *ctx) {
     }
 }
 
-void EdgeWeightedGraph::render(Context *ctx) {
+void EdgeWeightedGraph::computeMinimumSpanningTree() {
+    // Reset colors
+    for (const auto& edge : edges) {
+        edge.color = EDGE_COLOR;
+        edge.width = 1;
+    }
+
+    PrimsMinimumSpanningTree mst = PrimsMinimumSpanningTree(*this);
+
+    std::cout << "Minimum spanning tree [" << mst.mstEdges.size() << "]: " << mst << std::endl;
+
+    // Set colors
+    for (const auto& edge : mst.mstEdges) {
+        edge->color = HIGHLIGHT_EDGE_COLOR;
+        edge->width = 6;
+    }
+}
+
+void EdgeWeightedGraph::draw(Context *ctx) const {
     // std::cout << "Render Graph" << std::endl;
 
     // Clear
@@ -219,7 +318,7 @@ void EdgeWeightedGraph::render(Context *ctx) {
     // Draw the vertices
     for (const auto& idVertexPair : vertices) {
         idVertexPair.second.draw(ctx);
-        // std::cout << "  B: " << *v << std::endl;
+        // std::cout << "  V: " << idVertexPair.second << std::endl;
     }
 
     // Draw the edges

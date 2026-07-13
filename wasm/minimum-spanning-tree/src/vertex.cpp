@@ -4,13 +4,12 @@
 
 #include "vertex.h"
 
-#include <cassert>
 #include <iostream>
 
 #include "main.h"
 #include "sdl-helpers/circle.h"
 
-Vertex::Vertex(unsigned x, unsigned y, unsigned id) : id(id), x(x), y(y), color(-1) {
+Vertex::Vertex(unsigned x, unsigned y, unsigned id) : id(id), x(x), y(y) {
     euclideanDistance = x*x + y*y;
 }
 
@@ -18,16 +17,6 @@ double Vertex::distanceTo(Vertex* v) const {
     int xDiff = x - v->x;
     int yDiff = y - v->y;
     return std::sqrt(xDiff * xDiff + yDiff * yDiff);
-}
-
-bool Vertex::inRange(int givenX, int givenY) const {
-    return (givenX >= (x - IN_RANGE) &&  givenX <= (x + IN_RANGE) && givenY >= (y - IN_RANGE) &&
-        givenY <= y + IN_RANGE);
-}
-
-bool Vertex::tooClose(int givenX, int givenY) const {
-    return (givenX >= (x - SEPARATION) &&  givenX <= (x + SEPARATION) && givenY >= (y - SEPARATION) &&
-        givenY <= y + SEPARATION);
 }
 
 void Vertex::removeEdge(const Edge* edge) {
@@ -45,7 +34,7 @@ int Vertex::degree() const {
 }
 
 void Vertex::draw(Context* ctx) const {
-    DrawFilledCircle(ctx->renderer, x, y, ctx->vertexRadius, SDL_Color{100, 255, 100, SDL_ALPHA_OPAQUE});
+    DrawFilledCircle(ctx->renderer, x, y, ctx->vertexRadius, VERTEX_COLOR);
 
     // Write id in circle
     SDL_Color black = {0, 0, 0};
@@ -70,12 +59,8 @@ void Vertex::draw(Context* ctx) const {
     SDL_DestroyTexture(Message);
 }
 
-bool Vertex::operator<(const Vertex& other) const {
-    return id < other.id;
-}
-
 std::ostream& operator<<(std::ostream& strm, const Vertex& v) {
-    strm << "{" << v.id << "} [(" << v.x << "," << v.y << "); " << v.color << " Edges:" << v.edges.size() << "]";
+    strm << "{" << v.id << "} [(" << v.x << "," << v.y << "); " << " Edges:" << v.edges.size() << "]";
     return strm;
 }
 

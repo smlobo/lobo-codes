@@ -8,7 +8,10 @@ add_executable(${PROJECT_NAME}
         src/edge-weighted-graph.cpp
         src/vertex.cpp
         src/edge.cpp
+        src/cell.cpp
+        src/prims-mst.cpp
         src/sdl-helpers/circle.cpp
+        src/sdl-helpers/line.cpp
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE -O2 -sUSE_SDL=2 -sUSE_SDL_TTF=2)
@@ -39,4 +42,3 @@ install(FILES ${CMAKE_SOURCE_DIR}/${PROJECT_NAME}.html
         DESTINATION dist/${PROJECT_NAME}
         RENAME index.html
 )
-

@@ -17,7 +17,7 @@ import (
 func main() {
 	a := app.New()
 	a.Settings().SetTheme(theme.LightTheme())
-	w := a.NewWindow("Acyclic Directed Graph Topological Sort")
+	w := a.NewWindow("Topological Sort")
 
 	fContainer := container.NewWithoutLayout()
 

@@ -136,6 +136,10 @@ func WasmRouter() chi.Router {
 	wasmGraphColoringFileServer := http.FileServer(http.Dir("./wasm/graph-color/dist"))
 	r.Handle("/graph-color/*", wasmGraphColoringFileServer)
 
+	// minimum-spanning-tree
+	wasmMinimumSPanningTreeFileServer := http.FileServer(http.Dir("./wasm/minimum-spanning-tree/dist"))
+	r.Handle("/minimum-spanning-tree/*", wasmMinimumSPanningTreeFileServer)
+
 	// koch-snowflake
 	wasmKochSnowflakeFileServer := http.FileServer(http.Dir("./wasm/koch-snowflake/dist"))
 	r.Handle("/koch-snowflake/*", wasmKochSnowflakeFileServer)

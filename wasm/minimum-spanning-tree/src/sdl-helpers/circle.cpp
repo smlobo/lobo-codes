@@ -4,6 +4,8 @@
 
 #include "circle.h"
 
+#include <cmath>
+
 void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, SDL_Color color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
 
@@ -41,8 +43,15 @@ void DrawCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, S
     }
 }
 
-void DrawFilledCircle(SDL_Renderer * renderer, int centreX, int centreY, int radius, SDL_Color color) {
-    for (unsigned i = 1; i <= radius; i++) {
-        DrawCircle(renderer, centreX, centreY, i, color);
+void DrawFilledCircle(SDL_Renderer* renderer, int centreX, int centreY, int radius, SDL_Color color) {
+    if (radius < 0) {
+        return;
+    }
+
+    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
+
+    for (int y = -radius; y <= radius; ++y) {
+        int x = static_cast<int>(std::sqrt(radius * radius - y * y));
+        SDL_RenderDrawLine(renderer, centreX - x, centreY + y, centreX + x, centreY + y);
     }
 }

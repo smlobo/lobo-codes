@@ -10,9 +10,10 @@
 #include <SDL_ttf.h>
 
 extern const unsigned RADIUS;
-extern const int IN_RANGE;
-extern const int SEPARATION;
-extern const unsigned ARROW;
+extern const int DIAMETER;
+extern const SDL_Color VERTEX_COLOR;
+extern const SDL_Color EDGE_COLOR;
+extern const SDL_Color HIGHLIGHT_EDGE_COLOR;
 
 class EdgeWeightedGraph;
 

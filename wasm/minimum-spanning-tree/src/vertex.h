@@ -16,18 +16,13 @@ public:
     const unsigned id;
     int x, y;
     unsigned euclideanDistance;
-    mutable int color;
     std::vector<const Edge*> edges;
 
     Vertex(unsigned x, unsigned y, unsigned id);
     double distanceTo(Vertex* v) const;
-    bool inRange(int x, int y) const;
-    bool tooClose(int x, int y) const;
     void removeEdge(const Edge *edge);
     int degree() const;
     void draw(Context* ctx) const;
-
-    bool operator<(const Vertex& other) const;
 };
 std::ostream& operator<<(std::ostream& strm, const Vertex& v);
 

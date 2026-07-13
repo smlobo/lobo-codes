@@ -4,18 +4,21 @@
 
 #include "edge.h"
 
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <iomanip>
+#include <iostream>
 
 #include "main.h"
+#include "sdl-helpers/line.h"
 #include "vertex.h"
 
 Edge::Edge(Vertex* from, Vertex* to) :
-    from(from), to(to) {
+    from(from), to(to), color(EDGE_COLOR), width(1) {
     // weight = std::sqrt(std::pow(from->x - to->x, 2) + std::pow(from->y - to->y, 2));
 
-    // Calculate the arrow x & y coordinates
+    // Calculate the edge x & y coordinates
     int xDiff = from->x - to->x;
     int yDiff = from->y - to->y;
 
@@ -32,8 +35,6 @@ Edge::Edge(Vertex* from, Vertex* to) :
     // Calculate the angle
     angle = std::atan2(yTo - yFrom, xTo - xFrom);
     angleDegrees = angle * 180.0 / M_PI;
-    double leftArrowAngle = angle - M_PI/6;
-    double rightArrowAngle = angle + M_PI/6;
 }
 
 bool Edge::intersects(const Edge* edge) const {
@@ -72,9 +73,8 @@ Vertex* Edge::other(const Vertex* v) const {
     }
 }
 
-void Edge::draw(Context* ctx, SDL_Color color) const {
-    SDL_SetRenderDrawColor(ctx->renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderDrawLine(ctx->renderer, xFrom, yFrom, xTo, yTo);
+void Edge::draw(Context* ctx) const {
+    DrawLine(ctx->renderer, xFrom, yFrom, xTo, yTo, width, color);
 }
 
 bool Edge::operator==(const Edge& other) const {
@@ -94,6 +94,10 @@ std::size_t EdgeHash::operator()(const Edge& e) const {
 
 bool EdgeWeightComparator::operator()(const Edge& e1, const Edge& e2) const {
     return e1.weight < e2.weight;
+}
+
+bool ReverseEdgeWeightComparator::operator()(const Edge* e1, const Edge* e2) const {
+    return e1->weight > e2->weight;
 }
 
 bool EdgeFromComparator::operator()(const Edge& e1, const Edge& e2) const {

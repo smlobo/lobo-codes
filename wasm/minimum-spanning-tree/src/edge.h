@@ -18,6 +18,8 @@ public:
     double weight;
     double angle;
     double angleDegrees;
+    mutable SDL_Color color;
+    mutable int width;
 
     // Arrow x & y coordinates
     int xFrom, yFrom, xTo, yTo;
@@ -25,7 +27,7 @@ public:
     Edge(Vertex* from, Vertex* to);
     bool intersects(const Edge* edge) const;
     Vertex* other(const Vertex* v) const;
-    void draw(Context *ctx, SDL_Color color = SDL_Color{255, 150, 0, SDL_ALPHA_OPAQUE}) const;
+    void draw(Context *ctx) const;
 
     bool operator==(const Edge& other) const;
 };
@@ -39,6 +41,11 @@ public:
 class EdgeWeightComparator {
 public:
     bool operator()(const Edge& e1, const Edge& e2) const;
+};
+
+class ReverseEdgeWeightComparator {
+public:
+    bool operator()(const Edge* e1, const Edge* e2) const;
 };
 
 class EdgeFromComparator {
