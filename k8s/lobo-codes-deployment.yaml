@@ -23,7 +23,7 @@ spec:
       containers:
         - name: lobo-codes
           image: localhost:32000/lobo-codes:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           env:
             - name: NODE_NAME
               valueFrom:
