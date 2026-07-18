@@ -33,9 +33,10 @@ func (t *TouchTracker) Tapped(ev *fyne.PointEvent) {
 	t.label.SetText(fmt.Sprintf("%.1f, %.1f", ev.Position.X, ev.Position.Y))
 
 	point := QuantizedPoint{
-		x: quantized(int64(ev.Position.X)),
-		y: quantized(int64(ev.Position.Y)),
+		x: quantized(int(ev.Position.X)),
+		y: quantized(int(ev.Position.Y)),
 	}
+	t.graph.Update(point, int(ev.Position.X), int(ev.Position.Y))
 	t.graph.HighlightReachableAt(point)
 	t.graph.Redraw(t.container)
 }

@@ -10,7 +10,8 @@ import (
 
 type Vertex struct {
 	id       uint
-	x, y     int64
+	x        int
+	y        int
 	qPoint   QuantizedPoint
 	color    color.Color
 	outgoing []*Edge
@@ -22,6 +23,24 @@ func (v *Vertex) String() string {
 	s += fmt.Sprintf("  Outgoing: %v\n", v.outgoing)
 	s += fmt.Sprintf("  Incoming: %v\n", v.incoming)
 	return s
+}
+
+func (v *Vertex) deleteIncoming(e *Edge) {
+	for inIndex := range v.incoming {
+		if v.incoming[inIndex] == e {
+			v.incoming = append(v.incoming[:inIndex], v.incoming[inIndex+1:]...)
+			return
+		}
+	}
+}
+
+func (v *Vertex) deleteOutgoing(e *Edge) {
+	for outIndex := range v.outgoing {
+		if v.outgoing[outIndex] == e {
+			v.outgoing = append(v.outgoing[:outIndex], v.outgoing[outIndex+1:]...)
+			return
+		}
+	}
 }
 
 func (v *Vertex) dfs(visitedSet *map[*Vertex]struct{}) {

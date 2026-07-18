@@ -3,23 +3,23 @@ package internal
 import "math"
 
 var (
-	WindowHeight int64
-	WindowWidth  int64
+	WindowHeight int
+	WindowWidth  int
 )
 var (
-	MaxY int64
-	MaxX int64
+	MaxY int
+	MaxX int
 )
 
-const numVertices int = 20
-const Delta int64 = 60
-const Margin int64 = 100
+const numVertices int = 8
+const Delta = int(pointDiameter)
+const Margin int = 100
 
 const pointDiameter float32 = 30.0
 const pointOutline float32 = 2.0
 
-func quantized(i int64) uint {
-	return uint(i / Delta)
+func quantized(i int) int {
+	return i / Delta
 }
 
 func weight(p, q *Vertex) uint64 {
@@ -28,6 +28,6 @@ func weight(p, q *Vertex) uint64 {
 	return uint64(math.Sqrt(xDiff*xDiff + yDiff*yDiff))
 }
 
-func euclidean(x, y uint) float64 {
+func euclidean(x, y int) float64 {
 	return math.Sqrt(float64(x*x + y*y))
 }

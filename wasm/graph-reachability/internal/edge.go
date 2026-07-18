@@ -9,14 +9,22 @@ import (
 	"fyne.io/fyne/v2/canvas"
 )
 
+type EdgeId struct {
+	from, to uint
+}
+
 type Edge struct {
-	from, to *Vertex
-	weight   uint64
-	color    color.Color
+	from  *Vertex
+	to    *Vertex
+	color color.Color
 }
 
 func (e *Edge) String() string {
-	return fmt.Sprintf("(%d -> %d; %d)", e.from.id, e.to.id, e.weight)
+	return fmt.Sprintf("(%d -> %d)", e.from.id, e.to.id)
+}
+
+func (e *Edge) weight() uint64 {
+	return weight(e.from, e.to)
 }
 
 func (e *Edge) intersects(other *Edge) bool {

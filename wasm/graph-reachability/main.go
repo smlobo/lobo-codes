@@ -30,8 +30,8 @@ func main() {
 	content := container.NewStack(mouseTracker, touchTracker, fContainer, container.NewVBox(mouseLabel, touchLabel))
 	w.SetContent(content)
 
-	internal.WindowWidth = int64(js.Global().Get("innerWidth").Int())
-	internal.WindowHeight = int64(js.Global().Get("innerHeight").Int())
+	internal.WindowWidth = js.Global().Get("innerWidth").Int()
+	internal.WindowHeight = js.Global().Get("innerHeight").Int()
 	internal.MaxX = (internal.WindowWidth - internal.Margin) / internal.Delta
 	internal.MaxY = (internal.WindowHeight - internal.Margin) / internal.Delta
 	fmt.Printf("windowWidth: %d, windowHeight: %d\n", internal.WindowWidth, internal.WindowHeight)

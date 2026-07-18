@@ -5,7 +5,8 @@ import (
 )
 
 type QuantizedPoint struct {
-	x, y uint
+	x int
+	y int
 }
 
 func (p *QuantizedPoint) String() string {

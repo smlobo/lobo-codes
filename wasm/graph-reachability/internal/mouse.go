@@ -33,8 +33,8 @@ func (m *MouseTracker) MouseMoved(ev *desktop.MouseEvent) {
 	m.label.SetText(fmt.Sprintf("%.1f, %.1f", ev.Position.X, ev.Position.Y))
 
 	point := QuantizedPoint{
-		x: quantized(int64(ev.Position.X)),
-		y: quantized(int64(ev.Position.Y)),
+		x: quantized(int(ev.Position.X)),
+		y: quantized(int(ev.Position.Y)),
 	}
 	m.graph.HighlightReachableAt(point)
 	m.graph.Redraw(m.container)
