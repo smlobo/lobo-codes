@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WebGPU Triangle</title>
+  <link rel="icon" href="../static/images/web-assembly-icon-128px.png">
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #10131a; color: #e9edf5; font-family: system-ui, sans-serif; }
+    main { text-align: center; }
+    canvas { width: min(900px, calc(100vw - 32px)); height: auto; border: 1px solid #35425a; border-radius: 28px; }
+    p { color: #aebbd0; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>WebGPU triangle</h1>
+    <p>A minimal C++ / WebAssembly / WebGPU render pass.</p>
+    <canvas id="canvas" width="900" height="600"></canvas>
+  </main>
+  <script>
+    var Module = {
+      canvas: document.getElementById('canvas'),
+      printErr: text => console.error(text)
+    };
+  </script>
+  <script src="webgpu-triangle.js"></script>
+</body>
+</html>
