@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 const FredApi = "https://api.stlouisfed.org/fred/series"
@@ -39,8 +38,8 @@ func fredData(fredSeries string, writer http.ResponseWriter, request *http.Reque
 
 	// Get the title & units
 	go func() {
-		response, err := otelhttp.Get(request.Context(), FredApi+"?file_type=json&series_id="+fredSeries+
-			"&api_key="+FredApiKey)
+		response, err := http.Get(FredApi + "?file_type=json&series_id=" + fredSeries +
+			"&api_key=" + FredApiKey)
 		//response, err := http.Get(FredApi + "?file_type=json&series_id=" + fredSeries + "&api_key=" + FredApiKey)
 		if err != nil || response.StatusCode > http.StatusOK {
 			writer.WriteHeader(http.StatusBadRequest)
@@ -117,7 +116,7 @@ func censusData(censusSeries string, writer http.ResponseWriter, request *http.R
 	returnData.Data = make([]seriesData, 0, 100)
 
 	// Get the data
-	response, err := otelhttp.Get(request.Context(), CensusApi+"?get=POP,NAME,GENC&YR=&key="+CensusApiKey)
+	response, err := http.Get(CensusApi + "?get=POP,NAME,GENC&YR=&key=" + CensusApiKey)
 	if err != nil || response.StatusCode > http.StatusOK {
 		writer.WriteHeader(http.StatusBadRequest)
 		return returnData, false
