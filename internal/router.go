@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/go-chi/chi/v5"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
@@ -137,8 +136,12 @@ func WasmRouter() chi.Router {
 	r.Handle("/graph-color/*", wasmGraphColoringFileServer)
 
 	// minimum-spanning-tree
-	wasmMinimumSPanningTreeFileServer := http.FileServer(http.Dir("./wasm/minimum-spanning-tree/dist"))
-	r.Handle("/minimum-spanning-tree/*", wasmMinimumSPanningTreeFileServer)
+	wasmMinimumSpanningTreeFileServer := http.FileServer(http.Dir("./wasm/minimum-spanning-tree/dist"))
+	r.Handle("/minimum-spanning-tree/*", wasmMinimumSpanningTreeFileServer)
+
+	// minimum-spanning-tree
+	wasmWebgpuTriangleFileServer := http.FileServer(http.Dir("./wasm/webgpu-triangle/dist"))
+	r.Handle("/webgpu-triangle/*", wasmWebgpuTriangleFileServer)
 
 	// koch-snowflake
 	wasmKochSnowflakeFileServer := http.FileServer(http.Dir("./wasm/koch-snowflake/dist"))
