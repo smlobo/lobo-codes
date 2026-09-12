@@ -1,5 +1,6 @@
 [
   { "name": "Appalachian Trail, Double Spring Gap", "coords": [-83.5429, 35.5652] },
+  { "name": "Bryce Canyon", "coords": [-112.1605, 37.6187] },
   { "name": "Calloway Peak from the Parkway", "coords": [-81.8103, 36.1115] },
   { "name": "Central Park", "coords": [-73.9716, 40.7755] },
   { "name": "The Pond at Central Park", "coords": [-73.9736, 40.7657] },
@@ -17,6 +18,7 @@
   { "name": "Fort Macon", "coords": [-76.6820, 34.6946] },
   { "name": "Fort Sumter", "coords": [-79.8752, 32.7527] },
   { "name": "Golden Gate Park", "coords": [-122.4698, 37.7698] },
+  { "name": "Grand Canyon North Rim", "coords": [-112.0487, 36.1936] },
   { "name": "Grand Prismatic Spring", "coords": [-110.8398, 44.5235] },
   { "name": "Grassy Ridge Bald", "coords": [-82.0935, 36.1059] },
   { "name": "Greybeard Mountain", "coords": [-82.2949, 35.6843] },
@@ -57,5 +59,8 @@
   { "name": "Stone Mountain State Park", "coords": [-81.0443, 36.3933] },
   { "name": "Company Mill Trail at Umstead State Park", "coords": [-78.7486, 35.8535] },
   { "name": "Sycamore Trail at Umstead State Park", "coords": [-78.7519, 35.8610] },
-  { "name": "Lower Yellowstone Falls", "coords": [-110.4963, 44.7182] }
+  { "name": "Lower Yellowstone Falls", "coords": [-110.4963, 44.7182] },
+  { "name": "Zion Canyon Overlook", "coords": [-112.9461, 37.2135] },
+  { "name": "Zion; Kolob Canyons", "coords": [-113.1943, 37.4641] },
+  { "name": "Zion; The Narrows", "coords": [-112.9490, 37.3085] }
 ]
