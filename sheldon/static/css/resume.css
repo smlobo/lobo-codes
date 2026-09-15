@@ -43,7 +43,7 @@ a:active {
 }
 
 .container {
-    max-width: 700px;
+    max-width: 900px;
     background: #fff;
     margin: 0px auto 0px;
     box-shadow: 1px 1px 2px #DAD7D7;
@@ -154,12 +154,12 @@ a:active {
     }
 
     .left {
-        width: 35%;
+        width: 30%;
     }
 
     .right {
         tex-align: right;
-        width: 64%;
+        width: 69%;
     }
 
     .name {

@@ -19,7 +19,7 @@
                 919-961-6206<br>
                 <a href="mailto: sheldon.m.lobo@gmail.com">sheldon.m.lobo@gmail.com</a><br>
                 Cary, NC 27519<br>
-                <a href="static/sheldonlobo_resume_june23.pdf" target="_blank">PDF Resume</a>
+                <a href="static/sheldonlobo_resume_sept26.pdf" target="_blank">PDF Resume</a>
             </div>
             <div class="right">
                 <a href="https://sheldon.lobo.codes/" target="_blank">
@@ -35,7 +35,10 @@
         <div class="section">
             <div class="section__title">Profile</div>
             <span class="desc">
-                Extensive experience in binary instrumentation (native code, Java bytecode, PHP, .NET) & compilers (backend, linkers, runtime libraries).
+                <ul class="section__unlist">
+                    <li>Compilers, APM, SAST tools - binary/bytecode/IR translation/instrumentation</li>
+                    <li>Backend engineer - GCP</li>
+                </ul>
             </span>
         </div>
 
@@ -43,16 +46,12 @@
             <div class="section__title">Skills</div>
             <span class="desc">
                 <ul class="section__unlist">
-                    <li>C, C++, Java, Go, x64/SPARC assembly</li>
-                    <li>Binary rewriting (native, Java bytecode, PHP, .NET)</li>
-                    <li>Compilers (backend, linkers, runtime libraries, debuggers)</li>
-                    <li>Scripting (Python, bash, RegEx)</li>
+                    <li>C, C++, Java, Go, x64/SPARC/ARM assembly</li>
+                    <li>Binary rewriting/translation (native, Java/Python bytecode, Go SSA, PHP, .NET)</li>
+                    <li>Compilers (backend, linkers, runtime libraries, debuggers, LLVM)</li>
                     <li>Docker, Kubernetes, Linux/UNIX, VMs, GCP, GKE</li>
                     <li>App servers (Tomcat, Jetty, WLS, WAS, Go)</li>
-                    <li>MySql, Cassandra, SQLite, Redis, GCP Firestore</li>
-                    <li>IntelliJ, CLion, GoLand</li>
-                    <li>make, maven, ant, gradle / git, hg</li>
-                    <li>CICD - Bitbucket, TeamCity, Jenkins, CircleCi</li>
+                    <li>MySql, SQLite/RQLite, GCP Firestore</li>
                 </ul>
             </span>
         </div>
@@ -76,6 +75,28 @@
             <div class="section__list">
                 <div class="section__list-item">
                     <div class="left">
+                        <div class="name">Principal Software Engineer</div>
+                        <div class="name">Oracle</div>
+                        <div class="duration">2023 - Present</div>
+                    </div>
+                    <div class="right">
+                        <div class="desc">
+                            LLVM based SAST tool
+                            <ul class="section__unlist">
+                                <li>AI based plugin for build integration & code analysis</li>
+                                <li>Translation to LLVM IR from:</li>
+                                <ul class="section__unlist">
+                                    <li>Python bytecode</li>
+                                    <li>Go SSA</li>
+                                </ul>
+                                <li>JDeveloper extension for enabling LLVM bitcode generation</li>
+                                <li>Statistics based checker framework; report an unchecked-result defect</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="section__list-item">
+                    <div class="left">
                         <div class="name">Senior Backend Engineer</div>
                         <div class="name">Pendo</div>
                         <div class="duration">2022 - 2023</div>
@@ -84,8 +105,8 @@
                         <div class="desc">
                             The core distributed systems Platform team using Golang.
                             <ul class="section__unlist">
-                                <li>Cross GCP project migrations of live customer data at scale. Copying, filtering, mutating data across GCS buckets and GCP Firestore Entities.</li>
-                                <li>On call responding to customer issues with realtime AppEngine/GKE Event ingestion and batch processing GCP Pub/Sub messaging based jobs framework.</li>
+                                <li>Cross GCP project migrations of live customer data at scale. Copying, filtering, mutating data across GCS buckets and GCP Firestore Entities in Go. Scale of 500K GCS objects & 1M Firestore Entities.</li>
+                                <li>On call responding to customer issues with realtime AppEngine/GKE Event ingestion and batch processing GCP Pub/Sub messaging based jobs framework. Data ingestion scale ~400MB/sec.</li>
                             </ul>
                         </div>
                     </div>
@@ -98,10 +119,10 @@
                     </div>
                     <div class="right">
                         <div class="desc">
-                            The APM Agent team.
+                            The Application Performance Monitoring (APM) Agent team.
                             <ul class="section__unlist">
                                 <li>Java instrumentation for APM using a C++ native profiler library with a Java jar using JNI.</li>
-                                <li>Golang based collector for open source distributed tracing (Zipkin, Jaeger, OpenTelemetry)</li>
+                                <li>Golang based <a href="https://hub.docker.com/r/aternity/apm-collector" target="_blank">collector</a> for open source distributed tracing (Zipkin, Jaeger, OpenTelemetry)</li>
                                 <li>New support for Java frameworks focussing on distributed tracing:
                                     <ul class="section__unlist">
                                         <li>Reactive Streams (Spring WebFlux, Reactor)</li>
@@ -120,21 +141,14 @@
                     </div>
                     <div class="right">
                         <div class="desc">
-                            The APM group, developing the Java Agent and maintaining the existing PHP & .NET (IIS) Agents.
+                            The APM team, developing the Java Agent and maintaining the existing PHP & .NET (IIS) Agents.
                             <ul class="section__unlist">
-                                <li>Java instrumentation for Application Performance Monitoring (APM), using the ASM library:
+                                <li>Java instrumentation for Application Performance Monitoring (APM), using the <a href="https://asm.ow2.io/" target="_blank">ASM</a> library:
                                     <ul class="section__unlist">
                                         <li>Instrumentation of a running Java VM, rather than invoking the Java Agent at startup</li>
                                         <li>Select Java methods for instrumentation based on Annotations</li>
                                         <li>OCI & Kubernetes/OKE resource discovery using the Instance Metadata Service</li>
                                         <li>Jetty/Dropwizard resource discovery</li>
-                                    </ul>
-                                </li>
-                                <li>Prototypes:
-                                    <ul class="section__unlist">
-                                        <li>RASP features for Oracle APM; Java probes in App Servers for detecting SQL injection, SQL audit, session begin/end, and authentication failure events.</li>
-                                        <li>Bayesian anomaly detection; converted data scientist python research to Java.</li>
-                                        <li>Rust based lightweight proxy server to detect and parse SQL for possible security monitoring.</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -186,7 +200,6 @@
                     <div class="left">
                         <div class="name">Staff Software Engineer</div>
                         <div class="name">Sun Microsystems</div>
-                        <div class="duration">1999 - 2010</div>
                     </div>
                     <div class="right">
                         <div class="desc">
@@ -247,7 +260,12 @@
                     <div class="right">BE Electronics Engineering</div>
                 </li>
             </ul>
-            </div>
+        </div>
+        <div class="section">
+            <div class="section__title">Work Status</div>
+            <span class="desc">
+                US Citizen
+            </span>
         </div>
 
     <div class="footer">

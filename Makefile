@@ -11,6 +11,10 @@ debug:
 
 .PHONY: test
 test:
+	HOSTNAME="lobo-codes-abcdef1234-vwxyz" NODE_NAME="work-macbook" ./bin/${TARGET} \
+		-os-release="test/os-release" -go-version="test/golang_version.txt"
+
+test-run:
 	HOSTNAME="lobo-codes-abcdef1234-vwxyz" NODE_NAME="work-macbook" go run cmd/${TARGET}.go \
 		-os-release="test/os-release" -go-version="test/golang_version.txt"
 

@@ -28,3 +28,6 @@ ssl-certificates/
 # pyenv
 .python-version
 
+# VS Code
+.vscode
+
