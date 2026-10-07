@@ -89,9 +89,8 @@ func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request
 	}
 
 	// Find a pre-existing IP Address & UserAgent entry
-	queryString := fmt.Sprintf("SELECT id,count FROM '%s' WHERE remote_address=%s AND user_agent=%s", tableName,
-		info.RemoteAddress, info.UserAgent)
-	rows, err := RqliteQuery(queryString)
+	queryString := fmt.Sprintf("SELECT id FROM %s WHERE remote_address=? AND user_agent=?", rqliteTable(tableName))
+	rows, err := RqliteQuery(queryString, info.RemoteAddress, info.UserAgent)
 	if err != nil {
 		log.Printf("WARNING: Error during lookup of IP: %s, user agent: %s; %s", info.RemoteAddress,
 			info.UserAgent, err.Error())
@@ -112,16 +111,12 @@ func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request
 		info.CreatedAt = info.UpdatedAt
 		info.Count = 1
 
-		pattern := "INSERT INTO '%s' (created_at,updated_at,remote_address,user_agent,count,country_short," +
-			"country_long,region,city,latitude,longitude,zipcode,timezone,elevation) VALUES ('%s', '%s', " +
-			"'%s', '%s', %d, '%s', '%s', '%s', '%s', %f, %f, '%s', '%s', %f)"
-
-		insertQuery := fmt.Sprintf(pattern, tableName, info.CreatedAt.Format(time.RFC3339Nano),
-			info.UpdatedAt.Format(time.RFC3339Nano), info.RemoteAddress, strings.Trim(info.UserAgent, "\""),
+		insertQuery := fmt.Sprintf("INSERT INTO %s (created_at,updated_at,remote_address,user_agent,count,country_short,"+
+			"country_long,region,city,latitude,longitude,zipcode,timezone,elevation) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rqliteTable(tableName))
+		err = RqliteExecute(insertQuery, info.CreatedAt.Format(time.RFC3339Nano),
+			info.UpdatedAt.Format(time.RFC3339Nano), info.RemoteAddress, info.UserAgent,
 			info.Count, info.CountryShort, info.CountryLong, info.Region, info.City, info.Latitude, info.Longitude,
 			info.Zipcode, info.Timezone, info.Elevation)
-
-		err = RqliteExecute(insertQuery)
 		if err != nil {
 			log.Printf("WARN: error inserting new entry into rqlite %s: %s; %s", tableName, info, err.Error())
 		}
@@ -130,20 +125,24 @@ func rqliteLogRequest(info *RequestInfo, tableName string, request *http.Request
 		// Existing visitor
 		rowMap, ok := rows[0].(map[string]interface{})
 		if !ok {
-			log.Printf("result not string-int map: %T", rows[0])
+			log.Printf("unexpected rqlite row type: %T", rows[0])
+			return
 		}
-		newCount := int(rowMap["count"].(float64)) + 1
-		id := int(rowMap["id"].(float64))
+		idValue, ok := rowMap["id"].(float64)
+		if !ok {
+			log.Printf("unexpected rqlite id: %v", rowMap["id"])
+			return
+		}
+		id := int(idValue)
 
-		insertUpdate := fmt.Sprintf("UPDATE '%s' SET count = %d, updated_at = \"%s\" WHERE id = %d", tableName,
-			newCount, info.UpdatedAt.Format(time.RFC3339Nano), id)
-
-		err = RqliteExecute(insertUpdate)
+		updateQuery := fmt.Sprintf("UPDATE %s SET count = count + 1, updated_at = ? WHERE id = ?", rqliteTable(tableName))
+		err = RqliteExecute(updateQuery, info.UpdatedAt.Format(time.RFC3339Nano), id)
 		if err != nil {
-			log.Printf("WARN: error updating entry into rqlite %s: %s, [count: %d, id: %d]; %s", tableName, info,
-				newCount, id, err.Error())
+			log.Printf("WARN: error updating entry in rqlite %s: %s, [id: %d]; %s", tableName, info,
+				id, err.Error())
+			return
 		}
-		log.Printf("INFO: Updated in %s: %s [count: %d, id: %d]", tableName, info, newCount, id)
+		log.Printf("INFO: Updated in %s: %s [id: %d]", tableName, info, id)
 	}
 }
 
@@ -155,7 +154,7 @@ func rqliteGetCountriesCities(tableName string, request *http.Request) (countryC
 
 	// Read country name & count
 	// Also, the city & region to count
-	queryString := fmt.Sprintf("SELECT country_short, city, region FROM '%s'", tableName)
+	queryString := fmt.Sprintf("SELECT country_short, city, region FROM %s", rqliteTable(tableName))
 	rows, err := RqliteQuery(queryString)
 	if err != nil {
 		log.Printf("WARNING: Error during country/city/region lookup for %s; %s", tableName, err.Error())
@@ -199,9 +198,24 @@ func rqliteGetCountriesCities(tableName string, request *http.Request) (countryC
 	return
 }
 
-func RqliteQuery(queryString string) ([]interface{}, error) {
+func rqliteTable(tableName string) string {
+	return `"` + strings.ReplaceAll(tableName, `"`, `""`) + `"`
+}
+
+func rqliteRequestBody(queryString string, args ...interface{}) ([]byte, error) {
+	if len(args) == 0 {
+		return json.Marshal([]string{queryString})
+	}
+	statement := append([]interface{}{queryString}, args...)
+	return json.Marshal([]interface{}{statement})
+}
+
+func RqliteQuery(queryString string, args ...interface{}) ([]interface{}, error) {
 	url := rqliteURL + "/db/query?associative"
-	body := []byte(fmt.Sprintf("[\"%s\"]", queryString))
+	body, err := rqliteRequestBody(queryString, args...)
+	if err != nil {
+		return nil, err
+	}
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
 	if err != nil {
@@ -213,25 +227,30 @@ func RqliteQuery(queryString string) ([]interface{}, error) {
 		return nil, fmt.Errorf("not OK status code: %d while querying rqlite", resp.StatusCode)
 	}
 
-	// Unmarshal response into Json
-	var resultsJson map[string][]map[string]interface{}
-	bytes, _ := io.ReadAll(resp.Body)
-	err = json.Unmarshal(bytes, &resultsJson)
-	if err != nil {
+	var result struct {
+		Results []struct {
+			Rows  []interface{} `json:"rows"`
+			Error string        `json:"error"`
+		} `json:"results"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, err
 	}
-
-	rowsArray, ok := resultsJson["results"][0]["rows"].([]interface{})
-	if !ok {
-		return nil, fmt.Errorf("rows array not found")
+	if len(result.Results) == 0 {
+		return nil, fmt.Errorf("rqlite query returned no result")
 	}
-
-	return rowsArray, nil
+	if result.Results[0].Error != "" {
+		return nil, fmt.Errorf("rqlite query: %s", result.Results[0].Error)
+	}
+	return result.Results[0].Rows, nil
 }
 
-func RqliteExecute(queryString string) error {
+func RqliteExecute(queryString string, args ...interface{}) error {
 	url := rqliteURL + "/db/execute"
-	body := []byte(fmt.Sprintf("[\"%s\"]", queryString))
+	body, err := rqliteRequestBody(queryString, args...)
+	if err != nil {
+		return err
+	}
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(body))
 	if err != nil {
@@ -243,6 +262,19 @@ func RqliteExecute(queryString string) error {
 		return fmt.Errorf("not OK status code: %d while querying rqlite", resp.StatusCode)
 	}
 
-	// Unmarshal response into Json
+	var result struct {
+		Results []struct {
+			Error string `json:"error"`
+		} `json:"results"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return err
+	}
+	if len(result.Results) == 0 {
+		return fmt.Errorf("rqlite execute returned no result")
+	}
+	if result.Results[0].Error != "" {
+		return fmt.Errorf("rqlite execute: %s", result.Results[0].Error)
+	}
 	return nil
 }
